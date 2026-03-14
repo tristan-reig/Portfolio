@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type JSX } from 'react';
 import projects from '../data/projects.json';
 
 interface Project {
@@ -21,24 +21,98 @@ const CATEGORY_COLOR: Record<string, string> = {
   Système:   '#FF4D6A',
 };
 
-const DEMO_ICON: Record<string, string> = {
-  iframe:   '⬜',
-  wasm:     '⬡',
-  terminal: '>_',
-};
-
 const DEMO_LABEL: Record<string, string> = {
   iframe:   'Live demo',
   wasm:     'WebAssembly',
   terminal: 'Terminal',
 };
 
+function IconMonitor({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/>
+      <line x1="8" y1="21" x2="16" y2="21"/>
+      <line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+  );
+}
+
+function IconCube({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+      <line x1="12" y1="22.08" x2="12" y2="12"/>
+    </svg>
+  );
+}
+
+function IconTerminal({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="4 17 10 11 4 5"/>
+      <line x1="12" y1="19" x2="20" y2="19"/>
+    </svg>
+  );
+}
+
+function IconGithub({ size = 14 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+    </svg>
+  );
+}
+
+function IconExternalLink({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>
+  );
+}
+
+function IconClose({ size = 12 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  );
+}
+
+function IconClock({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  );
+}
+
+function IconFilter({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+    </svg>
+  );
+}
+
+const DEMO_ICON_COMPONENT: Record<string, JSX.Element> = {
+  iframe:   <IconMonitor />,
+  wasm:     <IconCube />,
+  terminal: <IconTerminal />,
+};
+
 export default function ProjectGallery() {
   const [filter, setFilter]                   = useState('Tous');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const categories      = ['Tous', 'Web', 'Graphisme', 'Logiciel', 'Système'];
-  const filteredProjects = filter === 'Tous'
+  const categories = ['Tous', 'Web', 'Graphisme', 'Logiciel', 'Système'];
+
+  const displayedProjects = filter === 'Tous'
     ? (projects as Project[])
     : (projects as Project[]).filter(p => p.category === filter);
 
@@ -64,13 +138,14 @@ export default function ProjectGallery() {
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className="font-mono text-xs px-4 py-1.5 rounded border transition-all duration-200 cursor-pointer"
+              className="font-mono text-xs px-4 py-1.5 rounded border transition-all duration-200 cursor-pointer flex items-center gap-1.5"
               style={{
                 background:  active ? col + '1A' : 'transparent',
                 borderColor: active ? col        : 'var(--color-border-base)',
                 color:       active ? col        : 'var(--color-text-secondary)',
               }}
             >
+              {cat === 'Tous' && <IconFilter size={11} />}
               {cat}
             </button>
           );
@@ -78,7 +153,7 @@ export default function ProjectGallery() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {filteredProjects.map(project => {
+        {displayedProjects.map(project => {
           const col = accentFor(project.category);
           return (
             <button
@@ -108,10 +183,9 @@ export default function ProjectGallery() {
                 >
                   {project.category}
                 </span>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs text-text-muted">{project.year}</span>
-                  <span className="font-mono text-xs text-text-muted">·</span>
-                  <span className="font-mono text-xs text-text-muted">{String(project.id).padStart(2, '0')}</span>
+                <div className="flex items-center gap-1.5 text-text-muted">
+                  <IconClock size={11} />
+                  <span className="font-mono text-xs">{project.year || '—'}</span>
                 </div>
               </div>
 
@@ -123,10 +197,11 @@ export default function ProjectGallery() {
                   {project.title}
                 </h3>
                 <span
-                  className="font-mono text-xs px-2 py-1 rounded shrink-0 mt-0.5"
+                  className="flex items-center gap-1.5 font-mono text-xs px-2 py-1 rounded shrink-0 mt-0.5"
                   style={{ background: 'rgba(0,0,0,0.4)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-base)' }}
                 >
-                  {DEMO_ICON[project.demoType]} {DEMO_LABEL[project.demoType]}
+                  {DEMO_ICON_COMPONENT[project.demoType]}
+                  {DEMO_LABEL[project.demoType]}
                 </span>
               </div>
 
@@ -177,7 +252,7 @@ export default function ProjectGallery() {
           >
             <div className="flex justify-between items-center p-6 border-b" style={{ borderColor: 'var(--color-border-base)' }}>
               <div className="flex items-center gap-3">
-                <span className="font-mono text-xs text-text-muted">{String(selectedProject.id).padStart(2, '00')}</span>
+                <span className="font-mono text-xs text-text-muted">{String(selectedProject.id).padStart(2, '0')}</span>
                 <h3 className="text-xl font-bold text-accent" style={{ fontFamily: 'var(--font-mono)' }}>
                   {selectedProject.title}
                 </h3>
@@ -194,9 +269,9 @@ export default function ProjectGallery() {
               </div>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="font-mono text-xs text-text-muted hover:text-text-primary w-8 h-8 flex items-center justify-center rounded border border-border-base hover:border-text-secondary transition-all duration-150 cursor-pointer"
+                className="text-text-muted hover:text-text-primary w-8 h-8 flex items-center justify-center rounded border border-border-base hover:border-text-secondary transition-all duration-150 cursor-pointer"
               >
-                ✕
+                <IconClose />
               </button>
             </div>
 
@@ -217,10 +292,14 @@ export default function ProjectGallery() {
 
               <div
                 className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
-                style={{ background: 'var(--color-bg-deep)', borderColor: 'var(--color-border-base)' }}
+                style={{ background: 'var(--color-bg-deep)', borderColor: 'var(--color-border-base)', color: 'var(--color-text-muted)' }}
               >
-                <span className="font-mono text-3xl text-text-muted">{DEMO_ICON[selectedProject.demoType]}</span>
-                <span className="font-mono text-xs text-text-muted">[ {DEMO_LABEL[selectedProject.demoType]} — coming soon ]</span>
+                <span className="opacity-40" style={{ transform: 'scale(2.5)', display: 'block' }}>
+                  {DEMO_ICON_COMPONENT[selectedProject.demoType]}
+                </span>
+                <span className="font-mono text-xs text-text-muted mt-3">
+                  [ {DEMO_LABEL[selectedProject.demoType]} — coming soon ]
+                </span>
               </div>
 
               <div className="flex flex-wrap gap-2">
@@ -236,12 +315,17 @@ export default function ProjectGallery() {
               </div>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="font-mono text-xs text-text-muted">{selectedProject.year}</span>
+                <div className="flex items-center gap-1.5 text-text-muted">
+                  <IconClock size={13} />
+                  <span className="font-mono text-xs">{selectedProject.year || '—'}</span>
+                </div>
                 <a
                   href={selectedProject.github ?? '#'}
-                  className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10"
+                  className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10 flex items-center gap-2"
                 >
-                  ↗ Code source
+                  <IconGithub size={13} />
+                  Code source
+                  <IconExternalLink size={12} />
                 </a>
               </div>
             </div>

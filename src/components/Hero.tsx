@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 
 const LANGAGES: { label: string; color: string }[] = [
-  { label: 'C',      color: '#555599' },
-  { label: 'C++',    color: '#F34B7D' },
-  { label: 'Java',   color: '#B07219' },
+  { label: 'C', color: '#555599' },
+  { label: 'C++', color: '#F34B7D' },
+  { label: 'Java', color: '#B07219' },
   { label: 'Python', color: '#3572A5' },
-  { label: 'JS/TS',  color: '#F7DF1E' },
+  { label: 'JavaScript / TypeScript', color: '#F7DF1E' },
 ];
 
 const FRAMEWORKS: { label: string; color: string }[] = [

@@ -1,97 +1,158 @@
 [
   {
-    "id": 1,
-    "title": "Score-Tracker",
-    "category": "Web",
-    "description": "Suivi de résultats sportifs & e-sport en temps réel.",
-    "longDescription": "Application React consommant plusieurs APIs sportives (Foot, Rugby, LoL) avec gestion de favoris, historique de matchs et notifications.",
-    "tech": ["React", "TypeScript", "REST API", "CSS Modules"],
-    "demoType": "iframe",
-    "github": "#",
-    "highlights": [
-      "Fetch polling temps réel",
-      "Gestion de favoris persistante",
-      "UI responsive mobile-first"
-    ],
-    "year": "2024"
-  },
-  {
-    "id": 2,
-    "title": "scop",
-    "category": "Graphisme",
-    "description": "Moteur de rendu 3D avec caméra libre et shaders GLSL.",
-    "longDescription": "Moteur OpenGL from scratch en C avec chargement de .obj, gestion de matrices de transformation, shaders Phong et caméra FPS.",
-    "tech": ["C", "OpenGL", "GLSL", "Make"],
-    "demoType": "wasm",
-    "github": "#",
-    "highlights": [
-      "Shaders Phong / Gouraud",
-      "Caméra FPS quaternion",
-      "Chargement .obj custom"
-    ],
-    "year": "2023"
-  },
-  {
-    "id": 3,
     "title": "Singlefind",
     "category": "Web",
-    "description": "Site de rencontre minimaliste avec base relationnelle.",
-    "longDescription": "Full-stack Flask avec authentification JWT, système de matching, messagerie instantanée via WebSockets et gestion de profils avec photos.",
-    "tech": ["Python", "Flask", "PostgreSQL", "WebSockets"],
+    "description": "Site de rencontre développé en binôme dans le cadre des cours de NSI.",
+    "longDescription": "Application web full-stack réalisée en Terminale NSI avec Flask et SQLAlchemy pour le backend, Bootstrap 4 pour le frontend. Gestion des utilisateurs via Flask-Login, base de données relationnelle, géolocalisation avec Geopy. Projet réalisé en binôme.",
+    "tech": [
+      "Python",
+      "Flask",
+      "SQL",
+      "Bootstrap"
+    ],
     "demoType": "iframe",
     "github": "#",
     "highlights": [
-      "Auth JWT + sessions",
-      "Messagerie WebSocket",
-      "Algo de matching par score"
+      "Authentification utilisateur avec Flask-Login",
+      "Base de données relationnelle via Flask-SQLAlchemy",
+      "Géolocalisation des profils avec Geopy"
+    ],
+    "year": "2022"
+  },
+  {
+    "title": "Weathercast",
+    "category": "Logiciel",
+    "description": "Application météo desktop développée en Terminale NSI.",
+    "longDescription": "Application desktop Electron affichant la météo en temps réel via plusieurs APIs (Open-Meteo et autres). Interface web embarquée stylisée avec Tailwind CSS. Projet réalisé en équipe de trois dans le cadre des cours de NSI en Terminale.",
+    "tech": [
+      "Electron",
+      "JavaScript",
+      "Tailwind CSS",
+      "Open-Meteo API"
+    ],
+    "demoType": "iframe",
+    "github": "#",
+    "highlights": [
+      "Application desktop cross-platform via Electron",
+      "Données météo temps réel",
+      "Projet d'équipe"
     ],
     "year": "2023"
   },
   {
-    "id": 4,
-    "title": "avaj-launcher",
-    "category": "Logiciel",
-    "description": "Simulation de véhicules aériens via design patterns.",
-    "longDescription": "Simulation orientée objet implémentant les patterns Observer, Singleton et Factory pour modéliser des véhicules aériens réagissant à des conditions météo.",
-    "tech": ["Java", "Observer", "Factory", "Singleton"],
+    "title": "Score-Tracker",
+    "category": "Web",
+    "description": "Site de suivi de résultats sportifs & e-sport en temps réel (Foot, Rugby, LoL).",
+    "longDescription": "Application web React/Vite permettant de suivre les résultats en direct, consulter les classements et l'historique de matchs pour le football, le rugby et League of Legends. Inclut la recherche d'équipes et de joueurs, ainsi que les brackets de compétition LoL, via des APIs sportives tierces servies par un backend Express.",
+    "tech": [
+      "React",
+      "Vite",
+      "JavaScript",
+      "Express",
+      "API REST"
+    ],
+    "demoType": "iframe",
+    "github": "#",
+    "highlights": [
+      "Résultats en direct via APIs sportives",
+      "Classements, historique de matchs et recherche d'équipe/joueur",
+      "Brackets de compétition"
+    ],
+    "year": "2023 – 2024"
+  },
+  {
+    "title": "minishell",
+    "category": "Système",
+    "description": "Réécriture d'un shell Unix en C, projet solo du cursus 42.",
+    "longDescription": "Implémentation complète d'un shell interactif inspiré de Bash : parsing de commandes, gestion des pipes, redirections (>, >>, <, <<), variables d'environnement, expansion de $?, signaux (ctrl-C, ctrl-D, ctrl-\\) et 7 built-ins (echo, cd, pwd, export, unset, env, exit). Projet réalisé seul dans le cadre du cursus 42.",
+    "tech": [
+      "C",
+      "fork / execve / readline",
+      "Signaux UNIX"
+    ],
     "demoType": "terminal",
     "github": "#",
     "highlights": [
-      "4 design patterns GoF",
-      "Parsing fichier de scénario",
-      "Architecture extensible"
+      "Parser de commandes avec gestion des quotes simples et doubles",
+      "Pipes, redirections et here-doc",
+      "7 built-ins, variables d'environnement et gestion des signaux"
     ],
-    "year": "2026"
+    "year": "2025"
   },
   {
-    "id": 5,
-    "title": "ft_vox",
+    "title": "ft_containers",
+    "category": "Logiciel",
+    "description": "Réimplémentation des conteneurs de la STL C++, projet 42.",
+    "longDescription": "Réécriture des principaux conteneurs de la bibliothèque standard C++ (List, Vector, Map, Stack, Queue) avec leurs itérateurs complets. Aucune utilisation de la STL. Chaque conteneur respecte fidèlement l'interface de référence, y compris les surcharges d'opérateurs non-membres.",
+    "tech": [
+      "C++",
+      "Conteneurs",
+      "Iterateurs"
+    ],
+    "demoType": "terminal",
+    "github": "#",
+    "highlights": [
+      "5 conteneurs réimplémentés : List, Vector, Map, Stack, Queue",
+      "Itérateurs complets pour chaque conteneur",
+      "Interface identique à la STL, sans jamais l'utiliser"
+    ],
+    "year": "2025"
+  },
+  {
+    "title": "scop",
     "category": "Graphisme",
-    "description": "Moteur voxel avec génération procédurale de terrain.",
-    "longDescription": "Moteur de rendu voxel en C++ avec génération de terrain par bruit de Perlin, chunk loading dynamique, frustum culling et ambient occlusion.",
-    "tech": ["C++", "OpenGL", "Perlin Noise", "Chunk System"],
+    "description": "Visionneuse 3D OpenGL avec rendu par facettes et texturing, projet 42.",
+    "longDescription": "Programme C affichant un objet 3D chargé depuis un fichier .obj en perspective, avec rotation automatique autour de son axe central. Shaders GLSL écrits à la main pour la colorisation par facette et l'application de texture avec transition douce. Déplacement de l'objet sur les trois axes. Aucune librairie externe pour le parsing, les matrices ou les shaders.",
+    "tech": [
+      "C",
+      "OpenGL",
+      "GLSL",
+      "MinilibX"
+    ],
     "demoType": "wasm",
     "github": "#",
     "highlights": [
-      "Bruit de Perlin 3D",
-      "Chunk loading / unloading",
-      "Frustum culling & AO"
+      "Parser .obj custom, matrices de transformation from scratch",
+      "Shaders GLSL : couleurs par facette + texturing avec transition douce",
+      "Projection en perspective et déplacement sur 3 axes"
     ],
     "year": "2026"
   },
   {
-    "id": 6,
+    "title": "ft_vox",
+    "category": "Graphisme",
+    "description": "Moteur de rendu voxel avec monde procédural infini, projet 42.",
+    "longDescription": "Moteur voxel en C++ rendu sous OpenGL capable de générer un monde procédural de 16_384 x 256 x 16_384 cubes avec génération déterministe par seed. Terrain naturel (collines, montagnes, grottes) via bruit de Perlin. Système de chunks avec chargement/déchargement dynamique, frustum culling, skybox, caméra FPS et textures par type de bloc.",
+    "tech": [
+      "C++",
+      "OpenGL",
+      "GLSL"
+    ],
+    "demoType": "wasm",
+    "github": "#",
+    "highlights": [
+      "Génération procédurale déterministe",
+      "Système de chunks avec chargement/déchargement dynamique en RAM",
+      "Frustum culling, skybox et caméra FPS avec vitesse x20"
+    ],
+    "year": "2026"
+  },
+  {
     "title": "malloc",
     "category": "Système",
-    "description": "Réécriture de l'allocateur mémoire de la libc standard.",
-    "longDescription": "Implémentation complète de malloc/free/realloc avec arènes par taille, coalescing de blocs libres, alignement mémoire et protection contre la corruption.",
-    "tech": ["C", "mmap / sbrk", "Architecture OS", "Pointeurs"],
+    "description": "Réécriture de malloc/free/realloc en bibliothèque partagée, projet 42.",
+    "longDescription": "Implémentation complète de malloc, free et realloc sous forme de bibliothèque partagée (.so) utilisable par injection sans recompilation. Gestion de trois arènes pré-allouées via mmap() : TINY, SMALL et LARGE. Alignement mémoire strict et fonction show_alloc_mem() pour visualiser l'état des zones.",
+    "tech": [
+      "C",
+      "mmap",
+      "munmap"
+    ],
     "demoType": "terminal",
     "github": "#",
     "highlights": [
-      "Arènes TINY / SMALL / LARGE",
-      "Coalescing + splitting",
-      "Thread-safe avec mutex"
+      "Zones mémoire pré-allouées pour éviter trop d'appels système",
+      "Petites, moyennes et grandes allocations gérées séparément",
+      "Utilisable sur n'importe quel programme sans le modifier"
     ],
     "year": "2026"
   }

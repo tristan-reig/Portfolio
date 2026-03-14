@@ -32,10 +32,14 @@ import ProjectGallery from '../components/ProjectGallery';
           N'hésitez pas à me contacter directement.
         </p>
         <a
-          href="mailto:hello@example.com"
+          href="mailto:tristan.reig@gmail.com"
           class="inline-flex items-center gap-3 font-mono text-sm font-bold px-6 py-3 rounded-lg bg-accent text-bg-deep transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_28px_6px_rgba(0,255,156,0.25)]"
         >
-          → hello@example.com
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          tristan.reig@gmail.com
         </a>
       </div>
 
@@ -64,12 +68,17 @@ import ProjectGallery from '../components/ProjectGallery';
         <a
           href="/cv.pdf"
           download
-          class="self-start font-mono text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-200 hover:-translate-y-px"
+          class="self-start inline-flex items-center gap-2 font-mono text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-200 hover:-translate-y-px"
           style="border-color: var(--color-accent); color: var(--color-accent);"
           onmouseover="this.style.background='rgba(0,255,156,0.07)'; this.style.boxShadow='0 0 18px 2px rgba(0,255,156,0.15)';"
           onmouseout="this.style.background='transparent'; this.style.boxShadow='none';"
         >
-          ↓ Télécharger le CV
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Télécharger le CV
         </a>
       </div>
 
