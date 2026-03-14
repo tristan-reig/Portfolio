@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "title": "Score-Tracker",
+    "category": "Web",
+    "description": "Suivi de résultats sportifs & e-sport en temps réel.",
+    "longDescription": "Application React consommant plusieurs APIs sportives (Foot, Rugby, LoL) avec gestion de favoris, historique de matchs et notifications.",
+    "tech": ["React", "TypeScript", "REST API", "CSS Modules"],
+    "demoType": "iframe",
+    "github": "#",
+    "highlights": [
+      "Fetch polling temps réel",
+      "Gestion de favoris persistante",
+      "UI responsive mobile-first"
+    ],
+    "year": "2024"
+  },
+  {
+    "id": 2,
+    "title": "scop",
+    "category": "Graphisme",
+    "description": "Moteur de rendu 3D avec caméra libre et shaders GLSL.",
+    "longDescription": "Moteur OpenGL from scratch en C avec chargement de .obj, gestion de matrices de transformation, shaders Phong et caméra FPS.",
+    "tech": ["C", "OpenGL", "GLSL", "Make"],
+    "demoType": "wasm",
+    "github": "#",
+    "highlights": [
+      "Shaders Phong / Gouraud",
+      "Caméra FPS quaternion",
+      "Chargement .obj custom"
+    ],
+    "year": "2023"
+  },
+  {
+    "id": 3,
+    "title": "Singlefind",
+    "category": "Web",
+    "description": "Site de rencontre minimaliste avec base relationnelle.",
+    "longDescription": "Full-stack Flask avec authentification JWT, système de matching, messagerie instantanée via WebSockets et gestion de profils avec photos.",
+    "tech": ["Python", "Flask", "PostgreSQL", "WebSockets"],
+    "demoType": "iframe",
+    "github": "#",
+    "highlights": [
+      "Auth JWT + sessions",
+      "Messagerie WebSocket",
+      "Algo de matching par score"
+    ],
+    "year": "2023"
+  },
+  {
+    "id": 4,
+    "title": "avaj-launcher",
+    "category": "Logiciel",
+    "description": "Simulation de véhicules aériens via design patterns.",
+    "longDescription": "Simulation orientée objet implémentant les patterns Observer, Singleton et Factory pour modéliser des véhicules aériens réagissant à des conditions météo.",
+    "tech": ["Java", "Observer", "Factory", "Singleton"],
+    "demoType": "terminal",
+    "github": "#",
+    "highlights": [
+      "4 design patterns GoF",
+      "Parsing fichier de scénario",
+      "Architecture extensible"
+    ],
+    "year": "2026"
+  },
+  {
+    "id": 5,
+    "title": "ft_vox",
+    "category": "Graphisme",
+    "description": "Moteur voxel avec génération procédurale de terrain.",
+    "longDescription": "Moteur de rendu voxel en C++ avec génération de terrain par bruit de Perlin, chunk loading dynamique, frustum culling et ambient occlusion.",
+    "tech": ["C++", "OpenGL", "Perlin Noise", "Chunk System"],
+    "demoType": "wasm",
+    "github": "#",
+    "highlights": [
+      "Bruit de Perlin 3D",
+      "Chunk loading / unloading",
+      "Frustum culling & AO"
+    ],
+    "year": "2026"
+  },
+  {
+    "id": 6,
+    "title": "malloc",
+    "category": "Système",
+    "description": "Réécriture de l'allocateur mémoire de la libc standard.",
+    "longDescription": "Implémentation complète de malloc/free/realloc avec arènes par taille, coalescing de blocs libres, alignement mémoire et protection contre la corruption.",
+    "tech": ["C", "mmap / sbrk", "Architecture OS", "Pointeurs"],
+    "demoType": "terminal",
+    "github": "#",
+    "highlights": [
+      "Arènes TINY / SMALL / LARGE",
+      "Coalescing + splitting",
+      "Thread-safe avec mutex"
+    ],
+    "year": "2026"
+  }
+]

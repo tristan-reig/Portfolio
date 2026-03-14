@@ -1,14 +1,79 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectGallery from '../components/ProjectGallery.tsx';
+import Hero from '../components/Hero';
+import ProjectGallery from '../components/ProjectGallery';
 ---
 
-<BaseLayout title="Accueil">
-  <section class="py-20">
-    <h1 class="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-      Développeur Polyvalent
-    </h1>
+<BaseLayout title="Portfolio">
+
+  <Hero client:only="react" />
+
+  <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
+
+  <ProjectGallery client:only="react" />
+
+  <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
+
+  <section id="contact" class="py-12">
+    <div class="flex items-baseline gap-4 mb-2">
+      <span class="font-mono text-xs text-text-muted">03.</span>
+      <h2 class="text-3xl font-bold text-text-primary tracking-tight">Contact</h2>
+    </div>
+    <div
+      class="mb-10 h-px"
+      style="background: linear-gradient(90deg, var(--color-accent), transparent); width: min(120px,100%)"
+    ></div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+
+      <div>
+        <p class="text-sm leading-relaxed text-text-secondary mb-8">
+          Étudiant en L3 à la recherche d'un Master pour la rentrée 2026.<br />
+          N'hésitez pas à me contacter directement.
+        </p>
+        <a
+          href="mailto:hello@example.com"
+          class="inline-flex items-center gap-3 font-mono text-sm font-bold px-6 py-3 rounded-lg bg-accent text-bg-deep transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_28px_6px_rgba(0,255,156,0.25)]"
+        >
+          → hello@example.com
+        </a>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <p class="font-mono text-xs text-text-muted uppercase tracking-widest">Curriculum Vitæ</p>
+
+        <div
+          class="w-full rounded-xl border overflow-hidden"
+          style="border-color: var(--color-border-base); background: var(--color-bg-card); height: 380px;"
+        >
+          <object
+            data="/cv.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
+            type="application/pdf"
+            class="w-full h-full"
+            aria-label="Aperçu du CV"
+          >
+            <div class="w-full h-full flex flex-col items-center justify-center gap-3 p-6 text-center">
+              <span class="font-mono text-4xl" style="color: var(--color-text-muted)">📄</span>
+              <p class="font-mono text-xs" style="color: var(--color-text-muted)">
+                Aperçu non disponible dans ce navigateur.
+              </p>
+            </div>
+          </object>
+        </div>
+
+        <a
+          href="/cv.pdf"
+          download
+          class="self-start font-mono text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-200 hover:-translate-y-px"
+          style="border-color: var(--color-accent); color: var(--color-accent);"
+          onmouseover="this.style.background='rgba(0,255,156,0.07)'; this.style.boxShadow='0 0 18px 2px rgba(0,255,156,0.15)';"
+          onmouseout="this.style.background='transparent'; this.style.boxShadow='none';"
+        >
+          ↓ Télécharger le CV
+        </a>
+      </div>
+
+    </div>
   </section>
 
-  <ProjectGallery client:load />
 </BaseLayout>

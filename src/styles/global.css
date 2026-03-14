@@ -1,1 +1,103 @@
 @import "tailwindcss";
+
+@import "@fontsource/syne/400.css";
+@import "@fontsource/syne/600.css";
+@import "@fontsource/syne/700.css";
+@import "@fontsource/syne/800.css";
+@import "@fontsource/jetbrains-mono/300.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+
+@theme {
+  --color-bg-deep:        #060A0E;
+  --color-bg-card:        #0C1318;
+  --color-bg-card-hover:  #111920;
+  --color-border-base:    #1E2D35;
+  --color-border-glow:    rgba(0,255,156,0.2);
+  --color-accent:         #00FF9C;
+  --color-accent-dim:     rgba(0,255,156,0.4);
+  --color-accent-text:    #00E88A;
+  --color-text-primary:   #D4DFE8;
+  --color-text-secondary: #6B8A9A;
+  --color-text-muted:     #3A5060;
+  --color-danger:         #FF4D6A;
+  --color-warning:        #FFB830;
+
+  --font-display: "Syne", sans-serif;
+  --font-mono:    "JetBrains Mono", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  @apply bg-bg-deep text-text-primary antialiased min-h-svh;
+  font-family: var(--font-display);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,0,0,0.07) 3px,
+    rgba(0,0,0,0.07) 4px
+  );
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 60vh;
+  background: radial-gradient(ellipse at center, rgba(0,255,156,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.layout-wrapper { position: relative; z-index: 1; }
+
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { @apply bg-bg-deep; }
+::-webkit-scrollbar-thumb { @apply bg-border-base rounded-sm; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent-dim); }
+
+::selection { background: var(--color-accent-dim); color: #000; }
+
+@keyframes glitch-1 {
+  0%,100% { clip-path: inset(0 0 95% 0);  transform: translate(-2px,0); }
+  20%     { clip-path: inset(40% 0 40% 0); transform: translate(2px,0); }
+  40%     { clip-path: inset(70% 0 15% 0); transform: translate(-1px,0); }
+  60%     { clip-path: inset(10% 0 80% 0); transform: translate(3px,0); }
+  80%     { clip-path: inset(55% 0 30% 0); transform: translate(-2px,0); }
+}
+@keyframes glitch-2 {
+  0%,100% { clip-path: inset(80% 0 5% 0);  transform: translate(2px,0);  color: #FF4D6A; }
+  20%     { clip-path: inset(20% 0 65% 0);  transform: translate(-2px,0); }
+  40%     { clip-path: inset(5% 0 90% 0);   transform: translate(1px,0);  color: #00FF9C; }
+  60%     { clip-path: inset(60% 0 25% 0);  transform: translate(-3px,0); }
+  80%     { clip-path: inset(35% 0 50% 0);  transform: translate(2px,0);  color: #FF4D6A; }
+}
+@keyframes blink  { 0%,49%{opacity:1} 50%,100%{opacity:0} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+.animate-fade-up { animation: fadeUp 0.55s ease both; }
+.animate-fade-in { animation: fadeIn 0.4s  ease both; }
+
+.cursor-blink::after {
+  content: '▋';
+  display: inline-block;
+  color: var(--color-accent);
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
