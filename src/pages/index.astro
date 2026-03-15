@@ -16,6 +16,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
+  <!-- ── Contact ── -->
   <section id="contact" class="py-12">
     <div class="flex items-baseline gap-4 mb-2">
       <span class="font-mono text-xs text-text-muted">03.</span>
@@ -28,6 +29,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
+      <!-- Left : texte + mail -->
       <div>
         <p class="text-sm leading-relaxed text-text-secondary mb-8">
           Étudiant en L3 à la recherche d'un Master pour la rentrée 2026.<br />
@@ -37,7 +39,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           href="mailto:tristan.reig@gmail.com"
           class="inline-flex items-center gap-3 font-mono text-sm font-bold px-6 py-3 rounded-lg bg-accent text-bg-deep transition-all duration-200 hover:-translate-y-px hover:shadow-[0_0_28px_6px_rgba(0,255,156,0.25)]"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round">
             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
             <polyline points="22,6 12,13 2,6"/>
           </svg>
@@ -45,9 +47,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </a>
       </div>
 
+      <!-- Right : CV preview + download -->
       <div class="flex flex-col gap-4">
         <p class="font-mono text-xs text-text-muted uppercase tracking-widest">Curriculum Vitæ</p>
 
+        <!-- PDF preview — hauteur fixe, pas d'aspect-ratio qui crée du vide -->
         <div
           class="w-full rounded-xl border overflow-hidden"
           style="border-color: var(--color-border-base); background: var(--color-bg-card); height: 380px;"
@@ -67,6 +71,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </object>
         </div>
 
+        <!-- Download button -->
         <a
           href={`${base}/cv.pdf`}
           download
@@ -75,10 +80,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           onmouseover="this.style.background='rgba(0,255,156,0.07)'; this.style.boxShadow='0 0 18px 2px rgba(0,255,156,0.15)';"
           onmouseout="this.style.background='transparent'; this.style.boxShadow='none';"
         >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
           </svg>
           Télécharger le CV
         </a>
