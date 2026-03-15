@@ -1,5 +1,6 @@
 import { useState, type JSX } from 'react';
 import projects from '../data/projects.json';
+import ScopDemo from './ScopDemo';
 
 interface Project {
   id: number;
@@ -106,7 +107,7 @@ const DEMO_ICON_COMPONENT: Record<string, JSX.Element> = {
   terminal: <IconTerminal />,
 };
 
-export default function ProjectGallery() {
+export default function ProjectGallery({ base = '' }: { base?: string }) {
   const [filter, setFilter]                   = useState('Tous');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -290,17 +291,21 @@ export default function ProjectGallery() {
                 </ul>
               </div>
 
-              <div
-                className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
-                style={{ background: 'var(--color-bg-deep)', borderColor: 'var(--color-border-base)', color: 'var(--color-text-muted)' }}
-              >
-                <span className="opacity-40" style={{ transform: 'scale(2.5)', display: 'block' }}>
-                  {DEMO_ICON_COMPONENT[selectedProject.demoType]}
-                </span>
-                <span className="font-mono text-xs text-text-muted mt-3">
-                  [ {DEMO_LABEL[selectedProject.demoType]} — coming soon ]
-                </span>
-              </div>
+              {selectedProject.demoType === 'wasm' && selectedProject.title === 'scop' ? (
+                <ScopDemo base={base.replace(/\/$/, '')} />
+              ) : (
+                <div
+                  className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
+                  style={{ background: 'var(--color-bg-deep)', borderColor: 'var(--color-border-base)', color: 'var(--color-text-muted)' }}
+                >
+                  <span className="opacity-40" style={{ transform: 'scale(2.5)', display: 'block' }}>
+                    {DEMO_ICON_COMPONENT[selectedProject.demoType]}
+                  </span>
+                  <span className="font-mono text-xs text-text-muted mt-3">
+                    [ {DEMO_LABEL[selectedProject.demoType]} — coming soon ]
+                  </span>
+                </div>
+              )}
 
               <div className="flex flex-wrap gap-2">
                 {selectedProject.tech.map(tag => (
