@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero';
 import ProjectGallery from '../components/ProjectGallery';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout title="Portfolio">
@@ -51,7 +53,7 @@ import ProjectGallery from '../components/ProjectGallery';
           style="border-color: var(--color-border-base); background: var(--color-bg-card); height: 380px;"
         >
           <object
-            data="/cv.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
+            data={`${base}/cv.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
             type="application/pdf"
             class="w-full h-full"
             aria-label="Aperçu du CV"
@@ -66,7 +68,7 @@ import ProjectGallery from '../components/ProjectGallery';
         </div>
 
         <a
-          href="/cv.pdf"
+          href={`${base}/cv.pdf`}
           download
           class="self-start inline-flex items-center gap-2 font-mono text-sm font-medium px-5 py-2.5 rounded-lg border transition-all duration-200 hover:-translate-y-px"
           style="border-color: var(--color-accent); color: var(--color-accent);"
