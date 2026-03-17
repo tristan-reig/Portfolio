@@ -16,14 +16,12 @@ const { title } = Astro.props;
   <body>
     <div class="layout-wrapper flex flex-col min-h-svh">
 
-      <!-- ── Sticky Header ── -->
       <header
         id="site-header"
         class="sticky top-0 z-40 transition-all duration-300"
       >
         <div class="max-w-5xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
 
-          <!-- Logo -->
           <a
             href="/"
             class="font-mono text-sm font-bold tracking-widest uppercase text-accent"
@@ -31,7 +29,6 @@ const { title } = Astro.props;
             <span class="text-text-muted">~/</span>portfolio
           </a>
 
-          <!-- Nav -->
           <nav class="hidden md:flex items-center gap-8">
             {[
               { label: "À propos", href: "#about"   },
@@ -49,7 +46,6 @@ const { title } = Astro.props;
             ))}
           </nav>
 
-          <!-- GitHub icon link -->
           <a
             href="https://github.com/Skiifig"
             target="_blank"
@@ -60,32 +56,26 @@ const { title } = Astro.props;
             <i class="fa-brands fa-github text-lg"></i>
           </a>
         </div>
-        <!-- Bottom border -->
         <div class="h-px w-full bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
       </header>
 
-      <!-- ── Main ── -->
       <main class="flex-grow max-w-5xl mx-auto w-full px-6 md:px-12">
         <slot />
       </main>
 
-      <!-- ── Footer ── -->
       <footer class="max-w-5xl mx-auto w-full px-6 md:px-12 py-10">
         <div class="h-px mb-8 bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
           <span class="font-mono text-xs text-text-muted">© 2026 — Conçu avec Astro & React</span>
           <div class="flex items-center gap-5">
-            <!-- GitHub -->
             <a href="https://github.com/Skiifig" target="_blank" rel="noopener"
                class="text-text-secondary hover:text-accent transition-colors duration-200" aria-label="GitHub">
               <i class="fa-brands fa-github text-lg"></i>
             </a>
-            <!-- LinkedIn -->
             <a href="https://linkedin.com/in/tristan-reig" target="_blank" rel="noopener"
                class="text-text-secondary hover:text-accent transition-colors duration-200" aria-label="LinkedIn">
               <i class="fa-brands fa-linkedin text-lg"></i>
             </a>
-            <!-- Mail -->
             <a href="mailto:tristan.reig@gmail.com"
                class="text-text-secondary hover:text-accent transition-colors duration-200" aria-label="Mail">
               <i class="fa-solid fa-envelope text-lg"></i>
@@ -96,7 +86,6 @@ const { title } = Astro.props;
     </div>
 
     <script>
-      // Header backdrop on scroll
       const header = document.getElementById('site-header') as HTMLElement | null;
       window.addEventListener('scroll', () => {
         if (!header) return;
@@ -109,14 +98,12 @@ const { title } = Astro.props;
         }
       });
 
-      // Active nav highlight — basé sur la position scroll, pas IntersectionObserver
       const links = document.querySelectorAll<HTMLAnchorElement>('.nav-link');
 
       function updateActiveLink() {
         const sections = ['about', 'projets', 'contact'];
         const scrollY = window.scrollY + 120;
 
-        // Si on est tout en haut, toujours activer "about"
         if (window.scrollY < 50) {
           links.forEach(l => {
             l.style.color = l.dataset.section === 'about'

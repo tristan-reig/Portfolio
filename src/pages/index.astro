@@ -12,11 +12,10 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
-  <ProjectGallery client:only="react" base={import.meta.env.BASE_URL} />
+  <ProjectGallery client:only="react" base={import.meta.env.BASE_URL} wsUrl={import.meta.env.PUBLIC_MINISHELL_WS_URL ?? ''} />
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
-  <!-- ── Contact ── -->
   <section id="contact" class="py-12">
     <div class="flex items-baseline gap-4 mb-2">
       <span class="font-mono text-xs text-text-muted">03.</span>
@@ -29,7 +28,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-      <!-- Left : texte + mail -->
       <div>
         <p class="text-sm leading-relaxed text-text-secondary mb-8">
           Étudiant en L3 à la recherche d'un Master pour la rentrée 2026.<br />
@@ -44,11 +42,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         </a>
       </div>
 
-      <!-- Right : CV preview + download -->
       <div class="flex flex-col gap-4">
         <p class="font-mono text-xs text-text-muted uppercase tracking-widest">Curriculum Vitæ</p>
 
-        <!-- PDF preview — hauteur fixe, pas d'aspect-ratio qui crée du vide -->
         <div
           class="w-full rounded-xl border overflow-hidden"
           style="border-color: var(--color-border-base); background: var(--color-bg-card); height: 380px;"
@@ -68,7 +64,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
           </object>
         </div>
 
-        <!-- Download button -->
         <a
           href={`${base}/cv.pdf`}
           download

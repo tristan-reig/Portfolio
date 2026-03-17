@@ -2,7 +2,7 @@ import { useState, type JSX } from 'react';
 import projects from '../data/projects.json';
 import ScopDemo from './ScopDemo';
 import ScreenshotGallery from './ScreenshotGallery';
-import MinishellDemo from './Minishelldemo';
+import MinishellDemo from './MinishellDemo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faDesktop, faCube, faTerminal, faImage,
@@ -44,7 +44,7 @@ const DEMO_ICON_COMPONENT: Record<string, JSX.Element> = {
   screenshots: <FontAwesomeIcon icon={faImage} />,
 };
 
-export default function ProjectGallery({ base = '' }: { base?: string }) {
+export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: string; wsUrl?: string }) {
   const [filter, setFilter]                   = useState('Tous');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -237,7 +237,7 @@ export default function ProjectGallery({ base = '' }: { base?: string }) {
                   count={0}
                 />
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'minishell' ? (
-                <MinishellDemo />
+                <MinishellDemo wsUrl={wsUrl} />
               ) : (
                 <div
                   className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
