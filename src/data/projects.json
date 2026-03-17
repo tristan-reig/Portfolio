@@ -32,12 +32,12 @@
       "Tailwind CSS",
       "Open-Meteo API"
     ],
-    "demoType": "iframe",
-    "github": "#",
+    "demoType": "screenshots",
+    "github": "https://github.com/tristan-reig/Weathercast",
     "highlights": [
       "Application desktop cross-platform via Electron",
-      "Données météo temps réel",
-      "Projet d'équipe"
+      "Données météo temps réel (Open-Meteo + autres APIs)",
+      "Projet d'équipe — 3 contributeurs"
     ],
     "year": "2023"
   },

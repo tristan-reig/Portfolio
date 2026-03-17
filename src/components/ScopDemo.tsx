@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faPause, faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
 
 const OBJECTS = [
   { key: 'teapot',  label: 'Théière',  path: 'assets/teapot.obj' },
@@ -177,9 +179,7 @@ export default function ScopDemo({ base }: { base: string }) {
               className="flex items-center justify-center w-16 h-16 rounded-full border-2 transition-all duration-200 hover:scale-110"
               style={{ borderColor: 'var(--color-accent)', background: 'rgba(0,255,156,0.12)' }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--color-accent)">
-                <polygon points="5,3 19,12 5,21"/>
-              </svg>
+              <FontAwesomeIcon icon={faPlay} style={{ color: 'var(--color-accent)', fontSize: '20px' }} />
             </button>
           </div>
         )}
@@ -201,16 +201,12 @@ export default function ScopDemo({ base }: { base: string }) {
             >
               {running ? (
                 <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
-                  </svg>
+                  <FontAwesomeIcon icon={faPause} className="w-3" />
                   Pause
                 </>
               ) : (
                 <>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5,3 19,12 5,21"/>
-                  </svg>
+                  <FontAwesomeIcon icon={faPlay} className="w-3" />
                   Lancer
                 </>
               )}
@@ -226,19 +222,10 @@ export default function ScopDemo({ base }: { base: string }) {
               className="text-text-muted hover:text-accent transition-colors duration-200"
               title="Plein écran"
             >
-              {fullscreen ? (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                     style={{ stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round' }}>
-                  <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/>
-                  <path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
-                </svg>
-              ) : (
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                     style={{ stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round' }}>
-                  <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/>
-                  <path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
-                </svg>
-              )}
+              {fullscreen
+                ? <FontAwesomeIcon icon={faCompress} />
+                : <FontAwesomeIcon icon={faExpand} />
+              }
             </button>
           </div>
         </div>
