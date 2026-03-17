@@ -23,6 +23,8 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run build
+        env:
+          PUBLIC_MINISHELL_WS_URL: ${{ secrets.PUBLIC_MINISHELL_WS_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
