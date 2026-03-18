@@ -11,8 +11,10 @@
       "SQL",
       "Bootstrap"
     ],
-    "demoType": "iframe",
-    "github": "#",
+    "demoType": "screenshots",
+    "screenshotCount": 6,
+    "github": "https://github.com/tristan-reig/Singlefind",
+    "demoUrl": "https://web-production-d473d.up.railway.app",
     "highlights": [
       "Authentification utilisateur avec Flask-Login",
       "Base de données relationnelle via Flask-SQLAlchemy",
@@ -33,6 +35,7 @@
       "Open-Meteo API"
     ],
     "demoType": "screenshots",
+    "screenshotCount": 5,
     "github": "https://github.com/tristan-reig/Weathercast",
     "highlights": [
       "Application desktop cross-platform via Electron",

@@ -19,6 +19,7 @@ interface Project {
   tech: string[];
   demoType: string;
   github?: string;
+  demoUrl?: string;
   highlights: string[];
   year?: string;
 }
@@ -234,10 +235,18 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                 <ScreenshotGallery
                   projectKey={selectedProject.title.toLowerCase()}
                   base={base.replace(/\/$/, '')}
-                  count={0}
+                  count={(selectedProject as any).screenshotCount ?? 0}
                 />
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'minishell' ? (
                 <MinishellDemo wsUrl={wsUrl} />
+              ) : selectedProject.demoType === 'iframe' && selectedProject.demoUrl ? (
+                <div className="w-full rounded-xl overflow-hidden border" style={{ borderColor: 'var(--color-border-base)', height: '480px' }}>
+                  <iframe
+                    src={selectedProject.demoUrl}
+                    className="w-full h-full"
+                    title={`Démo ${selectedProject.title}`}
+                  />
+                </div>
               ) : (
                 <div
                   className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
