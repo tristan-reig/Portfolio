@@ -58,7 +58,8 @@
       "API REST"
     ],
     "demoType": "iframe",
-    "github": "#",
+    "demoUrl": "https://score-tracker-production-426b.up.railway.app",
+    "github": "https://github.com/tristan-reig/Score-Tracker",
     "highlights": [
       "Résultats en direct via APIs sportives",
       "Classements, historique de matchs et recherche d'équipe/joueur",
