@@ -3,6 +3,8 @@ import projects from '../data/projects.json';
 import ScopDemo from './ScopDemo';
 import ScreenshotGallery from './ScreenshotGallery';
 import MinishellDemo from './MinishellDemo';
+import FtContainersDemo from './FtContainersDemo';
+import FtContainersCode from './FtContainersCode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faDesktop, faCube, faTerminal, faImage,
@@ -239,14 +241,26 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                 />
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'minishell' ? (
                 <MinishellDemo wsUrl={wsUrl} />
+              ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'ft_containers' ? (
+                <>
+                  <FtContainersDemo />
+                  <FtContainersCode />
+                </>
               ) : selectedProject.demoType === 'iframe' && selectedProject.demoUrl ? (
-                <div className="w-full rounded-xl overflow-hidden border" style={{ borderColor: 'var(--color-border-base)', height: '480px' }}>
-                  <iframe
-                    src={selectedProject.demoUrl}
-                    className="w-full h-full"
-                    title={`Démo ${selectedProject.title}`}
-                  />
-                </div>
+                <a
+                href={selectedProject.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 w-full py-6 rounded-xl border transition-all duration-200 hover:border-accent/40 hover:bg-accent/5"
+                style={{ borderColor: 'var(--color-border-base)' }}
+              >
+                <span className="font-mono text-sm text-accent">Ouvrir la démo</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+              </a>
               ) : (
                 <div
                   className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
