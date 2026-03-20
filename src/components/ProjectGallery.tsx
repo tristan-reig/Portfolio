@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react';
 import projects from '../data/projects.json';
-import ScopDemo from './ScopDemo';
+import WasmDemo from './WasmDemo';
 import ScreenshotGallery from './ScreenshotGallery';
 import MinishellDemo from './MinishellDemo';
 import FtContainersDemo from './FtContainersDemo';
@@ -24,6 +24,7 @@ interface Project {
   demoUrl?: string;
   highlights: string[];
   year?: string;
+  screenshotCount?: number;
 }
 
 const CATEGORY_COLOR: Record<string, string> = {
@@ -232,12 +233,31 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
               </div>
 
               {selectedProject.demoType === 'wasm' && selectedProject.title === 'scop' ? (
-                <ScopDemo base={base.replace(/\/$/, '')} />
+                <WasmDemo
+                  base={base.replace(/\/$/, '')}
+                  name="scop"
+                  canvasId="scop-canvas"
+                  aspectRatio="1"
+                  controls="WASD · ↑↓←→ · Espace (texture)"
+                  objects={[
+                    { key: 'teapot',  label: 'Théière', path: 'assets/teapot.obj' },
+                    { key: 'voiture', label: 'Voiture', path: 'assets/voiture.obj' },
+                    { key: 'airboat', label: 'Airboat', path: 'assets/airboat.obj' },
+                  ]}
+                />
+              ) : selectedProject.demoType === 'wasm' && selectedProject.title === 'ft_vox' ? (
+                <WasmDemo
+                  base={base.replace(/\/$/, '')}
+                  name="ft_vox"
+                  canvasId="ftvox-canvas"
+                  aspectRatio="4/3"
+                  controls="ZQSD · Souris · Espace (saut) · F (vol) · Shift (sprint)"
+                />
               ) : selectedProject.demoType === 'screenshots' ? (
                 <ScreenshotGallery
                   projectKey={selectedProject.title.toLowerCase()}
                   base={base.replace(/\/$/, '')}
-                  count={(selectedProject as any).screenshotCount ?? 0}
+                  count={selectedProject.screenshotCount ?? 0}
                 />
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'minishell' ? (
                 <MinishellDemo wsUrl={wsUrl} />
@@ -248,19 +268,19 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                 </>
               ) : selectedProject.demoType === 'iframe' && selectedProject.demoUrl ? (
                 <a
-                href={selectedProject.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-3 w-full py-6 rounded-xl border transition-all duration-200 hover:border-accent/40 hover:bg-accent/5"
-                style={{ borderColor: 'var(--color-border-base)' }}
-              >
-                <span className="font-mono text-sm text-accent">Ouvrir la démo</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-              </a>
+                  href={selectedProject.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-3 w-full py-6 rounded-xl border transition-all duration-200 hover:border-accent/40 hover:bg-accent/5"
+                  style={{ borderColor: 'var(--color-border-base)' }}
+                >
+                  <span className="font-mono text-sm text-accent">Ouvrir la démo</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                  </svg>
+                </a>
               ) : (
                 <div
                   className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
@@ -293,6 +313,7 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   <span className="font-mono text-xs">{selectedProject.year || '—'}</span>
                 </div>
                 <a
+                  target="_blank"
                   href={selectedProject.github ?? '#'}
                   className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10 flex items-center gap-2"
                 >
