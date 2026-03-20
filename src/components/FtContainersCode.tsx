@@ -36,39 +36,104 @@ function getFilename(path: string): string {
   return path.split('/').pop() ?? path;
 }
 
-// Minimal C++ syntax highlighter
-function highlight(code: string): string {
-  const keywords = [
+function highlight(line: string): string {
+  const KEYWORDS = new Set([
     'template','typename','class','struct','namespace','public','private',
     'protected','explicit','virtual','const','void','bool','return','if',
     'else','while','for','typedef','static','inline','friend','operator',
-    'new','delete','this','true','false','NULL','throw','try','catch',
-  ];
-  const types = [
-    'size_t','size_type','difference_type','value_type','allocator_type',
-    'reference','const_reference','pointer','const_pointer','iterator',
-    'const_iterator','reverse_iterator','const_reverse_iterator',
+    'new','delete','this','true','false','NULL','throw','try','catch','int',
+    'char','unsigned','long','short','double','float','size_t',
+  ]);
+  const TYPES = new Set([
+    'size_type','difference_type','value_type','allocator_type',
+    'reference','const_reference','pointer','const_pointer',
+    'iterator','const_iterator','reverse_iterator','const_reverse_iterator',
     'node_type','node_allocator','ptrdiff_t',
-  ];
+  ]);
 
-  return code
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/(["'`])(?:(?!\1)[^\\]|\\.)*\1/g, '<span style="color:#FFB830">$&</span>')
-    .replace(/(\/\/[^\n]*)/g, '<span style="color:#3A5060;font-style:italic">$1</span>')
-    .replace(/(\/\*[\s\S]*?\*\/)/g, '<span style="color:#3A5060;font-style:italic">$1</span>')
-    .replace(/(#\w+)/g, '<span style="color:#FF4D6A">$1</span>')
-    .replace(
-      new RegExp(`\\b(${keywords.join('|')})\\b`, 'g'),
-      '<span style="color:#61DAFB">$1</span>'
-    )
-    .replace(
-      new RegExp(`\\b(${types.join('|')})\\b`, 'g'),
-      '<span style="color:#B57BFF">$1</span>'
-    )
-    .replace(/\b(\d+)\b/g, '<span style="color:#FFB830">$1</span>')
-    .replace(/\bft::/g, '<span style="color:#00FF9C">ft::</span>');
+  type Token = { type: string; value: string };
+  const tokens: Token[] = [];
+  let i = 0;
+
+  while (i < line.length) {
+    if (line[i] === '/' && line[i+1] === '/') {
+      tokens.push({ type: 'comment', value: line.slice(i) });
+      break;
+    }
+    if (line[i] === '#') {
+      const includeAngle = line.slice(i).match(/^(#\w+\s*)(<[^>]*>)/);
+      const includeQuote = line.slice(i).match(/^(#\w+\s*)("(?:[^"\\]|\\.)*")/);
+      if (includeAngle) {
+        tokens.push({ type: 'preprocessor', value: includeAngle[1] });
+        tokens.push({ type: 'string', value: includeAngle[2] });
+        i += includeAngle[0].length;
+        continue;
+      } else if (includeQuote) {
+        tokens.push({ type: 'preprocessor', value: includeQuote[1] });
+        tokens.push({ type: 'string', value: includeQuote[2] });
+        i += includeQuote[0].length;
+        continue;
+      } else {
+        const m = line.slice(i).match(/^#\w+/);
+        if (m) { tokens.push({ type: 'preprocessor', value: m[0] }); i += m[0].length; continue; }
+      }
+    }
+    if (line[i] === '"' || line[i] === "'") {
+      const q = line[i];
+      let j = i + 1;
+      while (j < line.length) {
+        if (line[j] === '\\') { j += 2; continue; }
+        if (line[j] === q) { j++; break; }
+        j++;
+      }
+      tokens.push({ type: 'string', value: line.slice(i, j) });
+      i = j;
+      continue;
+    }
+    if (/\d/.test(line[i]) && (i === 0 || /\W/.test(line[i-1]))) {
+      const m = line.slice(i).match(/^\d+/);
+      if (m) { tokens.push({ type: 'number', value: m[0] }); i += m[0].length; continue; }
+    }
+    if (/[a-zA-Z_]/.test(line[i])) {
+      const m = line.slice(i).match(/^[a-zA-Z_]\w*/);
+      if (m) {
+        const word = m[0];
+        if (line.slice(i + word.length, i + word.length + 2) === '::' && word === 'ft') {
+          tokens.push({ type: 'namespace', value: 'ft::' });
+          i += word.length + 2;
+          continue;
+        }
+        if (KEYWORDS.has(word)) tokens.push({ type: 'keyword', value: word });
+        else if (TYPES.has(word)) tokens.push({ type: 'type', value: word });
+        else tokens.push({ type: 'ident', value: word });
+        i += word.length;
+        continue;
+      }
+    }
+    const last = tokens[tokens.length - 1];
+    if (last && last.type === 'plain') last.value += line[i];
+    else tokens.push({ type: 'plain', value: line[i] });
+    i++;
+  }
+
+  const esc = (s: string) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const COLOR: Record<string, string> = {
+    comment:    '#3A5060',
+    preprocessor:'#FF4D6A',
+    string:     '#FFB830',
+    keyword:    '#61DAFB',
+    type:       '#B57BFF',
+    number:     '#FFB830',
+    namespace:  '#00FF9C',
+  };
+
+  return tokens.map(t => {
+    if (t.type === 'plain' || t.type === 'ident') return esc(t.value);
+    const color = COLOR[t.type] ?? '#D4DFE8';
+    const style = t.type === 'comment' ? `color:${color};font-style:italic` : `color:${color}`;
+    return `<span style="${style}">${esc(t.value)}</span>`;
+  }).join('');
 }
 
 export default function FtContainersCode() {

@@ -109,3 +109,11 @@ body::after {
   animation: blink 1s step-end infinite;
   margin-left: 2px;
 }
+
+.stack-pill:hover {
+  border-color: color-mix(in srgb, var(--pill-color) 50%, transparent) !important;
+  color: var(--pill-color) !important;
+  background: color-mix(in srgb, var(--pill-color) 7%, transparent) !important;
+  box-shadow: 0 0 10px 1px color-mix(in srgb, var(--pill-color) 13%, transparent);
+  transform: translateY(-1px);
+}

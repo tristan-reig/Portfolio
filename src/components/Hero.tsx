@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
 
+const age = (() => {
+  const now = new Date();
+  const birth = new Date(now.getFullYear(), 6, 9);
+  return now >= birth ? now.getFullYear() - 2005 : now.getFullYear() - 2005 - 1;
+})();
+
 const LANGAGES: { label: string; color: string }[] = [
   { label: 'C', color: '#555599' },
   { label: 'C++', color: '#F34B7D' },
@@ -13,12 +19,11 @@ const FRAMEWORKS: { label: string; color: string }[] = [
   { label: 'React',  color: '#61DAFB' },
   { label: 'Astro',  color: '#FF7E33' },
   { label: 'Flask',  color: '#AAAAAA' },
-  { label: 'Node.js',color: '#6CC24A' },
 ];
 
 const LINES = [
-  { prefix: '~/about',  text: 'Étudiant en L3, passionné par la programmation et la modélisation 3D.' },
-  { prefix: '~/stack',  text: 'C · C++ · OpenGL · Java · Python · React · Astro' },
+  { prefix: '~/about',  text: 'Étudiant en L3, passionné par la programmation et l\'informatique graphique.' },
+  { prefix: '~/age',  text: `${age} ans` },
   { prefix: '~/status', text: 'À la recherche d\'un Master pour la rentrée 2026.' },
 ];
 
@@ -56,19 +61,15 @@ function TypingLine({
 }
 
 function StackPill({ label, color }: { label: string; color: string }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <span
-      className="font-mono text-xs px-3 py-1 rounded border cursor-default transition-all duration-200"
+      className="font-mono text-xs px-3 py-1 rounded border cursor-default transition-all duration-200 stack-pill"
       style={{
-        borderColor:    hovered ? color + '80' : 'var(--color-border-base)',
-        color:          hovered ? color        : 'var(--color-text-muted)',
-        background:     hovered ? color + '12' : 'rgba(0,0,0,0.35)',
-        boxShadow:      hovered ? `0 0 10px 1px ${color}22` : 'none',
-        transform:      hovered ? 'translateY(-1px)' : 'none',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+        '--pill-color': color,
+        borderColor: 'var(--color-border-base)',
+        color: 'var(--color-text-muted)',
+        background: 'rgba(0,0,0,0.35)',
+      } as React.CSSProperties}
     >
       {label}
     </span>
@@ -131,7 +132,7 @@ export default function Hero() {
         className="rounded-xl border border-border-base bg-bg-card overflow-hidden animate-fade-up mb-8"
         style={{ maxWidth: '600px' }}
       >
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-base bg-black/30">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border-base" style={{ background: 'rgba(0,0,0,0.3)' }}>
           {['#FF5F57', '#FFBD2E', '#28C941'].map(c => (
             <span key={c} className="size-3 rounded-full opacity-80" style={{ background: c }} />
           ))}

@@ -197,7 +197,6 @@ export default function FtContainersDemo() {
   const lines = OUTPUTS[active];
   const color = CONTAINER_COLORS[active];
 
-  // Start animation when container changes
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     setDisplayed([]);
@@ -205,7 +204,6 @@ export default function FtContainersDemo() {
     setRunning(true);
   }, [active]);
 
-  // Animate lines one by one
   useEffect(() => {
     if (!running) return;
     if (lineIdx >= lines.length) {
@@ -220,7 +218,6 @@ export default function FtContainersDemo() {
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [running, lineIdx, lines]);
 
-  // Auto-scroll
   useEffect(() => {
     if (termRef.current)
       termRef.current.scrollTop = termRef.current.scrollHeight;
@@ -239,7 +236,6 @@ export default function FtContainersDemo() {
     if (line.startsWith('===')) {
       return <span style={{ color: '#3A5060' }}>{line}</span>;
     }
-    // Key => value for map
     if (line.match(/^\d+ => /)) {
       const parts = line.split(' => ');
       return (
@@ -250,7 +246,6 @@ export default function FtContainersDemo() {
         </>
       );
     }
-    // highlight numbers inline
     return (
       <span style={{ color: '#D4DFE8' }}>
         {line.split(/(\b\d+\b)/).map((part, i) =>
@@ -265,7 +260,6 @@ export default function FtContainersDemo() {
   return (
     <div className="flex flex-col gap-3 w-full">
 
-      {/* Container selector */}
       <div className="flex gap-2 flex-wrap">
         {CONTAINERS.map(c => {
           const col = CONTAINER_COLORS[c];
@@ -287,12 +281,10 @@ export default function FtContainersDemo() {
         })}
       </div>
 
-      {/* Terminal */}
       <div
         className="rounded-xl border overflow-hidden"
         style={{ borderColor: 'var(--color-border-base)' }}
       >
-        {/* Chrome bar */}
         <div
           className="flex items-center justify-between px-4 py-2.5 border-b"
           style={{ borderColor: 'var(--color-border-base)', background: 'rgba(0,0,0,0.5)' }}
@@ -321,7 +313,6 @@ export default function FtContainersDemo() {
           )}
         </div>
 
-        {/* Output */}
         <div
           ref={termRef}
           className="p-4 overflow-y-auto"
@@ -333,7 +324,6 @@ export default function FtContainersDemo() {
             lineHeight: '1.6',
           }}
         >
-          {/* Command line */}
           <div className="mb-2">
             <span style={{ color: '#00FF9C' }}>~/ft_containers</span>
             <span style={{ color: '#6B8A9A' }}> ❯ </span>

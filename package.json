@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^5.0.0",
+    "@emailjs/browser": "^4.4.1",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@fontsource/syne": "^5.2.7",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
