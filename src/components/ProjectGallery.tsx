@@ -96,7 +96,120 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {displayedProjects.map(project => {
-          const col = accentFor(project.category);
+          const col   = accentFor(project.category);
+          const isWip = project.demoType === 'wip';
+
+          // ── Carte WIP ──────────────────────────────────────────────────────
+          if (isWip) {
+            return (
+              <div
+                key={project.id}
+                className="rounded-xl p-6 flex flex-col gap-4 relative overflow-hidden group/wip"
+                style={{
+                  background: 'var(--color-bg-card)',
+                  border:     '2px dashed #FFB83077',
+                  cursor:     'not-allowed',
+                  userSelect: 'none',
+                }}
+              >
+                {/* Contenu légèrement désaturé */}
+                <div style={{ opacity: 0.65 }}>
+                  {/* Row 1 */}
+                  <div className="flex justify-between items-center mb-4">
+                    <span
+                      className="font-mono text-xs px-2 py-0.5 rounded border"
+                      style={{ color: col, borderColor: col + '55', background: col + '12' }}
+                    >
+                      {project.category}
+                    </span>
+                    <div className="flex items-center gap-1.5" style={{ color: 'var(--color-text-muted)' }}>
+                      <FontAwesomeIcon icon={faClock} className="text-xs" />
+                      <span className="font-mono text-xs">{project.year || '—'}</span>
+                    </div>
+                  </div>
+
+                  {/* Row 2 — titre + badge */}
+                  <div className="flex justify-between items-start gap-2 mb-4">
+                    <h3
+                      className="text-xl font-bold text-text-primary leading-tight"
+                      style={{ fontFamily: 'var(--font-mono)' }}
+                    >
+                      {project.title}
+                    </h3>
+                    <span
+                      className="flex items-center gap-1.5 font-mono text-xs px-2 py-1 rounded shrink-0 mt-0.5"
+                      style={{
+                        background: '#FFB8300F',
+                        color:      '#FFB830',
+                        border:     '1px solid #FFB83055',
+                      }}
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ background: '#FFB830', animation: 'pulse 1.5s ease-in-out infinite' }}
+                      />
+                      En cours
+                    </span>
+                  </div>
+
+                  <p className="text-sm leading-relaxed text-text-secondary mb-4">{project.description}</p>
+
+                  <ul className="space-y-1 mb-4">
+                    {project.highlights.map(h => (
+                      <li key={h} className="font-mono text-xs text-text-muted flex items-start gap-2">
+                        <span style={{ color: '#FFB83066' }} className="mt-px shrink-0">▸</span>
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div
+                    className="flex flex-wrap gap-1.5 pt-3 border-t"
+                    style={{ borderColor: 'var(--color-border-base)' }}
+                  >
+                    {project.tech.map(tag => (
+                      <span
+                        key={tag}
+                        className="font-mono text-xs px-2.5 py-1 rounded"
+                        style={{ background: 'rgba(0,0,0,0.4)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border-base)' }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Overlay au hover — flou + message centré */}
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover/wip:opacity-100 transition-opacity duration-200"
+                  style={{
+                    backdropFilter: 'blur(3px)',
+                    background: 'rgba(6,10,14,0.55)',
+                    borderRadius: '0.75rem',
+                  }}
+                >
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ background: '#FFB830', animation: 'pulse 1.5s ease-in-out infinite' }}
+                  />
+                  <p
+                    className="font-mono text-sm text-center px-8 leading-relaxed"
+                    style={{ color: '#FFB830' }}
+                  >
+                    Projet en cours de développement
+                  </p>
+                  <p
+                    className="font-mono text-xs text-center px-8"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    Pas encore disponible
+                  </p>
+                </div>
+              </div>
+            );
+          }
+
+          // ── Carte normale ──────────────────────────────────────────────────
           return (
             <button
               key={project.id}
@@ -177,6 +290,7 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
         })}
       </div>
 
+      {/* ── Modal ── */}
       {selectedProject && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -281,19 +395,7 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                     <line x1="10" y1="14" x2="21" y2="3"/>
                   </svg>
                 </a>
-              ) : (
-                <div
-                  className="w-full aspect-video rounded-xl border flex flex-col items-center justify-center gap-3"
-                  style={{ background: 'var(--color-bg-deep)', borderColor: 'var(--color-border-base)', color: 'var(--color-text-muted)' }}
-                >
-                  <span className="opacity-40" style={{ transform: 'scale(2.5)', display: 'block' }}>
-                    {DEMO_ICON_COMPONENT[selectedProject.demoType]}
-                  </span>
-                  <span className="font-mono text-xs text-text-muted mt-3">
-                    [ {DEMO_LABEL[selectedProject.demoType]} — coming soon ]
-                  </span>
-                </div>
-              )}
+              ) : null}
 
               <div className="flex flex-wrap gap-2">
                 {selectedProject.tech.map(tag => (
@@ -313,7 +415,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   <span className="font-mono text-xs">{selectedProject.year || '—'}</span>
                 </div>
                 <a
-                  target="_blank"
                   href={selectedProject.github ?? '#'}
                   className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10 flex items-center gap-2"
                 >

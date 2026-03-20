@@ -150,21 +150,22 @@
   },
   {
     "id": 8,
-    "title": "malloc",
-    "category": "Système",
-    "description": "Réécriture de malloc/free/realloc en bibliothèque partagée, projet 42.",
-    "longDescription": "Implémentation complète de malloc, free et realloc sous forme de bibliothèque partagée (.so) utilisable par injection sans recompilation. Gestion de trois arènes pré-allouées via mmap() : TINY, SMALL et LARGE. Alignement mémoire strict et fonction show_alloc_mem() pour visualiser l'état des zones.",
+    "title": "ft_minecraft",
+    "category": "Graphisme",
+    "description": "Moteur voxel Minecraft-like en java — monde procédural avancé, multijoueur, éclairage, SSAO. Projet 42 en cours.",
+    "longDescription": "",
     "tech": [
-      "C",
-      "mmap",
-      "munmap"
+      "Java",
+      "Gradle",
+      "OpenGL",
+      "GLSL"
     ],
-    "demoType": "terminal",
+    "demoType": "wip",
     "github": "#",
     "highlights": [
-      "Zones mémoire pré-allouées pour éviter trop d'appels système",
-      "Petites, moyennes et grandes allocations gérées séparément",
-      "Utilisable sur n'importe quel programme sans le modifier"
+      "Au moins 5 biomes distincts avec végétation, rivières, lacs et grottes procédurales",
+      "Éclairage directionnel, ombres, SSAO, eau transparente et brouillard",
+      "Multijoueur 4 joueurs — modifications de blocs persistantes et synchronisées"
     ],
     "year": "2026"
   }
