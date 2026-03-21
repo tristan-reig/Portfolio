@@ -1,9 +1,9 @@
-import { useState, type JSX } from 'react';
+import { useState, Suspense, lazy, type JSX } from 'react';
 import projects from '../data/projects.json';
 import WasmDemo from './WasmDemo';
 import ScreenshotGallery from './ScreenshotGallery';
-import MinishellDemo from './MinishellDemo';
-import FtContainersDemo from './FtContainersDemo';
+const MinishellDemo = lazy(() => import('./MinishellDemo'));
+const FtContainersDemo = lazy(() => import('./FtContainersDemo'));
 import FtContainersCode from './FtContainersCode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -374,12 +374,14 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   count={selectedProject.screenshotCount ?? 0}
                 />
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'minishell' ? (
-                <MinishellDemo wsUrl={wsUrl} />
+                <Suspense fallback={<div className="font-mono text-sm text-accent text-center py-10">Initialisation du terminal...</div>}>
+                  <MinishellDemo wsUrl={wsUrl} />
+                </Suspense>
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'ft_containers' ? (
-                <>
+                <Suspense fallback={<div className="font-mono text-sm text-accent text-center py-10">Chargement...</div>}>
                   <FtContainersDemo />
                   <FtContainersCode />
-                </>
+                </Suspense>
               ) : selectedProject.demoType === 'iframe' && selectedProject.demoUrl ? (
                 <a
                   href={selectedProject.demoUrl}

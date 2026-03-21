@@ -9,11 +9,11 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <BaseLayout>
 
-  <Hero client:only="react" />
+  <Hero client:load />
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
-  <ProjectGallery client:only="react" base={import.meta.env.BASE_URL} wsUrl={import.meta.env.PUBLIC_MINISHELL_WS_URL ?? ''} />
+  <ProjectGallery client:load base={import.meta.env.BASE_URL} wsUrl={import.meta.env.PUBLIC_MINISHELL_WS_URL ?? ''} />
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
