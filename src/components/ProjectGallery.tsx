@@ -99,7 +99,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
           const col   = accentFor(project.category);
           const isWip = project.demoType === 'wip';
 
-          // ── Carte WIP ──────────────────────────────────────────────────────
           if (isWip) {
             return (
               <div
@@ -112,9 +111,8 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   userSelect: 'none',
                 }}
               >
-                {/* Contenu légèrement désaturé */}
-                <div style={{ opacity: 0.65 }}>
-                  {/* Row 1 */}
+                
+                <div style={{ opacity: 0.65, position: 'relative', zIndex: 1 }}>
                   <div className="flex justify-between items-center mb-4">
                     <span
                       className="font-mono text-xs px-2 py-0.5 rounded border"
@@ -128,7 +126,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                     </div>
                   </div>
 
-                  {/* Row 2 — titre + badge */}
                   <div className="flex justify-between items-start gap-2 mb-4">
                     <h3
                       className="text-xl font-bold text-text-primary leading-tight"
@@ -179,7 +176,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   </div>
                 </div>
 
-                {/* Overlay au hover — flou + message centré */}
                 <div
                   className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover/wip:opacity-100 transition-opacity duration-200"
                   style={{
@@ -209,7 +205,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
             );
           }
 
-          // ── Carte normale ──────────────────────────────────────────────────
           return (
             <button
               key={project.id}
@@ -290,7 +285,6 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
         })}
       </div>
 
-      {/* ── Modal ── */}
       {selectedProject && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -347,18 +341,24 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
               </div>
 
               {selectedProject.demoType === 'wasm' && selectedProject.title === 'scop' ? (
-                <WasmDemo
-                  base={base.replace(/\/$/, '')}
-                  name="scop"
-                  canvasId="scop-canvas"
-                  aspectRatio="1"
-                  controls="WASD · ↑↓←→ · Espace (texture)"
-                  objects={[
-                    { key: 'teapot',  label: 'Théière', path: 'assets/teapot.obj' },
-                    { key: 'voiture', label: 'Voiture', path: 'assets/voiture.obj' },
-                    { key: 'airboat', label: 'Airboat', path: 'assets/airboat.obj' },
-                  ]}
-                />
+                <>
+                  <WasmDemo
+                    base={base.replace(/\/$/, '')}
+                    name="scop"
+                    canvasId="scop-canvas"
+                    aspectRatio="1"
+                    controls="WASD · ↑↓←→ · Espace (texture)"
+                    objects={[
+                      { key: 'teapot',  label: 'Théière', path: 'assets/teapot.obj' },
+                      { key: 'voiture', label: 'Voiture', path: 'assets/voiture.obj' },
+                      { key: 'airboat', label: 'Airboat', path: 'assets/airboat.obj' },
+                    ]}
+                  />
+                  <ProjectCodeViewer 
+                    repoPath="tristan-reig/scop" 
+                    projectName="scop" 
+                  />
+                </>
               ) : selectedProject.demoType === 'wasm' && selectedProject.title === 'ft_vox' ? (
                 <WasmDemo
                   base={base.replace(/\/$/, '')}
@@ -419,14 +419,19 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                   <FontAwesomeIcon icon={faClock} className="text-xs" />
                   <span className="font-mono text-xs">{selectedProject.year || '—'}</span>
                 </div>
-                <a
-                  href={selectedProject.github ?? '#'}
-                  className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10 flex items-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faGithubBrand} />
-                  Code source
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-xs" />
-                </a>
+                
+                {selectedProject.github && selectedProject.github !== '#' && (
+                  <a
+                    href={selectedProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-xs px-5 py-2.5 rounded-lg border border-accent/40 text-accent transition-all duration-150 hover:bg-accent/10 flex items-center gap-2"
+                  >
+                    <FontAwesomeIcon icon={faGithubBrand} />
+                    Code source
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="text-xs" />
+                  </a>
+                )}
               </div>
             </div>
           </div>

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const API_URL = 'https://portfolio-api-production-0433.up.railway.app/api';
 
@@ -18,100 +20,26 @@ function getFilename(path: string): string {
   return path.split('/').pop() ?? path;
 }
 
-function highlight(line: string): string {
-  try {
-    const KEYWORDS = new Set([
-      'template','typename','class','struct','namespace','public','private',
-      'protected','explicit','virtual','const','void','bool','return','if',
-      'else','while','for','typedef','static','inline','friend','operator',
-      'new','delete','this','true','false','NULL','throw','try','catch','int',
-      'char','unsigned','long','short','double','float','size_t',
-      'def','import','from','self','None','True','False','elif','extends','implements','package'
-    ]);
-    const TYPES = new Set([
-      'size_type','difference_type','value_type','allocator_type',
-      'reference','const_reference','pointer','const_pointer',
-      'iterator','const_iterator','reverse_iterator','const_reverse_iterator',
-      'node_type','node_allocator','ptrdiff_t','String','Object','List','Dict'
-    ]);
-
-    type Token = { type: string; value: string };
-    const tokens: Token[] = [];
-    let i = 0;
-
-    while (i < line.length) {
-      if ((line[i] === '/' && line[i+1] === '/') || (line[i] === '#' && line[i+1] === ' ')) {
-        tokens.push({ type: 'comment', value: line.slice(i) });
-        break;
-      }
-      if (line[i] === '#' && /[a-z]/.test(line[i+1])) {
-        const m = line.slice(i).match(/^#\w+\s*(<[^>]*>|"[^"]*")?/);
-        if (m) {
-          tokens.push({ type: 'preprocessor', value: m[0] });
-          i += m[0].length;
-          continue;
-        }
-      }
-      if (line[i] === '"' || line[i] === "'") {
-        const q = line[i];
-        let j = i + 1;
-        while (j < line.length) {
-          if (line[j] === '\\') { j += 2; continue; }
-          if (line[j] === q) { j++; break; }
-          j++;
-        }
-        tokens.push({ type: 'string', value: line.slice(i, j) });
-        i = j;
-        continue;
-      }
-      if (/\d/.test(line[i]) && (i === 0 || /\W/.test(line[i-1]))) {
-        const m = line.slice(i).match(/^\d+/);
-        if (m) { tokens.push({ type: 'number', value: m[0] }); i += m[0].length; continue; }
-      }
-      if (/[a-zA-Z_]/.test(line[i])) {
-        const m = line.slice(i).match(/^[a-zA-Z_]\w*/);
-        if (m) {
-          const word = m[0];
-          if (line.slice(i + word.length, i + word.length + 2) === '::' && word === 'ft') {
-            tokens.push({ type: 'namespace', value: 'ft::' });
-            i += word.length + 2;
-            continue;
-          }
-          if (KEYWORDS.has(word)) tokens.push({ type: 'keyword', value: word });
-          else if (TYPES.has(word)) tokens.push({ type: 'type', value: word });
-          else tokens.push({ type: 'ident', value: word });
-          i += word.length;
-          continue;
-        }
-      }
-      const last = tokens[tokens.length - 1];
-      if (last && last.type === 'plain') last.value += line[i];
-      else tokens.push({ type: 'plain', value: line[i] });
-      i++;
-    }
-
-    const esc = (s: string) => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-    const COLOR: Record<string, string> = {
-      comment:     '#3A5060',
-      preprocessor:'#FF4D6A',
-      string:      '#FFB830',
-      keyword:     '#61DAFB',
-      type:        '#B57BFF',
-      number:      '#FFB830',
-      namespace:   '#00FF9C',
-    };
-
-    return tokens.map(t => {
-      if (t.type === 'plain' || t.type === 'ident') return esc(t.value);
-      const color = COLOR[t.type] ?? '#D4DFE8';
-      const style = t.type === 'comment' ? `color:${color};font-style:italic` : `color:${color}`;
-      return `<span style="${style}">${esc(t.value)}</span>`;
-    }).join('');
-  } catch (error) {
-  console.error(`[DEBUG] Erreur de coloration sur la ligne :`, line, error);
-  return line.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function getLanguage(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'c': case 'h': case 'cpp': case 'hpp': return 'cpp';
+    case 'java': return 'java';
+    case 'py': return 'python';
+    case 'js': case 'jsx': return 'javascript';
+    case 'ts': case 'tsx': return 'typescript';
+    case 'html': return 'html';
+    case 'css': return 'css';
+    case 'json': return 'json';
+    case 'md': return 'markdown';
+    case 'sql': return 'sql';
+    case 'frag': case 'vert': case 'glsl': return 'glsl';
+    case 'sh': return 'bash';
+    case 'makefile': return 'makefile';
+    default: 
+      if (filename.toLowerCase() === 'makefile') return 'makefile';
+      return 'text';
+  }
 }
 
 export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCodeViewerProps) {
@@ -127,9 +55,7 @@ export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCode
       .then(r => r.json())
       .then((data: FileEntry[]) => {
         if (!Array.isArray(data)) throw new Error("Invalid API response");
-        
         const filteredData = data.filter(f => !f.path.includes('.git/') && !f.path.includes('node_modules/'));
-        
         setFiles(filteredData);
         setLoadingTree(false);
         if (filteredData.length > 0) {
@@ -147,11 +73,11 @@ export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCode
     fetch(`${API_URL}/file?repo=${encodeURIComponent(repoPath)}&path=${encodeURIComponent(path)}`)
       .then(r => r.json())
       .then(data => {
-        setContent(typeof data.content === 'string' ? data.content : '// Fichier vide ou format non géré');
+        setContent(typeof data.content === 'string' ? data.content : '// Fichier vide ou illisible');
         setLoading(false);
       })
       .catch(() => {
-        setContent('// Erreur de chargement');
+        setContent('// Erreur de chargement réseau');
         setLoading(false);
       });
   };
@@ -179,7 +105,7 @@ export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCode
   });
 
   const folderNames = Object.keys(grouped).sort();
-  const lines = content.split('\n');
+  const currentLanguage = getLanguage(selected ? getFilename(selected) : '');
 
   return (
     <div
@@ -204,7 +130,7 @@ export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCode
           style={{ width: '200px', borderColor: 'var(--color-border-base)', background: 'rgba(0,0,0,0.3)' }}
         >
           {loadingTree ? (
-            <div className="p-3 font-mono text-xs text-text-muted">Chargement de l'arbre...</div>
+            <div className="p-3 font-mono text-xs text-text-muted">Chargement...</div>
           ) : (
             <>
               {folderNames.map((folder, idx) => {
@@ -274,33 +200,50 @@ export default function ProjectCodeViewer({ repoPath, projectName }: ProjectCode
           )}
         </div>
 
-        <div className="flex-1 overflow-auto" style={{ background: '#060A0E' }}>
+        <div className="flex-1 overflow-hidden" style={{ background: '#060A0E' }}>
           {loading ? (
             <div className="flex items-center justify-center h-full gap-2">
               <div className="w-4 h-4 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--color-accent)', borderTopColor: 'transparent' }} />
               <span className="font-mono text-xs text-text-muted">Chargement...</span>
             </div>
           ) : content ? (
-            <table className="w-full border-collapse" style={{ fontFamily: '"JetBrains Mono", monospace', fontSize: '11px' }}>
-              <tbody>
-                {lines.map((line, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors duration-75">
-                    <td
-                      className="select-none text-right pr-4 pl-3 py-0"
-                      style={{ color: 'var(--color-text-muted)', minWidth: '40px', borderRight: '1px solid var(--color-border-base)', userSelect: 'none', lineHeight: '1.6' }}
-                    >
-                      {i + 1}
-                    </td>
-                    <td
-                      className="pl-4 pr-3 py-0 whitespace-pre"
-                      style={{ color: '#D4DFE8', lineHeight: '1.6' }}
-                      dangerouslySetInnerHTML={{ __html: highlight(line) }}
-                    />
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : null}
+            <SyntaxHighlighter
+              language={currentLanguage}
+              style={vscDarkPlus}
+              showLineNumbers={true}
+              wrapLines={true}
+              customStyle={{ 
+                margin: 0, 
+                padding: '16px 0', 
+                background: 'transparent',
+                fontSize: '12px',
+                fontFamily: '"JetBrains Mono", monospace',
+                height: '100%',
+                overflowX: 'auto'
+              }}
+              lineNumberStyle={{ 
+                minWidth: '48px',
+                paddingRight: '12px', 
+                color: 'var(--color-text-muted)', 
+                borderRight: '1px solid var(--color-border-base)', 
+                marginRight: '16px',
+                textAlign: 'right',
+                userSelect: 'none',
+                display: 'inline-block'
+              }}
+              lineProps={{ 
+                style: { display: 'block', whiteSpace: 'pre' } 
+              }}
+            >
+              {content}
+            </SyntaxHighlighter>
+          ) : (
+             <div className="flex items-center justify-center h-full">
+              <span className="font-mono text-xs text-text-muted">
+                ← Sélectionne un fichier
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

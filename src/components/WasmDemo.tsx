@@ -162,7 +162,6 @@ export default function WasmDemo({
   return (
     <div ref={containerRef} className="flex flex-col gap-3 w-full">
 
-      {/* Object selector (scop only) */}
       {objects && objects.length > 0 && (
         <div className="flex gap-2">
           {objects.map(obj => (
@@ -183,7 +182,6 @@ export default function WasmDemo({
         </div>
       )}
 
-      {/* Canvas */}
       <div className="relative w-full rounded-xl overflow-hidden" style={{ background: '#1a1a1a' }}>
         <canvas
           id={canvasId}
@@ -218,7 +216,6 @@ export default function WasmDemo({
         )}
       </div>
 
-      {/* Controls bar */}
       {loaded && (
         <div className="flex items-center justify-between">
           <button

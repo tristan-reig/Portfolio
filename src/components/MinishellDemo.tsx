@@ -16,7 +16,6 @@ export default function MinishellDemo({ wsUrl = WS_URL }: { wsUrl?: string }) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    /* ── Init xterm ── */
     const term = new Terminal({
       theme: {
         background:  '#060A0E',
@@ -40,7 +39,6 @@ export default function MinishellDemo({ wsUrl = WS_URL }: { wsUrl?: string }) {
 
     term.writeln('\x1b[90mConnexion au serveur minishell…\x1b[0m');
 
-    /* ── WebSocket ── */
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
@@ -67,13 +65,11 @@ export default function MinishellDemo({ wsUrl = WS_URL }: { wsUrl?: string }) {
       term.writeln('\x1b[31m✗ Impossible de se connecter au serveur\x1b[0m');
     };
 
-    /* ── Input xterm → WebSocket ── */
     term.onData(data => {
       if (ws.readyState === WebSocket.OPEN)
         ws.send(JSON.stringify({ data }));
     });
 
-    /* ── Resize ── */
     const observer = new ResizeObserver(() => fitAddon.fit());
     observer.observe(containerRef.current);
 
@@ -86,7 +82,6 @@ export default function MinishellDemo({ wsUrl = WS_URL }: { wsUrl?: string }) {
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      {/* Chrome */}
       <div
         className="rounded-xl border overflow-hidden"
         style={{ borderColor: 'var(--color-border-base)' }}
@@ -113,7 +108,6 @@ export default function MinishellDemo({ wsUrl = WS_URL }: { wsUrl?: string }) {
           </span>
         </div>
 
-        {/* xterm container */}
         <div
           ref={containerRef}
           style={{ height: '320px', background: '#060A0E', padding: '8px' }}
