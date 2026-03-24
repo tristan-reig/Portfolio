@@ -3,13 +3,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero';
 import ProjectGallery from '../components/ProjectGallery';
 import ContactForm from '../components/ContactForm';
+import HeroBackground from '../components/HeroBackground';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <BaseLayout>
 
-  <Hero client:load />
+  <div class="relative min-h-[500px] overflow-hidden">
+    
+    <HeroBackground client:load />
+
+    <div class="relative z-10 container mx-auto px-4 py-20 pointer-events-none">
+      <Hero client:load />
+    </div>
+  </div>
 
   <div class="h-px bg-gradient-to-r from-transparent via-border-base to-transparent"></div>
 
