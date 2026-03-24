@@ -4,7 +4,7 @@ import WasmDemo from './WasmDemo';
 import ScreenshotGallery from './ScreenshotGallery';
 const MinishellDemo = lazy(() => import('./MinishellDemo'));
 const FtContainersDemo = lazy(() => import('./FtContainersDemo'));
-import FtContainersCode from './FtContainersCode';
+import ProjectCodeViewer from './ProjectCodeViewer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faDesktop, faCube, faTerminal, faImage,
@@ -380,7 +380,10 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
               ) : selectedProject.demoType === 'terminal' && selectedProject.title === 'ft_containers' ? (
                 <Suspense fallback={<div className="font-mono text-sm text-accent text-center py-10">Chargement...</div>}>
                   <FtContainersDemo />
-                  <FtContainersCode />
+                  <ProjectCodeViewer
+                    repoPath="tristan-reig/ft_containers"
+                    projectName="ft_containers"
+                  />
                 </Suspense>
               ) : selectedProject.demoType === 'iframe' && selectedProject.demoUrl ? (
                 <a
