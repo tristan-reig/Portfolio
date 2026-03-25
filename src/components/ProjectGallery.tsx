@@ -177,7 +177,7 @@ export default function ProjectGallery({ base = '', wsUrl = '' }: { base?: strin
                 </div>
 
                 <div
-                  className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover/wip:opacity-100 transition-opacity duration-200"
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 opacity-0 group-hover/wip:opacity-100 transition-opacity duration-200"
                   style={{
                     backdropFilter: 'blur(3px)',
                     background: 'rgba(6,10,14,0.55)',
