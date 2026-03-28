@@ -1,43 +1,100 @@
-# Astro Starter Kit: Minimal
+# 🖥️ Portfolio — Tristan Reig
 
-```sh
-npm create astro@latest -- --template minimal
+Portfolio personnel développé avec **Astro**, **React** et **Three.js**, déployé sur GitHub Pages. Design inspiré des interfaces terminal avec une esthétique cyberpunk/hacker.
+
+---
+
+## ✨ Fonctionnalités
+
+- **Hero animé** — terminal interactif avec effet de frappe, fond de particules 3D (Three.js / React Three Fiber) et animation glitch CSS
+- **Galerie de projets** — filtrage par catégorie, modales détaillées avec démo intégrée
+- **Démos interactives** :
+  - 🖥️ Terminal live (minishell via WebSocket)
+  - 🧩 Démos de conteneurs C++ avec rendu ligne par ligne animé
+  - 🎮 Visionneuses WebAssembly (scop, ft_vox)
+  - 🖼️ Galerie de screenshots avec navigation
+  - 📄 Explorateur de code source (syntax highlighting via API GitHub)
+- **Formulaire de contact** — envoi d'e-mails via EmailJS
+- **Scanlines & ambient glow** — effets visuels CSS pour l'atmosphère
+
+---
+
+## 🛠️ Stack technique
+
+| Catégorie     | Technologie                                      |
+|---------------|--------------------------------------------------|
+| Framework     | [Astro](https://astro.build)                     |
+| UI            | React 18 + TypeScript                            |
+| Styles        | Tailwind CSS v4                                  |
+| 3D            | Three.js + React Three Fiber                     |
+| Terminal      | xterm.js                                         |
+| Highlighting  | react-syntax-highlighter (vscDarkPlus)           |
+| E-mails       | EmailJS                                          |
+| Fonts         | Syne (display) + JetBrains Mono                  |
+
+---
+
+## 📁 Structure du projet
+
+```
+src/
+├── components/
+│   ├── Hero.tsx               # Section d'accueil avec terminal animé
+│   ├── HeroBackground.tsx     # Fond de particules Three.js
+│   ├── ProjectGallery.tsx     # Grille + modale de projets
+│   ├── ProjectCodeViewer.tsx  # Explorateur de code via API
+│   ├── ScreenshotGallery.tsx  # Carrousel de screenshots
+│   ├── WasmDemo.tsx           # Lecteur de démos WebAssembly
+│   ├── FtContainersDemo.tsx   # Démo animée ft_containers
+│   ├── MinishellDemo.tsx      # Terminal live (xterm.js + WebSocket)
+│   └── ContactForm.tsx        # Formulaire EmailJS
+├── layouts/
+│   └── BaseLayout.astro       # Layout global (meta, fonts, scripts)
+├── pages/
+│   └── index.astro            # Page principale
+├── data/
+│   └── projects.json          # Données des projets
+└── styles/
+    └── global.css             # Thème Tailwind v4, animations, variables CSS
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+---
 
-## 🚀 Project Structure
+## 🚀 Lancer le projet en local
 
-Inside of your Astro project, you'll see the following folders and files:
+```bash
+# Installer les dépendances
+npm install
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+# Lancer le serveur de développement
+npm run dev
+
+# Build de production
+npm run build
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+> **Note :** La démo minishell nécessite un serveur WebSocket séparé (`PUBLIC_MINISHELL_WS_URL`).  
+> Les démos WebAssembly (scop, ft_vox) nécessitent les fichiers `.wasm` / `.js` compilés dans `public/`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+---
 
-Any static assets, like images, can be placed in the `public/` directory.
+## ⚙️ Variables d'environnement
 
-## 🧞 Commands
+| Variable                    | Description                              |
+|-----------------------------|------------------------------------------|
+| `PUBLIC_MINISHELL_WS_URL`   | URL du serveur WebSocket pour minishell  |
 
-All commands are run from the root of the project, from a terminal:
+---
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 📦 Projets présentés
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+| Projet          | Catégorie  | Technos principales             |
+|-----------------|------------|---------------------------------|
+| Singlefind      | Web        | Python, Flask, SQL, Bootstrap   |
+| Weathercast     | Logiciel   | Electron, JavaScript            |
+| Score-Tracker   | Web        | React, Express, APIs REST       |
+| minishell       | Système    | C, UNIX, Signaux                |
+| ft_containers   | Logiciel   | C++, STL réimplémentée          |
+| scop            | Graphisme  | C, OpenGL, GLSL                 |
+| ft_vox          | Graphisme  | C++, OpenGL, Perlin Noise       |
+| ft_minecraft    | Graphisme  | Java, OpenGL, GLSL (WIP)        |
