@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Environment, useGLTF } from '@react-three/drei'
+import { OrbitControls, Environment, useGLTF, ContactShadows } from '@react-three/drei'
 
 function Scene() {
   const { scene } = useGLTF('/models/scene.glb')
@@ -8,10 +8,18 @@ function Scene() {
 
 export default function App() {
   return (
-    <Canvas camera={{ position: [2.5, 1.8, 2.5], fov: 45 }}>
+    <Canvas camera={{ position: [4, 3, 4], fov: 30 }} gl={{ alpha: true }}>
       <Environment preset="city" />
       <Scene />
-      <OrbitControls target={[0, 0.6, 0]} />
+      <ContactShadows position={[0, 0, 0]} scale={6} blur={2.5} far={2} opacity={0.5} />
+      <OrbitControls
+        target={[0, 0.6, 0]}
+        enablePan={false}
+        minDistance={3}
+        maxDistance={7}
+        minPolarAngle={Math.PI / 6}
+        maxPolarAngle={Math.PI / 2.3}
+      />
     </Canvas>
   )
 }
