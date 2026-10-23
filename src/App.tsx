@@ -13,7 +13,7 @@ export default function App() {
       <Scene />
       <ContactShadows position={[0, 0, 0]} scale={6} blur={2.5} far={2} opacity={0.5} />
       <OrbitControls
-        target={[0, 0.6, 0]}
+        target={[0, 0.75, 0]}
         enablePan={false}
         minDistance={3}
         maxDistance={7}
