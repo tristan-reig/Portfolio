@@ -1,45 +1,186 @@
 import { useEffect, useRef } from 'react'
-import { CameraControls, CameraControlsImpl } from '@react-three/drei'
-import { DUREE_TRANSITION, LIMITES_ENSEMBLE, VUE_ECRAN, VUE_ENSEMBLE } from '../config/scene'
+import { Box3, MathUtils, PerspectiveCamera, Vector3, type Camera, type Object3D } from 'three'
+import { useFrame, useThree } from '@react-three/fiber'
+import { CameraControls, CameraControlsImpl, useGLTF } from '@react-three/drei'
+import {
+  BALAYAGE, DUREE_TRANSITION, ECRAN, LIMITES_ENSEMBLE, MODELE, VUE_ECRAN, VUE_ENSEMBLE,
+  type Vue, type VueId,
+} from '../config/scene'
 
 type Props = {
-  focus: boolean
+  // Vue demandée : ensemble, devant l'écran, ou zoom sur l'écran
+  vue: VueId
+  // La caméra balaie automatiquement la scène
+  verrou: boolean
 }
 
-export default function CameraRig({ focus }: Props) {
+export default function CameraRig({ vue, verrou }: Props) {
   const ref = useRef<CameraControlsImpl>(null)
-  const premier = useRef(true)
+  const invalidate = useThree((s) => s.invalidate)
+  const camera = useThree((s) => s.camera)
+  const { scene } = useGLTF(MODELE)
+  const focus = vue !== 'ensemble'
 
+  const premier = useRef(true)
+  const vuePrecedente = useRef<VueId>(vue)
+  const enTransition = useRef(false)
+  const verrouRef = useRef(verrou)
+
+  const poseLibre = useRef<Vue | null>(null)
+
+  const balayage = useRef({ base: 0, phase: 0, temps: 0 })
+  const balayageActif = useRef(false)
+  const balayageSuspendu = useRef(false)
+
+  const sens = useRef(1)
+
+  // Arrête le balayage en retenant dans quel sens il allait
+  const arreterBalayage = () => {
+    if (!balayageActif.current) return
+    const b = balayage.current
+    const vitesse = Math.cos(b.phase + (2 * Math.PI * b.temps) / BALAYAGE.periode)
+    sens.current = vitesse < 0 ? -1 : 1
+    balayageActif.current = false
+  }
+
+  // Lance un nouveau balayage depuis la position actuelle de la caméra
+  const demarrerBalayage = (c: CameraControlsImpl) => {
+    const [tx, ty, tz] = VUE_ENSEMBLE.cible
+    c.setTarget(tx, ty, tz, true)
+    c.rotatePolarTo(ENSEMBLE.polaire, true)
+    c.dollyTo(ENSEMBLE.distance, true)
+    c.normalizeRotations()
+
+    const ecart = normaliser(c.azimuthAngle - BALAYAGE.centre)
+    const depart = Math.max(-1, Math.min(1, ecart / BALAYAGE.amplitude))
+    const phase = sens.current > 0 ? Math.asin(depart) : Math.PI - Math.asin(depart)
+    balayage.current = { base: c.azimuthAngle - ecart, phase, temps: 0 }
+    balayageActif.current = true
+    invalidate()
+  }
+
+  // Transitions entre les vues
   useEffect(() => {
     const c = ref.current
     if (!c) return
 
-    // Pas d'animation au chargement, animation ensuite
     const anime = !premier.current
     premier.current = false
+
+    if (vuePrecedente.current === 'ensemble' && vue !== 'ensemble') {
+      const position = c.getPosition(new Vector3(), false)
+      const cible = c.getTarget(new Vector3(), false)
+      poseLibre.current = { position: position.toArray(), cible: cible.toArray() }
+      balayageSuspendu.current = balayageActif.current
+    }
+    vuePrecedente.current = vue
 
     // Pendant le trajet : aucune limite, et la souris ne peut pas interférer
     leverLimites(c)
     activerInteractions(c, false)
+    enTransition.current = true
 
-    const vue = focus ? VUE_ECRAN : VUE_ENSEMBLE
-    const [px, py, pz] = vue.position
-    const [tx, ty, tz] = vue.cible
+    const cadrage =
+      vue === 'ensemble' ? (poseLibre.current ?? VUE_ENSEMBLE)
+      : vue === 'ecran' ? VUE_ECRAN
+      : (cadrageZoom(scene, camera) ?? VUE_ECRAN)
+    const [px, py, pz] = cadrage.position
+    const [tx, ty, tz] = cadrage.cible
     let annule = false
 
-    c.setLookAt(px, py, pz, tx, ty, tz, anime).then(() => {
-      if (annule || focus) return
-      // Arrivée en vue d'ensemble : on rétablit les limites et la rotation
+    const trajet = c.setLookAt(px, py, pz, tx, ty, tz, anime)
+    c.normalizeRotations()
+
+    trajet.then(() => {
+      if (annule) return
+      enTransition.current = false
+      if (focus) return
+
+      poseLibre.current = null
       Object.assign(c, LIMITES_ENSEMBLE)
-      activerInteractions(c, true)
+      activerInteractions(c, !verrouRef.current)
+
+      if (verrouRef.current) {
+        if (balayageSuspendu.current) {
+          balayageActif.current = true
+          invalidate()
+        } else {
+          demarrerBalayage(c)
+        }
+      }
+      balayageSuspendu.current = false
     })
 
     return () => {
       annule = true
     }
-  }, [focus])
+  }, [vue, scene, camera])
+
+  // Verrouillage et déverrouillage
+  useEffect(() => {
+    verrouRef.current = verrou
+    const c = ref.current
+    if (!c) return
+
+    if (!verrou) arreterBalayage()
+
+    if (focus || enTransition.current) return
+
+    if (verrou) {
+      activerInteractions(c, false)
+      demarrerBalayage(c)
+    } else {
+      c.rotateTo(c.azimuthAngle, c.polarAngle, false)
+      c.dollyTo(c.distance, false)
+      activerInteractions(c, true)
+    }
+  }, [verrou, focus])
+
+  // Balayage : un aller-retour en douceur
+  useFrame((_, delta) => {
+    const c = ref.current
+    if (!c || !balayageActif.current) return
+
+    const b = balayage.current
+    b.temps += Math.min(delta, 0.1)
+    const angle = b.base + BALAYAGE.amplitude * Math.sin(b.phase + (2 * Math.PI * b.temps) / BALAYAGE.periode)
+    c.rotateAzimuthTo(angle, true)
+
+    invalidate()
+  })
 
   return <CameraControls ref={ref} smoothTime={DUREE_TRANSITION} />
+}
+
+function cadrageZoom(scene: Object3D, camera: Camera): Vue | null {
+  const dalle = scene.getObjectByName(ECRAN.objet)
+  if (!dalle || !(camera instanceof PerspectiveCamera)) return null
+
+  const boite = new Box3().setFromObject(dalle)
+  const centre = boite.getCenter(new Vector3())
+  const taille = boite.getSize(new Vector3())
+
+  const tangente = Math.tan(MathUtils.degToRad(camera.fov / 2))
+  const hauteurVisible = Math.max(taille.y, taille.x / camera.aspect) * ECRAN.margeZoom
+  const distance = hauteurVisible / (2 * tangente)
+
+  return {
+    position: [centre.x, centre.y, centre.z - distance],
+    cible: [centre.x, centre.y, centre.z],
+  }
+}
+
+const ENSEMBLE = (() => {
+  const [px, py, pz] = VUE_ENSEMBLE.position
+  const [tx, ty, tz] = VUE_ENSEMBLE.cible
+  const distance = Math.hypot(px - tx, py - ty, pz - tz)
+  return { distance, polaire: Math.acos((py - ty) / distance) }
+})()
+
+// Ramène un angle entre -π et π
+function normaliser(angle: number) {
+  const tour = 2 * Math.PI
+  return ((((angle + Math.PI) % tour) + tour) % tour) - Math.PI
 }
 
 function leverLimites(c: CameraControlsImpl) {

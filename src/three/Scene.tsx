@@ -2,48 +2,61 @@ import { useEffect, useMemo, useState } from 'react'
 import { Mesh } from 'three'
 import { useThree, type ThreeEvent } from '@react-three/fiber'
 import { Bvh, useGLTF } from '@react-three/drei'
+import Ecran from './Ecran'
 import Effets from './Effets'
-import { MODELE } from '../config/scene'
+import { MODELE, type VueId } from '../config/scene'
 import { estChaise } from '../utils/chaise'
+import { estEcran } from '../utils/ecran'
 
 type Props = {
-  focus: boolean
+  vue: VueId
   onChaise: () => void
+  onEcran: () => void
 }
 
-export default function Scene({ focus, onChaise }: Props) {
+type Survol = 'chaise' | 'ecran' | null
+
+export default function Scene({ vue, onChaise, onEcran }: Props) {
   const { scene } = useGLTF(MODELE)
-  const [survol, setSurvol] = useState(false)
+  const [survol, setSurvol] = useState<Survol>(null)
   const invalidate = useThree((s) => s.invalidate)
 
-  // Pas de surbrillance quand la caméra est devant l'écran
-  const surbrillance = survol && !focus
+  // La chaise n'est cliquable qu'en vue d'ensemble, l'écran tant qu'on n'a pas zoomé dessus
+  const chaiseActive = survol === 'chaise' && vue === 'ensemble'
+  const ecranActif = survol === 'ecran' && vue !== 'zoom'
 
-  const chaise = useMemo(() => {
-    const meshes: Mesh[] = []
+  const { chaise, ecran } = useMemo(() => {
+    const chaise: Mesh[] = []
+    const ecran: Mesh[] = []
     scene.traverse((o) => {
-      if (o instanceof Mesh && estChaise(o)) meshes.push(o)
+      if (!(o instanceof Mesh)) return
+      if (estChaise(o)) chaise.push(o)
+      else if (estEcran(o)) ecran.push(o)
     })
-    return meshes
+    return { chaise, ecran }
   }, [scene])
 
-  const contour = useMemo(() => (surbrillance ? chaise : []), [surbrillance, chaise])
+  // Contour blanc sur l'objet survolé, s'il est cliquable
+  const contour = useMemo(
+    () => (chaiseActive ? chaise : ecranActif ? ecran : []),
+    [chaiseActive, ecranActif, chaise, ecran],
+  )
 
   useEffect(() => {
-    document.body.style.cursor = surbrillance ? 'pointer' : 'auto'
+    document.body.style.cursor = chaiseActive || ecranActif ? 'pointer' : 'auto'
     invalidate()
-  }, [surbrillance, invalidate])
+  }, [chaiseActive, ecranActif, invalidate])
 
   const surMouvement = (e: ThreeEvent<PointerEvent>) => {
-    // Seul l'objet le plus proche du curseur compte
     e.stopPropagation()
-    setSurvol(estChaise(e.object))
+    setSurvol(estChaise(e.object) ? 'chaise' : estEcran(e.object) ? 'ecran' : null)
   }
 
   const surClic = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation()
-    // e.delta : distance parcourue par la souris, pour ignorer la fin d'une rotation
-    if (!focus && e.delta < 5 && estChaise(e.object)) onChaise()
+    if (e.delta >= 5) return
+    if (vue === 'ensemble' && estChaise(e.object)) onChaise()
+    else if (vue !== 'zoom' && estEcran(e.object)) onEcran()
   }
 
   return (
@@ -52,10 +65,11 @@ export default function Scene({ focus, onChaise }: Props) {
         <primitive
           object={scene}
           onPointerMove={surMouvement}
-          onPointerOut={() => setSurvol(false)}
+          onPointerOut={() => setSurvol(null)}
           onClick={surClic}
         />
       </Bvh>
+      <Ecran />
       <Effets contour={contour} />
     </>
   )

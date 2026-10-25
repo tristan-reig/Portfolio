@@ -1,0 +1,80 @@
+.hud {
+  position: fixed;
+  top: 64px;
+  left: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  font-size: 18px;
+  line-height: 1;
+  color: #fff;
+  user-select: none;
+  pointer-events: none;
+}
+
+.hud-ligne {
+  display: flex;
+  gap: 6px;
+}
+
+.hud-bloc {
+  padding: 8px 20px;
+  background: #000;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.hud-heure {
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-bouton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.hud-icone {
+  padding: 8px 10px;
+}
+
+.hud-bouton:hover {
+  background: #222;
+}
+
+.hud-actif,
+.hud-actif:hover {
+  background: #fff;
+  color: #000;
+}
+
+.hud-bouton:disabled,
+.hud-bouton:disabled:hover {
+  background: #000;
+  color: #fff;
+  opacity: 0.35;
+  cursor: default;
+}
+
+.hud-bouton:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .hud {
+    top: 16px;
+    left: 16px;
+    font-size: 14px;
+  }
+
+  .hud-bloc {
+    padding: 6px 12px;
+  }
+}

@@ -2,7 +2,6 @@ import type { Object3D } from 'three'
 import { EffectComposer, Outline, Vignette } from '@react-three/postprocessing'
 
 type Props = {
-  // Objets à entourer d'un contour blanc
   contour: Object3D[]
 }
 
