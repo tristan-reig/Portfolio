@@ -1,35 +1,66 @@
+import { useEffect, useState } from 'react'
 import { useHorloge } from '../hooks/useHorloge'
+import { useSequenceFrappe } from '../hooks/useFrappe'
+import { jouerTouche } from '../audio/clavier'
 import { PROFIL } from '../config/profil'
 import './Hud.css'
 
+const FRAPPE = {
+  debut: 300,
+  vitesse: 85,
+  variation: 0.6,
+  pause: 450,
+}
+
+const DELAI_BOUTON = FRAPPE.vitesse
+
 type Props = {
+  actif: boolean
   focus: boolean
   verrou: boolean
   onRetour: () => void
   onCamera: () => void
 }
 
-// Informations en haut à gauche, par-dessus la scène
-export default function Hud({ focus, verrou, onRetour, onCamera }: Props) {
+export default function Hud({ actif, focus, verrou, onRetour, onCamera }: Props) {
   const heure = useHorloge()
+
+  const { lignes, termine } = useSequenceFrappe([PROFIL.nom, PROFIL.titre, heure], {
+    actif,
+    ...FRAPPE,
+    surLettre: jouerTouche,
+  })
+  const [nom, titre, horloge] = lignes
+
+  const [boutonVisible, setBoutonVisible] = useState(false)
+  useEffect(() => {
+    if (!termine) return
+    const minuteur = setTimeout(() => {
+      setBoutonVisible(true)
+      jouerTouche()
+    }, DELAI_BOUTON)
+    return () => clearTimeout(minuteur)
+  }, [termine])
 
   return (
     <div className="hud">
-      <div className="hud-bloc">{PROFIL.nom}</div>
-      <div className="hud-bloc">{PROFIL.titre}</div>
+      {nom.visible && <BlocTexte complet={PROFIL.nom} affiche={nom.texte} />}
+      {titre.visible && <BlocTexte complet={PROFIL.titre} affiche={titre.texte} />}
 
       <div className="hud-ligne">
-        <div className="hud-bloc hud-heure">{heure}</div>
-        <button
-          className={`hud-bloc hud-bouton hud-icone${verrou ? ' hud-actif' : ''}`}
-          onClick={onCamera}
-          disabled={focus}
-          aria-pressed={verrou}
-          aria-label="Verrouiller la caméra"
-          title={verrou ? 'Déverrouiller la caméra' : 'Verrouiller la caméra'}
-        >
-          <IconeCamera />
-        </button>
+        {horloge.visible && <BlocTexte complet={heure} affiche={horloge.texte} classe="hud-heure" />}
+        {boutonVisible && (
+          <button
+            className={`hud-bloc hud-bouton hud-icone${verrou ? ' hud-actif' : ''}`}
+            onClick={onCamera}
+            disabled={focus}
+            aria-pressed={verrou}
+            aria-label="Verrouiller la caméra"
+            title={verrou ? 'Déverrouiller la caméra' : 'Verrouiller la caméra'}
+          >
+            <IconeCamera />
+          </button>
+        )}
       </div>
 
       {focus && (
@@ -37,6 +68,15 @@ export default function Hud({ focus, verrou, onRetour, onCamera }: Props) {
           ← Retour
         </button>
       )}
+    </div>
+  )
+}
+
+function BlocTexte({ complet, affiche, classe }: { complet: string; affiche: string; classe?: string }) {
+  return (
+    <div className={`hud-bloc${classe ? ` ${classe}` : ''}`}>
+      <span className="hud-masque">{complet}</span>
+      <span aria-hidden="true">{affiche}</span>
     </div>
   )
 }
