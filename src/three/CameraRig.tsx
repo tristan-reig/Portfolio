@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { Box3, MathUtils, PerspectiveCamera, Vector3, type Camera, type Object3D } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import { Box3, MathUtils, PerspectiveCamera, Vector3, type Camera, type CatmullRomCurve3, type Object3D } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { CameraControls, CameraControlsImpl } from '@react-three/drei'
 import {
@@ -7,6 +7,7 @@ import {
   type Vue, type VueId,
 } from '../config/scene'
 import { useModele } from './modele'
+import { adoucir, analyserScene, creerChemin, planifierTrajet } from './trajet'
 
 type Props = {
   // Vue demandée : ensemble, devant l'écran, ou zoom sur l'écran
@@ -34,6 +35,28 @@ export default function CameraRig({ vue, verrou }: Props) {
   const balayageSuspendu = useRef(false)
 
   const sens = useRef(1)
+
+  // Géométrie de la scène, pour des trajets qui contournent les meubles
+  const geometrie = useMemo(() => analyserScene(scene), [scene])
+
+  // Trajet en cours entre deux vues
+  const animation = useRef<{
+    chemin: CatmullRomCurve3
+    cibleDepart: Vector3
+    cibleArrivee: Vector3
+    duree: number
+    temps: number
+    fin: () => void
+  } | null>(null)
+  const cibleCourante = useMemo(() => new Vector3(), [])
+
+  const animerTrajet = (points: Vector3[], cibleDepart: Vector3, cibleArrivee: Vector3) =>
+    new Promise<void>((resolve) => {
+      animation.current?.fin()
+      const { chemin, duree } = creerChemin(points)
+      animation.current = { chemin, cibleDepart, cibleArrivee, duree, temps: 0, fin: resolve }
+      invalidate()
+    })
 
   // Arrête le balayage en retenant dans quel sens il allait
   const arreterBalayage = () => {
@@ -68,7 +91,8 @@ export default function CameraRig({ vue, verrou }: Props) {
     const anime = !premier.current
     premier.current = false
 
-    if (vuePrecedente.current === 'ensemble' && vue !== 'ensemble') {
+    const de = vuePrecedente.current
+    if (de === 'ensemble' && vue !== 'ensemble') {
       const position = c.getPosition(new Vector3(), false)
       const cible = c.getTarget(new Vector3(), false)
       poseLibre.current = { position: position.toArray(), cible: cible.toArray() }
@@ -89,8 +113,13 @@ export default function CameraRig({ vue, verrou }: Props) {
     const [tx, ty, tz] = cadrage.cible
     let annule = false
 
-    const trajet = c.setLookAt(px, py, pz, tx, ty, tz, anime)
-    c.normalizeRotations()
+    const trajet = anime
+      ? animerTrajet(
+          planifierTrajet(geometrie, c.getPosition(new Vector3(), false), new Vector3(px, py, pz), de, vue),
+          c.getTarget(new Vector3(), false),
+          new Vector3(tx, ty, tz),
+        )
+      : c.setLookAt(px, py, pz, tx, ty, tz, false)
 
     trajet.then(() => {
       if (annule) return
@@ -103,6 +132,10 @@ export default function CameraRig({ vue, verrou }: Props) {
 
       if (verrouRef.current) {
         if (balayageSuspendu.current) {
+          // La caméra revient au même angle, mais compté à un tour près : on recale le balayage dessus
+          const b = balayage.current
+          const angle = b.base + BALAYAGE.amplitude * Math.sin(b.phase + (2 * Math.PI * b.temps) / BALAYAGE.periode)
+          b.base += Math.round((c.azimuthAngle - angle) / (2 * Math.PI)) * 2 * Math.PI
           balayageActif.current = true
           invalidate()
         } else {
@@ -115,7 +148,7 @@ export default function CameraRig({ vue, verrou }: Props) {
     return () => {
       annule = true
     }
-  }, [vue, scene, camera])
+  }, [vue, scene, camera, geometrie])
 
   // Verrouillage et déverrouillage
   useEffect(() => {
@@ -137,10 +170,28 @@ export default function CameraRig({ vue, verrou }: Props) {
     }
   }, [verrou, focus])
 
-  // Balayage : un aller-retour en douceur
   useFrame((_, delta) => {
     const c = ref.current
-    if (!c || !balayageActif.current) return
+    if (!c) return
+
+    // Parcours du trajet en cours
+    const a = animation.current
+    if (a) {
+      a.temps = Math.min(a.temps + Math.min(delta, 0.1), a.duree)
+      const u = adoucir(a.temps / a.duree)
+      const p = a.chemin.getPointAt(u)
+      const t = cibleCourante.lerpVectors(a.cibleDepart, a.cibleArrivee, u)
+      c.setLookAt(p.x, p.y, p.z, t.x, t.y, t.z, false)
+      if (a.temps >= a.duree) {
+        animation.current = null
+        a.fin()
+      }
+      invalidate()
+      return
+    }
+
+    // Balayage : un aller-retour en douceur
+    if (!balayageActif.current) return
 
     const b = balayage.current
     b.temps += Math.min(delta, 0.1)

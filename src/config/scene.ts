@@ -26,6 +26,19 @@ export const LIMITES_ENSEMBLE = {
 
 export const DUREE_TRANSITION = 0.6
 
+// Trajets de la caméra entre les vues
+export const TRAJET = {
+  vitesse: 2.4,
+  dureeMin: 0.9,
+  dureeMax: 2.8,
+  angleDirect: 50,
+  marge: 0.9,
+  hauteurContournement: 0.5,
+  hauteurPassage: 0.4,
+  reculPassage: 0.35,
+  hauteurDessus: 0.25,
+}
+
 export const ECRAN = {
   objet: 'Ecran_Dalle',
   haut: '#1e4fd8',
