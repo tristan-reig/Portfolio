@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Mesh } from 'three'
 import { useThree, type ThreeEvent } from '@react-three/fiber'
-import { Bvh, useGLTF } from '@react-three/drei'
+import { Bvh } from '@react-three/drei'
 import Ecran from './Ecran'
 import Effets from './Effets'
-import { MODELE, type VueId } from '../config/scene'
+import { type VueId } from '../config/scene'
 import { estChaise } from '../utils/chaise'
 import { estEcran } from '../utils/ecran'
+import { useModele } from './modele'
 
 type Props = {
   vue: VueId
@@ -17,7 +18,7 @@ type Props = {
 type Survol = 'chaise' | 'ecran' | null
 
 export default function Scene({ vue, onChaise, onEcran }: Props) {
-  const { scene } = useGLTF(MODELE)
+  const { scene } = useModele()
   const [survol, setSurvol] = useState<Survol>(null)
   const invalidate = useThree((s) => s.invalidate)
 
@@ -74,5 +75,3 @@ export default function Scene({ vue, onChaise, onEcran }: Props) {
     </>
   )
 }
-
-useGLTF.preload(MODELE)

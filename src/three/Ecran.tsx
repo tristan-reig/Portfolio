@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { CanvasTexture, Mesh, MeshBasicMaterial, SRGBColorSpace, type Material } from 'three'
 import { useThree } from '@react-three/fiber'
-import { useGLTF } from '@react-three/drei'
 import { ECRAN, MODELE } from '../config/scene'
+import { useModele } from './modele'
 
 // Remplace le matériau de la dalle par un dégradé vertical
 export default function Ecran() {
-  const { scene } = useGLTF(MODELE)
+  const { scene } = useModele()
   const invalidate = useThree((s) => s.invalidate)
 
   useEffect(() => {

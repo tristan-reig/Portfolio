@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { Suspense, useCallback, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
 import Ambiance from './three/Ambiance'
@@ -13,7 +13,6 @@ import { useTouche } from './hooks/useTouche'
 import { VUE_ENSEMBLE } from './config/scene'
 
 export default function App() {
-  // demarre : le visiteur a cliqué ou appuyé sur une touche, le son est débloqué
   const [demarre, setDemarre] = useState(false)
   const { vue, verrou, aller, retour, basculerVerrou } = useNavigation()
 
@@ -30,9 +29,12 @@ export default function App() {
     <>
       <Canvas dpr={[1, 1.5]} frameloop="demand" camera={{ position: VUE_ENSEMBLE.position, fov: 35 }}>
         {import.meta.env.DEV && <Perf position="bottom-right" />}
-        <Ambiance />
-        <Scene vue={vue} onChaise={surChaise} onEcran={surEcran} />
-        <CameraRig vue={vue} verrou={verrou} />
+        {/* Pendant le chargement, seule la scène attend : le Canvas et le reste de la page continuent de vivre */}
+        <Suspense fallback={null}>
+          <Ambiance />
+          <Scene vue={vue} onChaise={surChaise} onEcran={surEcran} />
+          <CameraRig vue={vue} verrou={verrou} />
+        </Suspense>
       </Canvas>
       <Hud actif={demarre} focus={vue !== 'ensemble'} verrou={verrou} onRetour={retour} onCamera={basculerVerrou} />
       <Chargement />

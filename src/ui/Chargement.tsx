@@ -1,20 +1,29 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useProgress } from '@react-three/drei'
-import './Chargement.css'
+import { useProgressionModele } from '../three/modele'
 
-// Écran de chargement : affiche la progression, puis s'efface tout seul quand la scène est prête
+// L'écran de chargement est écrit directement dans index.html, pour s'afficher avant le JavaScript.
 export default function Chargement() {
+  const { part, termine } = useProgressionModele()
   const { progress, active } = useProgress()
-  const pret = !active && progress === 100
-  const [parti, setParti] = useState(false)
+  const pret = termine && !active && progress === 100
 
-  if (parti) return null
+  useEffect(() => {
+    const zone = document.getElementById('chargement-pourcent')
+    if (zone) zone.textContent = part === null ? '' : ` ${Math.round(part * 100)} %`
+  }, [part])
 
-  return (
-    <div className={`chargement${pret ? ' chargement-fini' : ''}`} onTransitionEnd={() => pret && setParti(true)}>
-      <div className="chargement-bloc" role="status">
-        Chargement {Math.round(progress)} %
-      </div>
-    </div>
-  )
+  useEffect(() => {
+    if (!pret) return
+    const ecran = document.getElementById('chargement')
+    if (!ecran) return
+
+    ecran.classList.add('fini')
+    const retirer = () => ecran.remove()
+    ecran.addEventListener('transitionend', retirer, { once: true })
+    const secours = setTimeout(retirer, 1000)
+    return () => clearTimeout(secours)
+  }, [pret])
+
+  return null
 }

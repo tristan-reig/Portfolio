@@ -1,11 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { Box3, MathUtils, PerspectiveCamera, Vector3, type Camera, type Object3D } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import { CameraControls, CameraControlsImpl, useGLTF } from '@react-three/drei'
+import { CameraControls, CameraControlsImpl } from '@react-three/drei'
 import {
-  BALAYAGE, DUREE_TRANSITION, ECRAN, LIMITES_ENSEMBLE, MODELE, VUE_ECRAN, VUE_ENSEMBLE,
+  BALAYAGE, DUREE_TRANSITION, ECRAN, LIMITES_ENSEMBLE, VUE_ECRAN, VUE_ENSEMBLE,
   type Vue, type VueId,
 } from '../config/scene'
+import { useModele } from './modele'
 
 type Props = {
   // Vue demandée : ensemble, devant l'écran, ou zoom sur l'écran
@@ -18,7 +19,7 @@ export default function CameraRig({ vue, verrou }: Props) {
   const ref = useRef<CameraControlsImpl>(null)
   const invalidate = useThree((s) => s.invalidate)
   const camera = useThree((s) => s.camera)
-  const { scene } = useGLTF(MODELE)
+  const { scene } = useModele()
   const focus = vue !== 'ensemble'
 
   const premier = useRef(true)
