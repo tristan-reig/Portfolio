@@ -3,9 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "workspaces": [
+    "os"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev:os": "npm run dev -w os",
+    "build": "tsc -b && vite build && npm run build -w os",
     "lint": "eslint .",
     "preview": "vite preview"
   },
