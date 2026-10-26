@@ -1,57 +1,85 @@
-import { useEffect } from 'react'
-import { CanvasTexture, Mesh, MeshBasicMaterial, SRGBColorSpace, type Material } from 'three'
+import { useEffect, useMemo, useRef } from 'react'
+import { Box3, DoubleSide, Mesh, ShaderMaterial, Vector3, type Material } from 'three'
 import { useThree } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 import { ECRAN, MODELE } from '../config/scene'
 import { useModele } from './modele'
 
-// Remplace le matériau de la dalle par un dégradé vertical
-export default function Ecran() {
+type Props = {
+  // L'OS reçoit la souris
+  actif: boolean
+}
+
+const METRE_PAR_PIXEL = 10 / 400
+
+export default function Ecran({ actif }: Props) {
   const { scene } = useModele()
   const invalidate = useThree((s) => s.invalidate)
+  const iframe = useRef<HTMLIFrameElement>(null)
+
+  const dalle = useMemo(() => {
+    const objet = scene.getObjectByName(ECRAN.objet)
+    if (!objet) return null
+    const boite = new Box3().setFromObject(objet)
+    const taille = boite.getSize(new Vector3())
+    const centre = boite.getCenter(new Vector3())
+    return { objet, largeur: taille.x, hauteur: taille.y, centre, avant: boite.min.z }
+  }, [scene])
 
   useEffect(() => {
-    const dalle = scene.getObjectByName(ECRAN.objet)
     if (!dalle) {
       console.warn(`Objet "${ECRAN.objet}" introuvable dans ${MODELE}`)
       return
     }
-
-    const texture = creerDegrade(ECRAN.haut, ECRAN.bas)
-    const materiau = new MeshBasicMaterial({ map: texture, toneMapped: false })
-
+    const trou = new ShaderMaterial({
+      fragmentShader: 'void main() { gl_FragColor = vec4(0.0); }',
+      side: DoubleSide,
+    })
     const origines = new Map<Mesh, Material | Material[]>()
-    dalle.traverse((o) => {
+    dalle.objet.traverse((o) => {
       if (o instanceof Mesh) {
         origines.set(o, o.material)
-        o.material = materiau
+        o.material = trou
       }
     })
     invalidate()
 
     return () => {
       origines.forEach((m, mesh) => (mesh.material = m))
-      texture.dispose()
-      materiau.dispose()
+      trou.dispose()
     }
-  }, [scene, invalidate])
+  }, [dalle, invalidate])
 
-  return null
-}
+  useEffect(() => {
+    const surMessage = (e: MessageEvent) => {
+      if (e.source !== iframe.current?.contentWindow || e.data?.type !== 'touche') return
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: e.data.key }))
+    }
+    window.addEventListener('message', surMessage)
+    return () => window.removeEventListener('message', surMessage)
+  }, [])
 
-function creerDegrade(haut: string, bas: string) {
-  const canvas = document.createElement('canvas')
-  canvas.width = 2
-  canvas.height = 256
+  if (!dalle) return null
 
-  const ctx = canvas.getContext('2d')!
-  const degrade = ctx.createLinearGradient(0, 0, 0, canvas.height)
-  degrade.addColorStop(0, haut)
-  degrade.addColorStop(1, bas)
-  ctx.fillStyle = degrade
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  const largeurPx = ECRAN.largeurPx
+  const hauteurPx = Math.round((largeurPx * dalle.hauteur) / dalle.largeur)
 
-  const texture = new CanvasTexture(canvas)
-  texture.colorSpace = SRGBColorSpace
-  texture.flipY = false
-  return texture
+  return (
+    <Html
+      transform
+      occlude="blending"
+      position={[dalle.centre.x, dalle.centre.y, dalle.avant - 0.001]}
+      rotation-y={Math.PI}
+      scale={dalle.largeur / (largeurPx * METRE_PAR_PIXEL)}
+      pointerEvents={actif ? 'auto' : 'none'}
+    >
+      <iframe
+        ref={iframe}
+        src={ECRAN.os}
+        title="OS"
+        onLoad={() => invalidate()}
+        style={{ width: largeurPx, height: hauteurPx, border: 0, display: 'block', background: '#000' }}
+      />
+    </Html>
+  )
 }

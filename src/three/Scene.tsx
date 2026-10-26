@@ -70,7 +70,7 @@ export default function Scene({ vue, onChaise, onEcran }: Props) {
           onClick={surClic}
         />
       </Bvh>
-      <Ecran />
+      <Ecran actif={vue === 'zoom'} />
       <Effets contour={contour} />
     </>
   )

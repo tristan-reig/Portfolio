@@ -27,7 +27,12 @@ export default function App() {
 
   return (
     <>
-      <Canvas dpr={[1, 1.5]} frameloop="demand" camera={{ position: VUE_ENSEMBLE.position, fov: 35 }}>
+      <Canvas
+        dpr={[1, 1.5]}
+        frameloop="demand"
+        camera={{ position: VUE_ENSEMBLE.position, fov: 35 }}
+        style={{ isolation: 'isolate' }}
+      >
         {import.meta.env.DEV && <Perf position="bottom-right" />}
         {/* Pendant le chargement, seule la scène attend : le Canvas et le reste de la page continuent de vivre */}
         <Suspense fallback={null}>
