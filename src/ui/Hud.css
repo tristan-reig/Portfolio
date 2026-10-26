@@ -12,6 +12,12 @@
   color: #fff;
   user-select: none;
   pointer-events: none;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.hud-masque-zoom {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .hud-ligne {

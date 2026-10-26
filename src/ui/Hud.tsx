@@ -18,11 +18,11 @@ type Props = {
   actif: boolean
   focus: boolean
   verrou: boolean
-  onRetour: () => void
+  masque: boolean
   onCamera: () => void
 }
 
-export default function Hud({ actif, focus, verrou, onRetour, onCamera }: Props) {
+export default function Hud({ actif, focus, masque, verrou, onCamera }: Props) {
   const heure = useHorloge()
 
   const { lignes, termine } = useSequenceFrappe([PROFIL.nom, PROFIL.titre, heure], {
@@ -42,8 +42,8 @@ export default function Hud({ actif, focus, verrou, onRetour, onCamera }: Props)
     return () => clearTimeout(minuteur)
   }, [termine])
 
-  return (
-    <div className="hud">
+    return (
+    <div className={`hud${masque ? ' hud-masque-zoom' : ''}`} aria-hidden={masque}>
       {nom.visible && <BlocTexte complet={PROFIL.nom} affiche={nom.texte} />}
       {titre.visible && <BlocTexte complet={PROFIL.titre} affiche={titre.texte} />}
 
@@ -62,12 +62,6 @@ export default function Hud({ actif, focus, verrou, onRetour, onCamera }: Props)
           </button>
         )}
       </div>
-
-      {focus && (
-        <button className="hud-bloc hud-bouton" onClick={onRetour}>
-          ← Retour
-        </button>
-      )}
     </div>
   )
 }

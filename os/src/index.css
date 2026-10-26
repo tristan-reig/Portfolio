@@ -1,3 +1,15 @@
+:root {
+  --fond: #11111b;
+  --barre: rgba(17, 17, 27, 0.72);
+  --bordure: rgba(255, 255, 255, 0.08);
+  --survol: rgba(255, 255, 255, 0.08);
+  --texte: #cdd6f4;
+  --texte-doux: #7f849c;
+  --accent: #89b4fa;
+  --rouge: #f38ba8;
+  --police: 'JetBrains Mono', ui-monospace, monospace;
+}
+
 html,
 body,
 #root {
@@ -7,11 +19,19 @@ body,
 
 body {
   overflow: hidden;
-  font-family: system-ui, sans-serif;
+  background: var(--fond);
+  font-family: var(--police);
   user-select: none;
 }
 
+/* Fond d'écran */
 .bureau {
+  position: relative;
   height: 100%;
-  background: linear-gradient(#1e4fd8, #ffffff);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 28%, rgba(137, 180, 250, 0.35), transparent 45%),
+    radial-gradient(circle at 82% 75%, rgba(203, 166, 247, 0.3), transparent 50%),
+    radial-gradient(circle at 60% 8%, rgba(148, 226, 213, 0.16), transparent 40%),
+    var(--fond);
 }

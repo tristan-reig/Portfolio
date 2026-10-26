@@ -41,7 +41,13 @@ export default function App() {
           <CameraRig vue={vue} verrou={verrou} />
         </Suspense>
       </Canvas>
-      <Hud actif={demarre} focus={vue !== 'ensemble'} verrou={verrou} onRetour={retour} onCamera={basculerVerrou} />
+      <Hud
+        actif={demarre}
+        focus={vue !== 'ensemble'}
+        masque={vue === 'zoom'}
+        verrou={verrou}
+        onCamera={basculerVerrou}
+      />
       <Chargement />
     </>
   )
