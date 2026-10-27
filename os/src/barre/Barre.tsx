@@ -9,11 +9,13 @@ const formatHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: 
 const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 
 type Props = {
+  // Titre de la fenêtre active, affiché au centre
+  titre: string
   // Ouvre le sélecteur de fond d'écran
   onFonds: () => void
 }
 
-export default function Barre({ onFonds }: Props) {
+export default function Barre({ titre, onFonds }: Props) {
   const maintenant = useHeure()
   const batterie = useBatterie()
   const [calendrier, setCalendrier] = useState(false)
@@ -54,7 +56,9 @@ export default function Barre({ onFonds }: Props) {
       </div>
 
       {/* Réservé au titre de la fenêtre active */}
-      <div className="barre-centre" />
+      <div className="barre-centre">
+        {titre}
+      </div>
 
       <div className="barre-droite">
         <button className="barre-icone" onClick={onFonds} title="Fond d'écran" aria-label="Fond d'écran">

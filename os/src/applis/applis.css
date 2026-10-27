@@ -1,0 +1,19 @@
+.appli {
+  padding: 22px 24px;
+  color: var(--texte);
+  font: 500 14px/1.6 var(--police);
+}
+
+.appli h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.appli p {
+  margin: 0 0 8px;
+}
+
+.appli-doux {
+  color: var(--texte-doux);
+}

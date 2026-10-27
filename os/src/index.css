@@ -1,12 +1,17 @@
 :root {
   --fond: #11111b;
   --barre: rgba(17, 17, 27, 0.72);
+  --menu: rgba(17, 17, 27, 0.94);
   --bordure: rgba(255, 255, 255, 0.08);
   --survol: rgba(255, 255, 255, 0.08);
   --texte: #cdd6f4;
   --texte-doux: #7f849c;
   --accent: #89b4fa;
   --rouge: #f38ba8;
+  --fenetre: rgba(17, 17, 27, 0.82);
+  --bordure-active-1: #33ccff;
+  --bordure-active-2: #00ff99;
+  --bordure-inactive: rgba(89, 89, 89, 0.67);
   --police: 'JetBrains Mono', ui-monospace, monospace;
 }
 

@@ -1,0 +1,93 @@
+/* Zone des fenêtres */
+.fenetres {
+  position: absolute;
+  top: 54px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+}
+
+.fenetre {
+  position: absolute;
+  border-radius: 10px;
+  background: var(--fenetre);
+  backdrop-filter: blur(14px) saturate(140%);
+  overflow: hidden;
+  transition:
+    left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    top 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: fenetre-ouverture 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fenetre::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  padding: 2px;
+  border-radius: inherit;
+  background: var(--bordure-inactive);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+}
+
+.fenetre-active::before {
+  background: linear-gradient(45deg, var(--bordure-active-1), var(--bordure-active-2));
+}
+
+@keyframes fenetre-ouverture {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+.fenetre-fermeture {
+  pointer-events: none;
+  animation: fenetre-fermeture 0.18s ease-in forwards;
+}
+
+@keyframes fenetre-fermeture {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+.fenetre-contenu {
+  height: 100%;
+  overflow: auto;
+}
+
+.fenetre-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texte-doux);
+  font: 500 18px/1 var(--police);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background-color 0.15s, color 0.15s;
+}
+
+.fenetre:hover .fenetre-fermer {
+  opacity: 1;
+}
+
+.fenetre-fermer:hover {
+  background: var(--rouge);
+  color: var(--fond);
+}

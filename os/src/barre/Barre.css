@@ -15,6 +15,7 @@
   backdrop-filter: blur(14px) saturate(140%);
   color: var(--texte);
   font: 500 14px/1 var(--police);
+  z-index: 5;
 }
 
 .barre-gauche {
@@ -89,4 +90,11 @@ button.barre-icone {
 
 .barre-faible {
   color: var(--rouge);
+}
+
+.barre-centre {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

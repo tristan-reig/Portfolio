@@ -5,10 +5,9 @@
   width: 300px;
   padding: 16px 14px 14px;
   box-sizing: border-box;
-  background: var(--barre);
+  background: var(--menu);
   border: 1px solid var(--bordure);
   border-radius: 14px;
-  backdrop-filter: blur(18px) saturate(140%);
   color: var(--texte);
   font: 500 13px/1 var(--police);
   animation: calendrier-entree 0.18s ease-out;
