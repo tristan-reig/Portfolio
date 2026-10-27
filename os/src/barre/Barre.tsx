@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+import Calendrier from './Calendrier'
 import { IconeAlimentation, IconeBatterie, IconeEclair, IconeReseau, IconeVolume } from './Icones'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
@@ -9,13 +11,42 @@ const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'nu
 export default function Barre() {
   const maintenant = useHeure()
   const batterie = useBatterie()
+  const [calendrier, setCalendrier] = useState(false)
+  const zoneHeure = useRef<HTMLDivElement>(null)
+
+  // Le calendrier se ferme avec Échap ou un clic ailleurs
+  useEffect(() => {
+    if (!calendrier) return
+    const surTouche = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      e.preventDefault()
+      setCalendrier(false)
+    }
+    const surClic = (e: PointerEvent) => {
+      if (!zoneHeure.current?.contains(e.target as Node)) setCalendrier(false)
+    }
+    window.addEventListener('keydown', surTouche, true)
+    window.addEventListener('pointerdown', surClic)
+    return () => {
+      window.removeEventListener('keydown', surTouche, true)
+      window.removeEventListener('pointerdown', surClic)
+    }
+  }, [calendrier])
 
   return (
     <header className="barre">
-      <time className="barre-gauche" dateTime={maintenant.toISOString()}>
-        <span>{formatHeure.format(maintenant)}</span>
-        <span className="barre-doux">{formatDate.format(maintenant)}</span>
-      </time>
+      <div className="barre-gauche" ref={zoneHeure}>
+        <button
+          className={`barre-heure${calendrier ? ' barre-heure-ouverte' : ''}`}
+          onClick={() => setCalendrier(!calendrier)}
+          aria-expanded={calendrier}
+          title="Calendrier"
+        >
+          <time dateTime={maintenant.toISOString()}>{formatHeure.format(maintenant)}</time>
+          <span className="barre-doux">{formatDate.format(maintenant)}</span>
+        </button>
+        {calendrier && <Calendrier aujourdhui={maintenant} />}
+      </div>
 
       {/* Réservé au titre de la fenêtre active */}
       <div className="barre-centre" />

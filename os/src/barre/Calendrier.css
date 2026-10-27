@@ -1,0 +1,106 @@
+.calendrier {
+  position: absolute;
+  top: 46px;
+  left: 0;
+  width: 300px;
+  padding: 16px 14px 14px;
+  box-sizing: border-box;
+  background: var(--barre);
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  backdrop-filter: blur(18px) saturate(140%);
+  color: var(--texte);
+  font: 500 13px/1 var(--police);
+  animation: calendrier-entree 0.18s ease-out;
+}
+
+@keyframes calendrier-entree {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.calendrier-heure {
+  padding: 0 4px;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendrier-date {
+  margin: 10px 0 16px;
+  padding: 0 4px 14px;
+  border-bottom: 1px solid var(--bordure);
+  color: var(--texte-doux);
+}
+
+.calendrier-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.calendrier-titre,
+.calendrier-fleche {
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texte);
+  font: 700 14px/1 var(--police);
+  cursor: pointer;
+}
+
+.calendrier-fleche {
+  width: 28px;
+  font-size: 18px;
+}
+
+.calendrier-titre {
+  padding: 0 10px;
+}
+
+.calendrier-titre:disabled {
+  cursor: default;
+}
+
+.calendrier-fleche:hover,
+.calendrier-titre:not(:disabled):hover {
+  background: var(--survol);
+}
+
+.calendrier-grille {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.calendrier-jour-semaine {
+  padding: 8px 0;
+  color: var(--texte-doux);
+  font-size: 12px;
+}
+
+.calendrier-jour {
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.calendrier-hors-mois {
+  color: var(--texte-doux);
+  opacity: 0.5;
+}
+
+.calendrier-aujourdhui {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+}
