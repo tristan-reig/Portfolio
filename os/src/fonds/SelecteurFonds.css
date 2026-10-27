@@ -1,0 +1,75 @@
+.selecteur {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(10, 10, 16, 0.45);
+  backdrop-filter: blur(6px);
+  animation: selecteur-entree 0.2s ease-out;
+}
+
+@keyframes selecteur-entree {
+  from {
+    opacity: 0;
+  }
+}
+
+.selecteur-couleurs {
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 7px;
+  background: var(--barre);
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+}
+
+.selecteur-couleur {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.selecteur-couleur:hover {
+  transform: scale(1.1);
+}
+
+.selecteur-couleur-active {
+  border-color: #fff;
+}
+
+.selecteur-cartes {
+  position: absolute;
+  left: 50%;
+  top: 410px;
+}
+
+.selecteur-carte {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    clip-path 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 0.35s;
+}
+
+.selecteur-vide {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  white-space: nowrap;
+  color: var(--texte-doux);
+  font: 500 14px/1 var(--police);
+}

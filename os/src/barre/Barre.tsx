@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendrier from './Calendrier'
-import { IconeAlimentation, IconeBatterie, IconeEclair, IconeReseau, IconeVolume } from './Icones'
+import { IconeAlimentation, IconeBatterie, IconeEclair, IconeFond, IconeReseau, IconeVolume } from './Icones'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
@@ -8,7 +8,12 @@ import './Barre.css'
 const formatHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
 const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 
-export default function Barre() {
+type Props = {
+  // Ouvre le sélecteur de fond d'écran
+  onFonds: () => void
+}
+
+export default function Barre({ onFonds }: Props) {
   const maintenant = useHeure()
   const batterie = useBatterie()
   const [calendrier, setCalendrier] = useState(false)
@@ -52,6 +57,9 @@ export default function Barre() {
       <div className="barre-centre" />
 
       <div className="barre-droite">
+        <button className="barre-icone" onClick={onFonds} title="Fond d'écran" aria-label="Fond d'écran">
+          <IconeFond />
+        </button>
         <span className="barre-icone" title="Réseau"><IconeReseau /></span>
         <span className="barre-icone" title="Volume"><IconeVolume /></span>
         {batterie && (
