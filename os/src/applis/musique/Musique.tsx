@@ -26,7 +26,6 @@ const formatTemps = (secondes: number) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
-// Ordre aléatoire de la liste
 function melanger(n: number, premier: number) {
   const reste = Array.from({ length: n }, (_, i) => i).filter((i) => i !== premier)
   for (let i = reste.length - 1; i > 0; i--) {
@@ -59,6 +58,7 @@ export default function Musique() {
   const echecs = useRef(0)
   const nbVideos = useRef(0)
 
+  // Liste des vidéos
   useEffect(() => {
     if (!CLE || !PLAYLIST_YOUTUBE) return
     let annule = false
@@ -170,6 +170,7 @@ export default function Musique() {
     nbVideos.current = videos.length
   })
 
+  // Précédent, comme sur Spotify : au-delà de 3 secondes, on revient d'abord au début du titre
   const precedent = () => {
     if (temps.position > 3) {
       lecteur.current?.seekTo(0, true)
@@ -198,7 +199,7 @@ export default function Musique() {
   }
 
   if (erreur) return <p className="musique-message">Impossible de charger la musique : {erreur}</p>
-  if (!playlist) return <p className="musique-message">Chargement...</p>
+  if (!playlist) return <p className="musique-message">Chargement…</p>
   if (!video) return <p className="musique-message">Aucune vidéo à lire dans cette playlist.</p>
 
   const duree = temps.duree || video.duree
@@ -212,7 +213,9 @@ export default function Musique() {
 
       <div className="musique">
         <section className="musique-lecteur">
-          <img className="musique-pochette" src={video.pochette} alt="" />
+          <div className="musique-pochette-cadre" style={{ '--pochette': `url(${video.pochette})` } as React.CSSProperties}>
+            <img className="musique-pochette" src={video.pochette} alt="" />
+          </div>
 
           <div className="musique-infos">
             <h1>{video.titre}</h1>
@@ -238,37 +241,39 @@ export default function Musique() {
             </div>
           </div>
 
-          <div className="musique-commandes">
-            <button
-              className={`musique-bouton musique-option${ordre ? ' musique-option-active' : ''}`}
-              onClick={basculerAleatoire}
-              aria-pressed={!!ordre}
-              title="Lecture aléatoire"
-              aria-label="Lecture aléatoire"
-            >
-              <IconeAleatoire />
-            </button>
-            <button className="musique-bouton" onClick={precedent} disabled={!pret} aria-label="Précédent"><IconePrecedent /></button>
-            <button className="musique-bouton musique-bouton-principal" onClick={basculer} disabled={!pret} aria-label={enLecture ? 'Pause' : 'Lecture'}>
-              {enLecture ? <IconePause /> : <IconeLecture />}
-            </button>
-            <button className="musique-bouton" onClick={suivant} disabled={!pret || aSuivre === null} aria-label="Suivant"><IconeSuivant /></button>
-            <button
-              className={`musique-bouton musique-option${boucle !== 'non' ? ' musique-option-active' : ''}`}
-              onClick={() => setBoucle(BOUCLE_SUIVANTE[boucle])}
-              title={boucle === 'non' ? 'Répéter' : boucle === 'liste' ? 'Répéter le titre' : 'Ne plus répéter'}
-              aria-label={boucle === 'non' ? 'Répétition désactivée' : boucle === 'liste' ? 'Répéter la liste' : 'Répéter le titre'}
-            >
-              {boucle === 'titre' ? <IconeBoucleTitre /> : <IconeBoucle />}
-            </button>
-          </div>
+          <div className="musique-reglages">
+            <div className="musique-commandes">
+              <button
+                className={`musique-bouton musique-option${ordre ? ' musique-option-active' : ''}`}
+                onClick={basculerAleatoire}
+                aria-pressed={!!ordre}
+                title="Lecture aléatoire"
+                aria-label="Lecture aléatoire"
+              >
+                <IconeAleatoire />
+              </button>
+              <button className="musique-bouton" onClick={precedent} disabled={!pret} aria-label="Précédent"><IconePrecedent /></button>
+              <button className="musique-bouton musique-bouton-principal" onClick={basculer} disabled={!pret} aria-label={enLecture ? 'Pause' : 'Lecture'}>
+                {enLecture ? <IconePause /> : <IconeLecture />}
+              </button>
+              <button className="musique-bouton" onClick={suivant} disabled={!pret || aSuivre === null} aria-label="Suivant"><IconeSuivant /></button>
+              <button
+                className={`musique-bouton musique-option${boucle !== 'non' ? ' musique-option-active' : ''}`}
+                onClick={() => setBoucle(BOUCLE_SUIVANTE[boucle])}
+                title={boucle === 'non' ? 'Répéter' : boucle === 'liste' ? 'Répéter le titre' : 'Ne plus répéter'}
+                aria-label={boucle === 'non' ? 'Répétition désactivée' : boucle === 'liste' ? 'Répéter la liste' : 'Répéter le titre'}
+              >
+                {boucle === 'titre' ? <IconeBoucleTitre /> : <IconeBoucle />}
+              </button>
+            </div>
 
-          <div className="musique-volume">
-            <button className="musique-bouton musique-option" onClick={basculerMuet} aria-label={volume > 0 ? 'Couper le son' : 'Remettre le son'}>
-              <IconeVolume niveau={volume} />
-            </button>
-            <Curseur className="musique-volume-curseur" valeur={volume} max={100} pas={5} label="Volume" texte={`${Math.round(volume)} %`} onChange={(v) => setVolume(Math.round(v))} />
-            <span className="musique-volume-valeur">{Math.round(volume)}</span>
+            <div className="musique-volume">
+              <button className="musique-bouton musique-option" onClick={basculerMuet} aria-label={volume > 0 ? 'Couper le son' : 'Remettre le son'}>
+                <IconeVolume niveau={volume} />
+              </button>
+              <Curseur className="musique-volume-curseur" valeur={volume} max={100} pas={5} label="Volume" texte={`${Math.round(volume)} %`} onChange={(v) => setVolume(Math.round(v))} />
+              <span className="musique-volume-valeur">{Math.round(volume)}</span>
+            </div>
           </div>
         </section>
 
@@ -329,6 +334,7 @@ export default function Musique() {
               ))}
             </ol>
           </div>
+
         </section>
       </div>
     </div>

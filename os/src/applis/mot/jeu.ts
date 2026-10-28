@@ -6,11 +6,13 @@ export type Couleur = 'bien' | 'present' | 'absent'
 export const LONGUEUR = 5
 export const ESSAIS = 6
 
+// Numéro du jour (même mot pour tout le monde à une date donnée), compté depuis le 1er janvier 2026
 const DEBUT = Date.UTC(2026, 0, 1)
 export function jourDuJour(date = new Date()) {
   return Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - DEBUT) / 86_400_000)
 }
 
+// Mélange fixe de la liste (toujours le même), pour que les mots ne sortent pas dans l'ordre alphabétique
 function melanger<T>(liste: T[], graine: number) {
   const copie = [...liste]
   let a = graine
@@ -34,6 +36,7 @@ export function motDuJour(langue: Langue, jour: number) {
   return liste[((jour % liste.length) + liste.length) % liste.length]
 }
 
+// Mots acceptés, chargés à la demande (≈ 50 et 100 ko)
 const dictionnaires: Partial<Record<Langue, Promise<Set<string>>>> = {}
 export function chargerDictionnaire(langue: Langue) {
   dictionnaires[langue] ??= (langue === 'fr' ? import('./mots-fr.json') : import('./mots-en.json')).then(
@@ -42,9 +45,12 @@ export function chargerDictionnaire(langue: Langue) {
   return dictionnaires[langue]
 }
 
+// « é » → « E » : les accents sont ignorés
 export const normaliser = (lettre: string) =>
   lettre.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase()
 
+// Couleur de chaque lettre, en gérant les lettres en double comme le jeu original :
+// d'abord les lettres bien placées, puis les présentes, dans la limite de leur nombre dans le mot
 export function evaluer(essai: string, solution: string): Couleur[] {
   const resultat: Couleur[] = Array(LONGUEUR).fill('absent')
   const restantes = new Map<string, number>()
@@ -62,10 +68,10 @@ export function evaluer(essai: string, solution: string): Couleur[] {
   return resultat
 }
 
-export type Partie = { jour: number; essais: string[] }
-export type Stats = { jouees: number; gagnees: number; serie: number; meilleure: number; dernierJourGagne: number; repartition: number[] }
+// ——— Sauvegarde (dans le navigateur du visiteur) ———
 
-const STATS_VIDES: Stats = { jouees: 0, gagnees: 0, serie: 0, meilleure: 0, dernierJourGagne: -2, repartition: Array(ESSAIS).fill(0) }
+export type Partie = { jour: number; essais: string[] }
+
 
 function lire<T>(cle: string, defaut: T): T {
   try {
@@ -79,7 +85,9 @@ function lire<T>(cle: string, defaut: T): T {
 function ecrire(cle: string, valeur: unknown) {
   try {
     localStorage.setItem(cle, JSON.stringify(valeur))
-  } catch {}
+  } catch {
+    // Stockage indisponible (navigation privée…) : la partie vaut pour cette visite seulement
+  }
 }
 
 export function lirePartie(langue: Langue, jour: number): Partie {
@@ -88,29 +96,3 @@ export function lirePartie(langue: Langue, jour: number): Partie {
 }
 
 export const ecrirePartie = (langue: Langue, partie: Partie) => ecrire(`mot-partie-${langue}`, partie)
-
-export const lireStats = (langue: Langue) => lire<Stats>(`mot-stats-${langue}`, STATS_VIDES)
-
-// Fin de partie : on met les statistiques à jour
-export function enregistrerFin(langue: Langue, jour: number, gagne: boolean, essais: number): Stats {
-  const s = lireStats(langue)
-  const nouvelles: Stats = {
-    ...s,
-    jouees: s.jouees + 1,
-    gagnees: s.gagnees + (gagne ? 1 : 0),
-    serie: gagne ? (s.dernierJourGagne === jour - 1 ? s.serie + 1 : 1) : 0,
-    dernierJourGagne: gagne ? jour : s.dernierJourGagne,
-    repartition: s.repartition.map((n, i) => (gagne && i === essais - 1 ? n + 1 : n)),
-  }
-  nouvelles.meilleure = Math.max(s.meilleure, nouvelles.serie)
-  ecrire(`mot-stats-${langue}`, nouvelles)
-  return nouvelles
-}
-
-// Résultat à partager, avec des carrés de couleur (sans dévoiler le mot)
-export function resultatAPartager(langue: Langue, jour: number, essais: string[], solution: string, gagne: boolean) {
-  const carres: Record<Couleur, string> = { bien: '🟩', present: '🟨', absent: '⬛' }
-  const titre = langue === 'fr' ? 'Mot du jour' : 'Daily word'
-  const lignes = essais.map((e) => evaluer(e, solution).map((c) => carres[c]).join(''))
-  return `${titre} n°${jour + 1} ${gagne ? essais.length : 'X'}/${ESSAIS}\n\n${lignes.join('\n')}`
-}

@@ -10,6 +10,7 @@ type Props = {
   actif: boolean
 }
 
+//
 export default function Ecran({ actif }: Props) {
   const { scene } = useModele()
   const invalidate = useThree((s) => s.invalidate)
@@ -153,9 +154,13 @@ export default function Ecran({ actif }: Props) {
   useEffect(() => {
     if (!actif) return
     const surTouche = (e: KeyboardEvent) => {
-      if (e.key !== ' ' || e.repeat) return
+      if (e.repeat) return
+      const ctrl = e.ctrlKey || e.metaKey
+      const raccourci =
+        e.key === ' ' || (ctrl && e.key.toLowerCase() === 'k') || (ctrl && e.shiftKey && e.key.startsWith('Arrow'))
+      if (!raccourci) return
       e.preventDefault()
-      iframe.current?.contentWindow?.postMessage({ type: 'touche', key: ' ' }, '*')
+      iframe.current?.contentWindow?.postMessage({ type: 'touche', key: e.key, ctrl, maj: e.shiftKey }, '*')
     }
     window.addEventListener('keydown', surTouche)
     return () => window.removeEventListener('keydown', surTouche)

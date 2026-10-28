@@ -34,5 +34,17 @@ export function useFenetres(depart: AppliId[]) {
     }, DUREE_FERMETURE)
   }, [])
 
-  return { fenetres, active, ouvrir, fermer, activer: setActive }
+  // Échange la place de deux fenêtres dans la mosaïque
+  const echanger = useCallback((a: number, b: number) => {
+    setFenetres((f) => {
+      const i = f.findIndex((x) => x.id === a)
+      const j = f.findIndex((x) => x.id === b)
+      if (i < 0 || j < 0 || i === j) return f
+      const suite = [...f]
+      ;[suite[i], suite[j]] = [suite[j], suite[i]]
+      return suite
+    })
+  }, [])
+
+  return { fenetres, active, ouvrir, fermer, activer: setActive, echanger }
 }

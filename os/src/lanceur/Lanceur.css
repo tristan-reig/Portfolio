@@ -1,0 +1,229 @@
+.lanceur {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font: 500 13px/1 var(--police);
+}
+
+.lanceur-actif {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 320px;
+  font-weight: 700;
+}
+
+.lanceur-pastille {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.lanceur-actif-titre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lanceur-champ {
+  width: 290px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--texte-doux);
+  font: inherit;
+  font-size: 12px;
+  cursor: text;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.lanceur-champ:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.lanceur-champ-compact {
+  width: auto;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.lanceur-invite {
+  flex: 1;
+  text-align: left;
+}
+
+.lanceur-champ kbd,
+.lanceur-touches kbd {
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: var(--survol);
+  color: var(--texte);
+  font: 700 10px/1 var(--police);
+}
+
+.lanceur-champ-ouvert {
+  width: 360px;
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.25);
+  animation: lanceur-champ 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes lanceur-champ {
+  from {
+    width: 290px;
+  }
+}
+
+.lanceur-champ-ouvert input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+}
+
+.lanceur-champ-ouvert input::placeholder {
+  color: var(--texte-doux);
+}
+
+.lanceur-champ-ouvert kbd {
+  color: var(--texte-doux);
+}
+
+.lanceur-panneau {
+  position: absolute;
+  top: calc(100% + 18px);
+  left: 50%;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 14px 16px 12px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--menu), var(--menu)) padding-box,
+    linear-gradient(45deg, var(--bordure-active-1), var(--bordure-active-2)) border-box;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  color: var(--texte);
+  transform: translateX(-50%);
+  transform-origin: top center;
+  animation: lanceur-panneau 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes lanceur-panneau {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px) scale(0.98);
+  }
+}
+
+.lanceur-grille {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  max-height: 420px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.lanceur-appli {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--texte);
+  font: 700 12px/1.2 var(--police);
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+
+.lanceur-appli-choisie {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-bottom-color: color-mix(in srgb, var(--couleur) 70%, transparent);
+  background: var(--survol);
+}
+
+.lanceur-icone {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--couleur);
+  color: #1e1e2e;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.lanceur-appli-choisie .lanceur-icone {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--couleur) 35%, transparent);
+}
+
+.lanceur-titre {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lanceur-vide {
+  margin: 0;
+  padding: 26px 0 20px;
+  color: var(--texte-doux);
+  text-align: center;
+}
+
+.lanceur-pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--bordure);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.lanceur-info {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--texte-doux);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lanceur-info strong {
+  color: var(--texte);
+}
+
+.lanceur-touches {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.lanceur-touches kbd {
+  color: var(--texte-doux);
+}

@@ -1,3 +1,4 @@
+/* Wordle : grille de 6 × 5 au centre, clavier en dessous ; tout se règle sur la taille de la fenêtre */
 .mot-cadre {
   height: 100%;
   container-type: size;
@@ -24,13 +25,14 @@
   user-select: none;
 }
 
+/* ——— En-tête ——— */
 .mot-entete {
   align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-right: 28px;
+  padding-right: 28px; /* place pour le × de la fenêtre */
 }
 
 .mot-entete h1 {
@@ -45,12 +47,7 @@
   font-weight: 500;
 }
 
-.mot-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
+/* Choix de la langue */
 .mot-langues {
   display: flex;
   padding: 2px;
@@ -74,25 +71,8 @@
   color: var(--sur-couleur);
 }
 
-.mot-icone {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: var(--texte-doux);
-  cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
-}
-
-.mot-icone:hover {
-  background: var(--survol);
-  color: var(--texte);
-}
-
+/* ——— Grille ——— */
+/* Les marges automatiques centrent ensemble la grille et le clavier sous l'en-tête */
 .mot-grille {
   margin-top: auto;
   display: grid;
@@ -153,6 +133,7 @@
   }
 }
 
+/* La case se retourne et dévoile sa couleur à mi-chemin (300 ms par case, comme dans MotDuJour.tsx) */
 .mot-retourne {
   animation: mot-retourne 0.5s ease-in-out both;
 }
@@ -190,6 +171,7 @@
   }
 }
 
+/* Victoire : les cases sautent l'une après l'autre, une fois retournées */
 .mot-victoire .mot-case {
   animation: mot-retourne 0.5s ease-in-out both, mot-saut 0.5s ease-out both;
 }
@@ -209,6 +191,7 @@
   }
 }
 
+/* ——— Clavier ——— */
 .mot-clavier {
   margin-bottom: auto;
   width: min(100%, 500px);
@@ -249,6 +232,7 @@
   font-size: 11px;
 }
 
+/* ——— Messages ——— */
 .mot-message {
   position: absolute;
   top: 54px;
@@ -272,120 +256,46 @@
   }
 }
 
-.mot-voile {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-  background: rgba(17, 17, 27, 0.6);
-  animation: mot-fondu 0.2s ease-out;
+/* ——— Fin de partie : résultat et compte à rebours, à la place du clavier (même hauteur) ——— */
+.mot-fin {
+  margin-bottom: auto;
+  height: calc(var(--touche) * 3 + 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: mot-apparition-fin 0.3s ease-out;
 }
 
-@keyframes mot-fondu {
+@keyframes mot-apparition-fin {
   from {
     opacity: 0;
+    transform: translateY(6px);
   }
 }
 
-.mot-panneau {
-  position: relative;
-  width: min(100%, 360px);
-  max-height: 100%;
-  overflow: auto;
-  box-sizing: border-box;
-  padding: 18px 22px 20px;
-  border: 1px solid var(--bordure);
-  border-radius: 12px;
-  background: var(--menu);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-}
-
-.mot-panneau h2,
-.mot-panneau h3 {
-  margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.mot-panneau h3 {
-  margin-top: 18px;
-}
-
-.mot-fermer {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  font-size: 18px;
-}
-
-.mot-chiffres {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  text-align: center;
-}
-
-.mot-chiffre strong {
-  display: block;
-  font-size: 24px;
-  line-height: 1.2;
-}
-
-.mot-chiffre span {
+.mot-fin p {
+  margin: 0;
   color: var(--texte-doux);
-  font-size: 10px;
 }
 
-.mot-repartition {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.mot-barre-ligne {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-}
-
-.mot-barre-ligne > span {
-  width: 10px;
-}
-
-.mot-barre {
-  min-width: max-content;
-  padding: 1px 7px;
-  box-sizing: border-box;
-  border-radius: 4px;
-  background: var(--absent);
+.mot-fin strong,
+.mot-fin .mot-fin-gagne {
+  color: var(--bien);
   font-weight: 700;
-  text-align: right;
 }
 
-.mot-barre-actuelle {
-  background: var(--bien);
-  color: var(--sur-couleur);
-}
-
-.mot-fin {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--bordure);
+.mot-fin p strong {
+  color: var(--texte);
+  letter-spacing: 0.1em;
 }
 
 .mot-compte {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .mot-compte span {
@@ -394,21 +304,7 @@
 }
 
 .mot-compte strong {
-  font-size: 20px;
+  color: var(--texte);
+  font-size: 26px;
   font-variant-numeric: tabular-nums;
-}
-
-.mot-copier {
-  padding: 9px 14px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--bien);
-  color: var(--sur-couleur);
-  font: 700 12px/1.2 var(--police);
-  cursor: pointer;
-  transition: filter 0.15s;
-}
-
-.mot-copier:hover {
-  filter: brightness(1.08);
 }
