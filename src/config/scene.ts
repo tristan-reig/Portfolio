@@ -42,7 +42,6 @@ export const TRAJET = {
 export const ECRAN = {
   objet: 'Ecran_Dalle',
   os: import.meta.env.DEV ? 'http://localhost:5174/os/' : '/os/',
-  largeurPx: 1280,
   margeZoom: 1.12,
 }
 

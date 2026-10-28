@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Curseur from './Curseur'
-import { signalerLecture } from './etat'
+import { enregistrerBasculer, signalerLecture } from './etat'
 import Paroles from './Paroles'
 import Separateur from './Separateur'
 import { chargerLecteur, chargerPlaylist, type LecteurYT, type Playlist } from './youtube'
@@ -182,6 +182,11 @@ export default function Musique() {
     if (enLecture) lecteur.current.pauseVideo()
     else lecteur.current.playVideo()
   }
+
+  useEffect(() => {
+    enregistrerBasculer(basculer)
+    return () => enregistrerBasculer(null)
+  })
 
   const basculerAleatoire = () => setOrdre(ordre ? null : melanger(videos.length, index))
 

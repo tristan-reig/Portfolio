@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-// État de la musique partagé avec la barre
+// État de la musique partagé avec la barre (l'indicateur « en lecture »)
 let enLecture = false
 const abonnes = new Set<() => void>()
 
@@ -18,4 +18,18 @@ export function useEnLecture() {
     },
     () => enLecture,
   )
+}
+
+// Lecture/pause depuis l'extérieur de la fenêtre (touche Espace) : le lecteur s'enregistre ici
+let basculer: (() => void) | null = null
+
+export function enregistrerBasculer(fonction: (() => void) | null) {
+  basculer = fonction
+}
+
+// Renvoie false s'il n'y a pas de lecteur ouvert
+export function basculerLecture() {
+  if (!basculer) return false
+  basculer()
+  return true
 }

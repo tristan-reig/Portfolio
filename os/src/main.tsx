@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import './liaison'
 import './zoom'
+import './raccourcis'
 import App from './App'
 
 createRoot(document.getElementById('root')!).render(

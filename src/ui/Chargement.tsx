@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
 import { useProgress } from '@react-three/drei'
 import { useProgressionModele } from '../three/modele'
+import { useOsPret } from '../three/osPret'
 
-// L'écran de chargement est écrit directement dans index.html, pour s'afficher avant le JavaScript.
 export default function Chargement() {
   const { part, termine } = useProgressionModele()
   const { progress, active } = useProgress()
-  const pret = termine && !active && progress === 100
+  const sceneChargee = termine && !active && progress === 100
+  const osPret = useOsPret(sceneChargee)
+  const pret = sceneChargee && osPret
 
   useEffect(() => {
     const zone = document.getElementById('chargement-pourcent')
