@@ -7,7 +7,6 @@ import { useVueAtteinte } from './vueAtteinte'
 import { signalerOsPret } from './osPret'
 
 type Props = {
-  // L'OS reçoit la souris (vue zoom) ; sinon les clics vont à la scène
   actif: boolean
 }
 
@@ -17,11 +16,9 @@ export default function Ecran({ actif }: Props) {
   const gl = useThree((s) => s.gl)
   const iframe = useRef<HTMLIFrameElement | null>(null)
   const net = useVueAtteinte() === 'zoom'
-  // Dernier style appliqué à l'iframe
   const dernier = useRef('')
   const osCharge = useRef(false)
 
-  // Position et taille de la dalle, un plan tourné vers -Z
   const dalle = useMemo(() => {
     const objet = scene.getObjectByName(ECRAN.objet)
     if (!objet) return null
@@ -32,7 +29,6 @@ export default function Ecran({ actif }: Props) {
   }, [scene])
 
 
-  // La dalle devient un trou dans le canvas, à travers lequel on voit l'iframe
   useEffect(() => {
     if (!dalle) {
       console.warn(`Objet "${ECRAN.objet}" introuvable dans ${MODELE}`)
@@ -57,8 +53,6 @@ export default function Ecran({ actif }: Props) {
     }
   }, [dalle, invalidate])
 
-  // Couche HTML sous le canvas, créée à la main (le rendu React de cette partie est celui de three.js) :
-  // le canvas passe devant et laisse passer la souris, la dalle y découpe un trou
   const vue = useRef<HTMLDivElement | null>(null)
   const repere = useRef<HTMLDivElement | null>(null)
   useEffect(() => {
@@ -67,19 +61,15 @@ export default function Ecran({ actif }: Props) {
     if (!parent || !canvas) return
 
     const v = document.createElement('div')
-    // Fond noir : c'est ce qu'on voit à travers la dalle tant que l'OS n'est pas chargé (écran éteint)
     v.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;background:#000'
-    // Repère de la caméra : la transformation 3D s'applique ici, l'iframe s'y place
     const r = document.createElement('div')
     r.style.cssText = 'position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none'
     const f = document.createElement('iframe')
     f.src = ECRAN.os
     f.title = 'OS'
-    // L'OS transmet ces permissions au lecteur YouTube qu'il contient : sans « autoplay », la musique ne démarre pas
     f.allow = 'autoplay; encrypted-media; picture-in-picture'
     f.style.cssText = 'position:absolute;border:0;background:#000;pointer-events:none;visibility:hidden'
     f.onload = () => {
-      // L'OS est prêt : il s'affiche, et l'écran de chargement du site peut partir
       osCharge.current = true
       dernier.current = ''
       signalerOsPret()
@@ -106,10 +96,8 @@ export default function Ecran({ actif }: Props) {
     }
   }, [gl, invalidate])
 
-  // On change de mode : une image de plus pour replacer l'iframe
   useEffect(() => invalidate(), [net, invalidate])
 
-  // Placement de l'iframe, à chaque image
   const matrice = useMemo(() => new Matrix4(), [])
   const coin = useMemo(() => new Vector3(), [])
   useFrame(({ camera, size }) => {
@@ -119,8 +107,6 @@ export default function Ecran({ actif }: Props) {
     if (!el || !v || !r || !dalle) return
     camera.updateMatrixWorld()
 
-    // Taille de l'iframe : celle de la dalle à l'écran en vue zoom (même calcul que cadrageZoom dans CameraRig).
-    // Elle ne change pas d'un mode à l'autre : l'OS n'a pas à se redimensionner, donc pas de scintillement.
     const aspect = size.width / size.height
     const hauteurVisible = Math.max(dalle.hauteur, dalle.largeur / aspect) * ECRAN.margeZoom
     const largeur = Math.round((dalle.largeur / (hauteurVisible * aspect)) * size.width)
@@ -128,7 +114,6 @@ export default function Ecran({ actif }: Props) {
 
     let style: string
     if (net) {
-      // À plat : posée sur le coin haut gauche de la dalle à l'écran, arrondi au pixel
       const { min, max } = dalle.boite
       let gauche = Infinity, haut = Infinity
       for (const [x, y] of [[min.x, min.y], [max.x, min.y], [min.x, max.y], [max.x, max.y]]) {
@@ -139,38 +124,32 @@ export default function Ecran({ actif }: Props) {
         haut = Math.min(haut, py)
       }
       const l = Math.round(gauche), t = Math.round(haut)
-      // Plus aucune 3D au-dessus de l'iframe : le navigateur dessine la page directement, sans l'étirer
       v.style.perspective = ''
       r.style.transform = ''
       r.style.transformStyle = 'flat'
       style = `left:${l}px;top:${t}px;width:${largeur}px;height:${hauteur}px;transform:none`
     } else {
-      // En 3D : même calcul que le CSS3DRenderer de three.js
       const focale = camera.projectionMatrix.elements[5] * (size.height / 2)
       v.style.perspective = `${focale}px`
       r.style.transformStyle = 'preserve-3d'
       r.style.transform =
         `translateZ(${focale}px)${matriceCamera(camera.matrixWorldInverse)}translate(${size.width / 2}px,${size.height / 2}px)`
-      // Dalle : son centre, retournée pour faire face à -Z, à l'échelle d'un pixel CSS
       const echelle = dalle.largeur / largeur
       matrice.makeRotationY(Math.PI).scale(new Vector3(echelle, echelle, echelle)).setPosition(dalle.centre.x, dalle.centre.y, dalle.avant)
       style = `left:0;top:0;width:${largeur}px;height:${hauteur}px;transform:translate(-50%,-50%)${matriceObjet(matrice)}`
     }
-    // On ne touche au style que s'il change : redimensionner l'iframe fait recalculer la page de l'OS
     if (style !== dernier.current) {
       dernier.current = style
       el.style.cssText = `position:absolute;border:0;display:block;background:#000;pointer-events:${actif ? 'auto' : 'none'};visibility:${osCharge.current ? 'visible' : 'hidden'};${style}`
     }
   })
 
-  // La souris passe à l'OS seulement en vue zoom
   useEffect(() => {
     if (iframe.current) iframe.current.style.pointerEvents = actif ? 'auto' : 'none'
     dernier.current = ''
     invalidate()
   }, [actif, invalidate])
 
-  // En vue zoom, Espace met la musique en pause ou la relance, même si la souris n'a pas encore cliqué dans l'OS
   useEffect(() => {
     if (!actif) return
     const surTouche = (e: KeyboardEvent) => {
@@ -182,7 +161,6 @@ export default function Ecran({ actif }: Props) {
     return () => window.removeEventListener('keydown', surTouche)
   }, [actif])
 
-  // Les touches transmises par l'OS (Échap…) sont rejouées sur la page, comme si on les avait tapées ici
   useEffect(() => {
     const surMessage = (e: MessageEvent) => {
       if (e.source !== iframe.current?.contentWindow || e.data?.type !== 'touche') return
@@ -195,7 +173,6 @@ export default function Ecran({ actif }: Props) {
   return null
 }
 
-// Matrices au format CSS (axe Y vers le bas), reprises du CSS3DRenderer de three.js
 const arrondi = (v: number) => (Math.abs(v) < 1e-10 ? 0 : v)
 
 function matriceCamera(m: Matrix4) {
