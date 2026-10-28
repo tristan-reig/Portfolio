@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import Musique from './musique/Musique'
+import MotDuJour from './mot/MotDuJour'
 
 export type Appli = {
   titre: string

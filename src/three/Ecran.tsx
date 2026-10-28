@@ -67,7 +67,7 @@ export default function Ecran({ actif }: Props) {
     const f = document.createElement('iframe')
     f.src = ECRAN.os
     f.title = 'OS'
-    f.allow = 'autoplay; encrypted-media; picture-in-picture'
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; clipboard-write'
     f.style.cssText = 'position:absolute;border:0;background:#000;pointer-events:none;visibility:hidden'
     f.onload = () => {
       osCharge.current = true
