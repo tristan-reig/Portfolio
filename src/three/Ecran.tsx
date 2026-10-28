@@ -77,6 +77,7 @@ export default function Ecran({ actif }: Props) {
         ref={iframe}
         src={ECRAN.os}
         title="OS"
+        allow="autoplay; encrypted-media; picture-in-picture"
         onLoad={() => invalidate()}
         style={{ width: largeurPx, height: hauteurPx, border: 0, display: 'block', background: '#000' }}
       />
