@@ -6,7 +6,7 @@ import { chargerLecteur, chargerPlaylist, type LecteurYT, type Playlist } from '
 import './Musique.css'
 
 // Identifiant de ta playlist YouTube : la partie après « list= » dans son lien
-const PLAYLIST_YOUTUBE = 'PLJkW-ZJ0qwzs'
+const PLAYLIST_YOUTUBE = 'OLAK5uy_msYZvB4nIlIHiuHMxqrI71oIKbfHqoti4'
 // Clé de la YouTube Data API, à mettre dans os/.env.local (voir README)
 const CLE = import.meta.env.VITE_YOUTUBE_CLE as string | undefined
 
@@ -44,6 +44,7 @@ export default function Musique() {
   const volumeAvantMuet = useRef(80)
   const [boucle, setBoucle] = useState<Boucle>('liste')
   const [ordre, setOrdre] = useState<number[] | null>(null) // null : lecture dans l'ordre
+  const [paroles, setParoles] = useState(true)
 
   const conteneur = useRef<HTMLDivElement>(null)
   const lecteur = useRef<LecteurYT | null>(null)
@@ -269,28 +270,39 @@ export default function Musique() {
             </button>
             <Curseur className="musique-volume-curseur" valeur={volume} max={100} pas={5} label="Volume" texte={`${Math.round(volume)} %`} onChange={(v) => setVolume(Math.round(v))} />
             <span className="musique-volume-valeur">{Math.round(volume)}</span>
+            <button
+              className={`musique-bouton musique-option${paroles ? ' musique-option-active' : ''}`}
+              onClick={() => setParoles(!paroles)}
+              aria-pressed={paroles}
+              title={paroles ? 'Masquer les paroles' : 'Afficher les paroles'}
+              aria-label="Paroles"
+            >
+              <IconeParoles />
+            </button>
           </div>
         </section>
 
         <section className="musique-cote">
-          <div className="musique-bloc musique-bloc-paroles">
-            <header className="musique-bloc-entete">
-              <h2>Paroles</h2>
-              <span className="musique-doux">via LRCLIB</span>
-            </header>
-            <Paroles
-              id={video.id}
-              titre={video.titre}
-              artiste={video.chaine}
-              duree={video.duree}
-              position={temps.position}
-              onChercher={(position) => {
-                lecteur.current?.seekTo(position, true)
-                lecteur.current?.playVideo()
-                setTemps({ position, duree })
-              }}
-            />
-          </div>
+          {paroles && (
+            <div className="musique-bloc musique-bloc-paroles">
+              <header className="musique-bloc-entete">
+                <h2>Paroles</h2>
+                <span className="musique-doux">via LRCLIB</span>
+              </header>
+              <Paroles
+                id={video.id}
+                titre={video.titre}
+                artiste={video.chaine}
+                duree={video.duree}
+                position={temps.position}
+                onChercher={(position) => {
+                  lecteur.current?.seekTo(position, true)
+                  lecteur.current?.playVideo()
+                  setTemps({ position, duree })
+                }}
+              />
+            </div>
+          )}
 
           <div className="musique-bloc musique-liste">
             <header className="musique-bloc-entete">
@@ -382,6 +394,16 @@ function IconeBoucleTitre() {
       <path d="m7 22-4-4 4-4" />
       <path d="M21 13v1a4 4 0 0 1-4 4H3" />
       <path d="M11 10h1v4" strokeWidth={1.8} />
+    </svg>
+  )
+}
+
+// Bulle de texte : afficher ou masquer les paroles
+function IconeParoles() {
+  return (
+    <svg {...trait}>
+      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z" />
+      <path d="M9 10h6M9 14h4" />
     </svg>
   )
 }

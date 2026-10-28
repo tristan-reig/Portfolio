@@ -10,7 +10,10 @@ type Props = {
   onChercher: (secondes: number) => void
 }
 
-// Paroles du titre en cours : la ligne chantée est mise en avant et reste au centre ;
+// Place de la ligne chantée dans le bloc : 0 en haut, 1 en bas
+const HAUTEUR_LIGNE_ACTIVE = 0.3
+
+// Paroles du titre en cours : la ligne chantée est mise en avant et reste au premier tiers du bloc ;
 // un clic sur une ligne y amène la lecture
 export default function Paroles({ id, titre, artiste, duree, position, onChercher }: Props) {
   const [resultat, setResultat] = useState<{ id: string; paroles: ParolesTrouvees | null; erreur?: string } | null>(null)
@@ -38,12 +41,12 @@ export default function Paroles({ id, titre, artiste, duree, position, onCherche
     const el = zone.current?.querySelector<HTMLElement>('.paroles-active')
     const conteneur = zone.current
     if (!el || !conteneur) return
-    conteneur.scrollTo({ top: el.offsetTop - conteneur.clientHeight / 2 + el.clientHeight / 2, behavior: 'smooth' })
+    conteneur.scrollTo({ top: el.offsetTop - conteneur.clientHeight * HAUTEUR_LIGNE_ACTIVE, behavior: 'smooth' })
   }, [active, id])
 
-  if (resultat?.id === id && resultat.erreur) return <p className="paroles-message">Paroles indisponibles : {resultat.erreur}</p>
+  if (resultat?.id === id && resultat.erreur) return <p className="paroles-message">Paroles non disponibles pour ce titre.</p>
   if (paroles === undefined) return <p className="paroles-message">Recherche des paroles…</p>
-  if (!paroles || paroles.type === 'introuvables') return <p className="paroles-message">Pas de paroles trouvées pour ce titre.</p>
+  if (!paroles || paroles.type === 'introuvables') return <p className="paroles-message">Paroles non disponibles pour ce titre.</p>
   if (paroles.type === 'instrumental') return <p className="paroles-message">♪ Morceau instrumental</p>
 
   return (
