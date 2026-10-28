@@ -1,4 +1,3 @@
-/* Lecteur de musique : pochette et commandes à gauche ; visualiseur et file d'attente à droite */
 .musique-cadre {
   position: relative;
   height: 100%;
@@ -6,7 +5,6 @@
   container-type: size;
 }
 
-/* Ambiance : la pochette très floue en fond, qui change avec le titre */
 .musique-ambiance {
   position: absolute;
   inset: -80px;
@@ -17,7 +15,6 @@
   pointer-events: none;
 }
 
-/* Le lecteur YouTube sort de l'écran mais garde sa taille, et continue de jouer */
 .musique-video-cachee {
   position: absolute;
   left: -10000px;
@@ -47,7 +44,6 @@
   color: var(--texte-doux);
 }
 
-/* ——— Colonne de gauche ——— */
 .musique-lecteur {
   width: 400px;
   flex-shrink: 0;
@@ -57,7 +53,6 @@
   gap: 18px;
 }
 
-/* Pochette : aussi grande que la hauteur le permet */
 .musique-pochette {
   width: min(100%, 52cqh);
   aspect-ratio: 1;
@@ -90,7 +85,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Commandes : aléatoire, précédent, lecture, suivant, répétition */
 .musique-commandes {
   display: flex;
   justify-content: space-between;
@@ -132,7 +126,6 @@
   filter: brightness(1.1);
 }
 
-/* Aléatoire et répétition : discrets, en couleur d'accent avec un point quand ils sont actifs */
 .musique-option {
   position: relative;
   color: var(--texte-doux);
@@ -154,7 +147,6 @@
   background: currentColor;
 }
 
-/* Volume */
 .musique-volume {
   display: flex;
   align-items: center;
@@ -173,7 +165,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ——— Curseurs (progression et volume) ——— */
 .curseur {
   position: relative;
   height: 16px;
@@ -199,7 +190,6 @@
   background: linear-gradient(90deg, var(--bordure-active-1), var(--accent));
 }
 
-/* La poignée n'apparaît qu'au survol, au glissement ou au clavier */
 .curseur-poignee {
   position: absolute;
   top: 50%;
@@ -224,13 +214,40 @@
   transform: translate(-50%, -50%) scale(1);
 }
 
-/* ——— Colonne de droite ——— */
 .musique-cote {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+}
+
+.musique-bloc-replie .musique-bloc-entete {
+  margin-bottom: 0;
+}
+
+.separateur {
+  flex-shrink: 0;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  cursor: row-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.separateur span {
+  width: 42px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bordure);
+  transition: background-color 0.15s, width 0.15s;
+}
+
+.separateur:hover span,
+.separateur:active span,
+.separateur:focus-visible span {
+  width: 64px;
+  background: var(--accent);
 }
 
 .musique-bloc {
@@ -249,7 +266,7 @@
 }
 
 .musique-bloc:first-child .musique-bloc-entete {
-  padding-right: 22px; /* place pour le bouton de fermeture de la fenêtre */
+  padding-right: 22px;
 }
 
 .musique-bloc-entete h2 {
@@ -271,32 +288,29 @@
   font-size: 11px;
 }
 
-/* Paroles : la ligne chantée en grand et en couleur, les autres estompées */
 .musique-bloc-paroles {
-  flex: 0.55;
+  flex: 0 1 auto;
   min-height: 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
 }
 
 .paroles {
-  position: relative; /* repère pour centrer la ligne en cours (offsetTop) */
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: none;
-  /* Les lignes s'effacent en haut et en bas du bloc */
   mask-image: linear-gradient(transparent, #000 10%, #000 80%, transparent);
 }
 
-/* Petite marge en haut : la première ligne commence juste sous le fondu */
 .paroles::before {
   content: '';
   display: block;
   height: 10%;
 }
 
-/* Marge vide en bas, pour que les dernières lignes puissent aussi remonter à leur place */
 .paroles::after {
   content: '';
   display: block;
@@ -334,7 +348,6 @@
   transform: scale(1.04);
 }
 
-/* Paroles non synchronisées : un simple texte à faire défiler */
 .paroles-simple {
   font-size: 15px;
   opacity: 0.85;
@@ -347,10 +360,9 @@
   text-align: center;
 }
 
-/* File d'attente */
 .musique-liste {
   flex: 1;
-  min-height: 0;
+  min-height: 190px;
   display: flex;
   flex-direction: column;
 }
@@ -424,18 +436,6 @@
   white-space: nowrap;
 }
 
-.musique-source {
-  align-self: flex-start;
-  color: var(--texte-doux);
-  font-size: 11px;
-  text-decoration: none;
-}
-
-.musique-source:hover {
-  color: var(--accent);
-}
-
-/* Petit égaliseur à la place du numéro du titre en cours */
 .musique-egaliseur {
   display: inline-flex;
   align-items: flex-end;
@@ -466,7 +466,6 @@
   }
 }
 
-/* Fenêtre étroite (mosaïque à plusieurs fenêtres) : tout en colonne, sans les paroles */
 @container (max-width: 860px) {
   .musique {
     flex-direction: column;
@@ -483,7 +482,8 @@
     width: min(100%, 260px);
   }
 
-  .musique-bloc:first-child {
+  .musique-bloc:first-child,
+  .separateur {
     display: none;
   }
 

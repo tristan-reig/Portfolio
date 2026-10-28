@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
 
-// État de la musique partagé avec la barre (l'indicateur « en lecture »)
+// État de la musique partagé avec la barre
 let enLecture = false
 const abonnes = new Set<() => void>()
 

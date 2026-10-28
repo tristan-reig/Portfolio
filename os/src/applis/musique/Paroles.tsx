@@ -6,15 +6,13 @@ type Props = {
   titre: string
   artiste: string
   duree: number
-  position: number // secondes
+  position: number
   onChercher: (secondes: number) => void
 }
 
-// Place de la ligne chantée dans le bloc : 0 en haut, 1 en bas
 const HAUTEUR_LIGNE_ACTIVE = 0.3
 
-// Paroles du titre en cours : la ligne chantée est mise en avant et reste au premier tiers du bloc ;
-// un clic sur une ligne y amène la lecture
+// Paroles du titre en cours
 export default function Paroles({ id, titre, artiste, duree, position, onChercher }: Props) {
   const [resultat, setResultat] = useState<{ id: string; paroles: ParolesTrouvees | null; erreur?: string } | null>(null)
   const zone = useRef<HTMLDivElement>(null)
@@ -29,10 +27,8 @@ export default function Paroles({ id, titre, artiste, duree, position, onCherche
     }
   }, [id, titre, artiste, duree])
 
-  // Les paroles affichées sont-elles bien celles du titre en cours ?
   const paroles = resultat?.id === id ? resultat.paroles : undefined
 
-  // Ligne en cours : la dernière dont le temps est passé (un léger avance pour suivre la voix)
   const lignes = paroles?.type === 'synchronisees' ? paroles.lignes : []
   let active = -1
   for (let i = 0; i < lignes.length && lignes[i].temps <= position + 0.3; i++) active = i

@@ -2,15 +2,22 @@ import { useEffect, useRef, useState } from 'react'
 import Curseur from './Curseur'
 import { signalerLecture } from './etat'
 import Paroles from './Paroles'
+import Separateur from './Separateur'
 import { chargerLecteur, chargerPlaylist, type LecteurYT, type Playlist } from './youtube'
 import './Musique.css'
 
-// Identifiant de ta playlist YouTube : la partie après « list= » dans son lien
+// Identifiant de la playlist YouTube
 const PLAYLIST_YOUTUBE = 'OLAK5uy_msYZvB4nIlIHiuHMxqrI71oIKbfHqoti4'
-// Clé de la YouTube Data API, à mettre dans os/.env.local (voir README)
 const CLE = import.meta.env.VITE_YOUTUBE_CLE as string | undefined
 
-// Répétition, comme sur Spotify : aucune, toute la liste, ou le titre en cours
+// Panneau des paroles
+const PAROLES = {
+  hauteur: 210,
+  replie: 44,
+  seuil: 110,
+  fileMin: 190,
+}
+
 type Boucle = 'non' | 'liste' | 'titre'
 const BOUCLE_SUIVANTE: Record<Boucle, Boucle> = { non: 'liste', liste: 'titre', titre: 'non' }
 
@@ -19,7 +26,7 @@ const formatTemps = (secondes: number) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
-// Ordre aléatoire de la liste, en gardant le titre en cours en premier
+// Ordre aléatoire de la liste
 function melanger(n: number, premier: number) {
   const reste = Array.from({ length: n }, (_, i) => i).filter((i) => i !== premier)
   for (let i = reste.length - 1; i > 0; i--) {
@@ -29,8 +36,6 @@ function melanger(n: number, premier: number) {
   return [premier, ...reste]
 }
 
-// Lecteur de musique : pochette, commandes et liste aux couleurs de l'OS.
-// Le son vient du lecteur YouTube, gardé hors de l'écran.
 export default function Musique() {
   const [playlist, setPlaylist] = useState<Playlist | null>(null)
   const [erreur, setErreur] = useState<string | null>(
@@ -43,18 +48,17 @@ export default function Musique() {
   const [volume, setVolume] = useState(80)
   const volumeAvantMuet = useRef(80)
   const [boucle, setBoucle] = useState<Boucle>('liste')
-  const [ordre, setOrdre] = useState<number[] | null>(null) // null : lecture dans l'ordre
-  const [paroles, setParoles] = useState(true)
+  const [ordre, setOrdre] = useState<number[] | null>(null)
+  const [hauteurParoles, setHauteurParoles] = useState(PAROLES.hauteur)
+  const cote = useRef<HTMLElement>(null)
 
   const conteneur = useRef<HTMLDivElement>(null)
   const lecteur = useRef<LecteurYT | null>(null)
   const finRef = useRef<() => void>(() => {})
   const suivantRef = useRef<() => void>(() => {})
-  // Vidéos illisibles d'affilée (intégration refusée, vidéo supprimée…), pour ne pas boucler à l'infini
   const echecs = useRef(0)
   const nbVideos = useRef(0)
 
-  // Liste des vidéos
   useEffect(() => {
     if (!CLE || !PLAYLIST_YOUTUBE) return
     let annule = false
@@ -70,12 +74,10 @@ export default function Musique() {
   const video = videos[index]
   const premiere = videos[0]?.id
 
-  // Lecteur YouTube, créé une fois la liste chargée
   useEffect(() => {
     const parent = conteneur.current
     if (!parent || !premiere) return
     let annule = false
-    // L'API remplace l'élément qu'on lui donne par son iframe : on lui en crée un exprès
     const element = document.createElement('div')
     parent.appendChild(element)
 
@@ -86,24 +88,22 @@ export default function Musique() {
         height: '100%',
         videoId: premiere,
         playerVars: {
-          controls: 0, // nos commandes remplacent celles de YouTube
-          fs: 0, // pas de bouton plein écran
-          disablekb: 1, // pas de raccourcis clavier YouTube
-          iv_load_policy: 3, // pas d'annotations
+          controls: 0,
+          fs: 0,
+          disablekb: 1,
+          iv_load_policy: 3,
           playsinline: 1,
-          rel: 0, // suggestions de fin limitées à la même chaîne
+          rel: 0,
         },
         events: {
           onReady: () => setPret(true),
           onStateChange: ({ data }) => {
-            // Pendant le chargement (BUFFERING), on reste « en lecture » pour éviter que l'icône et l'égaliseur clignotent
             const joue = data === YT.PlayerState.PLAYING || data === YT.PlayerState.BUFFERING
             setEnLecture(joue)
             signalerLecture(joue)
             if (data === YT.PlayerState.PLAYING) echecs.current = 0
             if (data === YT.PlayerState.ENDED) finRef.current()
           },
-          // 101 et 150 : intégration refusée par l'auteur ; 100 : vidéo privée ou supprimée
           onError: () => {
             echecs.current += 1
             if (echecs.current < nbVideos.current) suivantRef.current()
@@ -122,7 +122,6 @@ export default function Musique() {
     }
   }, [premiere])
 
-  // Position de lecture : l'API ne prévient pas, on la relit quatre fois par seconde
   useEffect(() => {
     if (!enLecture) return
     const minuteur = setInterval(() => {
@@ -144,7 +143,6 @@ export default function Musique() {
     lecteur.current.loadVideoById(v.id)
   }
 
-  // Titre voisin dans l'ordre de lecture (normal ou aléatoire) ; null en bout de liste sans répétition
   const voisin = (pas: number) => {
     const liste = ordre ?? videos.map((_, i) => i)
     const n = liste.indexOf(index) + pas
@@ -158,7 +156,6 @@ export default function Musique() {
     if (i !== null) jouer(i)
   }
 
-  // Fin d'un titre : on le rejoue, on passe au suivant, ou on s'arrête en fin de liste
   useEffect(() => {
     suivantRef.current = () => jouer(voisin(1) ?? (index + 1) % videos.length)
     finRef.current = () => {
@@ -173,7 +170,6 @@ export default function Musique() {
     nbVideos.current = videos.length
   })
 
-  // Précédent, comme sur Spotify : au-delà de 3 secondes, on revient d'abord au début du titre
   const precedent = () => {
     if (temps.position > 3) {
       lecteur.current?.seekTo(0, true)
@@ -197,18 +193,16 @@ export default function Musique() {
   }
 
   if (erreur) return <p className="musique-message">Impossible de charger la musique : {erreur}</p>
-  if (!playlist) return <p className="musique-message">Chargement…</p>
+  if (!playlist) return <p className="musique-message">Chargement...</p>
   if (!video) return <p className="musique-message">Aucune vidéo à lire dans cette playlist.</p>
 
   const duree = temps.duree || video.duree
+  const parolesRepliees = hauteurParoles < PAROLES.seuil
   const aSuivre = voisin(1)
 
   return (
-    // Le cadre sert de référence aux règles @container de Musique.css
     <div className="musique-cadre">
-      {/* Ambiance : la pochette, très floue, en fond de fenêtre */}
       <div className="musique-ambiance" style={{ backgroundImage: `url(${video.pochette})` }} />
-      {/* Le lecteur YouTube, hors de l'écran mais à sa taille normale, pour qu'il continue de jouer */}
       <div className="musique-video-cachee" ref={conteneur} />
 
       <div className="musique">
@@ -270,39 +264,41 @@ export default function Musique() {
             </button>
             <Curseur className="musique-volume-curseur" valeur={volume} max={100} pas={5} label="Volume" texte={`${Math.round(volume)} %`} onChange={(v) => setVolume(Math.round(v))} />
             <span className="musique-volume-valeur">{Math.round(volume)}</span>
-            <button
-              className={`musique-bouton musique-option${paroles ? ' musique-option-active' : ''}`}
-              onClick={() => setParoles(!paroles)}
-              aria-pressed={paroles}
-              title={paroles ? 'Masquer les paroles' : 'Afficher les paroles'}
-              aria-label="Paroles"
-            >
-              <IconeParoles />
-            </button>
           </div>
         </section>
 
-        <section className="musique-cote">
-          {paroles && (
-            <div className="musique-bloc musique-bloc-paroles">
-              <header className="musique-bloc-entete">
-                <h2>Paroles</h2>
-                <span className="musique-doux">via LRCLIB</span>
-              </header>
-              <Paroles
-                id={video.id}
-                titre={video.titre}
-                artiste={video.chaine}
-                duree={video.duree}
-                position={temps.position}
-                onChercher={(position) => {
-                  lecteur.current?.seekTo(position, true)
-                  lecteur.current?.playVideo()
-                  setTemps({ position, duree })
-                }}
-              />
-            </div>
-          )}
+        <section className="musique-cote" ref={cote}>
+          <div
+            className={`musique-bloc musique-bloc-paroles${parolesRepliees ? ' musique-bloc-replie' : ''}`}
+            style={{ flexBasis: parolesRepliees ? PAROLES.replie : hauteurParoles }}
+          >
+            <header className="musique-bloc-entete">
+              <h2>Paroles</h2>
+              <span className="musique-doux">via LRCLIB</span>
+            </header>
+            {!parolesRepliees && (
+                <Paroles
+                  id={video.id}
+                  titre={video.titre}
+                  artiste={video.chaine}
+                  duree={video.duree}
+                  position={temps.position}
+                  onChercher={(position) => {
+                    lecteur.current?.seekTo(position, true)
+                    lecteur.current?.playVideo()
+                    setTemps({ position, duree })
+                  }}
+                />
+            )}
+          </div>
+
+          <Separateur
+            hauteur={hauteurParoles}
+            min={PAROLES.replie}
+            max={() => (cote.current?.clientHeight ?? 600) - PAROLES.fileMin - 16}
+            onChange={setHauteurParoles}
+            label="Taille du panneau des paroles"
+          />
 
           <div className="musique-bloc musique-liste">
             <header className="musique-bloc-entete">
@@ -328,8 +324,6 @@ export default function Musique() {
               ))}
             </ol>
           </div>
-
-          <a className="musique-source" href={playlist.lien} target="_blank" rel="noopener">Ouvrir la playlist sur YouTube ↗</a>
         </section>
       </div>
     </div>
@@ -398,17 +392,6 @@ function IconeBoucleTitre() {
   )
 }
 
-// Bulle de texte : afficher ou masquer les paroles
-function IconeParoles() {
-  return (
-    <svg {...trait}>
-      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.4A8 8 0 1 1 21 12z" />
-      <path d="M9 10h6M9 14h4" />
-    </svg>
-  )
-}
-
-// Haut-parleur : barré quand le son est coupé, une ou deux ondes selon le volume
 function IconeVolume({ niveau }: { niveau: number }) {
   return (
     <svg {...trait}>

@@ -3,18 +3,14 @@ import { useState } from 'react'
 type Props = {
   valeur: number
   max: number
-  // Pendant le glissement (le volume suit en direct)
   onChange?: (valeur: number) => void
-  // Au relâchement (la position de lecture n'est changée qu'à la fin, pour ne pas surcharger YouTube)
   onFin?: (valeur: number) => void
-  // Pas des flèches du clavier
   pas: number
   label: string
-  texte?: string // valeur lue par les lecteurs d'écran
+  texte?: string
   className?: string
 }
 
-// Barre réglable aux couleurs de l'OS : cliquer ou glisser, ou flèches du clavier
 export default function Curseur({ valeur, max, onChange, onFin, pas, label, texte, className }: Props) {
   const [glisse, setGlisse] = useState<number | null>(null)
   const affichee = glisse ?? valeur

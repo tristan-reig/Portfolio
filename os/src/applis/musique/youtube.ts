@@ -1,7 +1,3 @@
-// YouTube : la liste des vidéos vient de la YouTube Data API v3,
-// la lecture du lecteur officiel (IFrame Player API), piloté par nos propres boutons.
-// Règles de YouTube : le lecteur doit rester visible (200 × 200 px minimum), rien ne doit le recouvrir.
-
 export type Video = {
   id: string
   titre: string
@@ -39,7 +35,6 @@ async function appeler<T>(chemin: string, parametres: Record<string, string>, cl
   return r
 }
 
-// « PT3M33S » → 213 secondes
 function lireDuree(iso: string) {
   const m = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(iso)
   return m ? Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0) : 0
@@ -49,7 +44,6 @@ export async function chargerPlaylist(id: string, cle: string): Promise<Playlist
   const [infos] = (await appeler<{ snippet: { title: string } }>('playlists', { part: 'snippet', id }, cle)).items ?? []
   if (!infos) throw new Error('playlist introuvable (elle doit être publique ou non répertoriée)')
 
-  // Les vidéos, 50 par page
   const elements: ElementPlaylist[] = []
   let page: string | undefined
   do {
@@ -62,10 +56,8 @@ export async function chargerPlaylist(id: string, cle: string): Promise<Playlist
     page = r.nextPageToken
   } while (page && elements.length < MAX_VIDEOS)
 
-  // Les vidéos privées ou supprimées ne peuvent pas être lues
   const lisibles = elements.filter((e) => e.status?.privacyStatus !== 'private' && e.snippet.thumbnails)
 
-  // Les durées sont dans une autre partie de l'API, 50 vidéos par appel
   const durees = new Map<string, number>()
   for (let i = 0; i < lisibles.length; i += 50) {
     const ids = lisibles.slice(i, i + 50).map((e) => e.snippet.resourceId.videoId)
@@ -83,7 +75,6 @@ export async function chargerPlaylist(id: string, cle: string): Promise<Playlist
     videos: lisibles.map((e) => ({
       id: e.snippet.resourceId.videoId,
       titre: e.snippet.title,
-      // Les chaînes automatiques de YouTube Music s'appellent « Artiste - Topic »
       chaine: (e.snippet.videoOwnerChannelTitle ?? '').replace(/ - Topic$/, ''),
       miniature: e.snippet.thumbnails?.medium?.url ?? e.snippet.thumbnails?.default?.url ?? '',
       pochette: e.snippet.thumbnails?.maxres?.url ?? e.snippet.thumbnails?.medium?.url ?? '',
@@ -91,8 +82,6 @@ export async function chargerPlaylist(id: string, cle: string): Promise<Playlist
     })),
   }
 }
-
-// ——— Lecteur ———
 
 export type LecteurYT = {
   loadVideoById(id: string): void
