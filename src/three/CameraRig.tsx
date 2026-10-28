@@ -8,6 +8,7 @@ import {
 } from '../config/scene'
 import { useModele } from './modele'
 import { adoucir, analyserScene, creerChemin, planifierTrajet } from './trajet'
+import { signalerVueAtteinte } from './vueAtteinte'
 
 type Props = {
   // Vue demandée : ensemble, devant l'écran, ou zoom sur l'écran
@@ -121,9 +122,12 @@ export default function CameraRig({ vue, verrou }: Props) {
         )
       : c.setLookAt(px, py, pz, tx, ty, tz, false)
 
+    signalerVueAtteinte(null)
+
     trajet.then(() => {
       if (annule) return
       enTransition.current = false
+      signalerVueAtteinte(vue)
       if (focus) return
 
       poseLibre.current = null

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { echelle } from '../../zoom'
 
 type Props = {
   hauteur: number
@@ -26,7 +27,7 @@ export default function Separateur({ hauteur, min, max, onChange, label }: Props
         depart.current = { y: e.clientY, hauteur }
       }}
       onPointerMove={(e) => {
-        if (depart.current) onChange(borner(depart.current.hauteur + e.clientY - depart.current.y))
+        if (depart.current) onChange(borner(depart.current.hauteur + (e.clientY - depart.current.y) / echelle()))
       }}
       onPointerUp={() => (depart.current = null)}
       onPointerCancel={() => (depart.current = null)}
