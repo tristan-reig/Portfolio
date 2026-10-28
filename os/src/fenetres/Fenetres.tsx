@@ -91,14 +91,6 @@ export default function Fenetres({ fenetres, active, onActiver, onFermer, onEcha
 
   return (
     <div className="fenetres" ref={zone}>
-      {placees.length === 0 && (
-        <div className="fenetres-vide">
-          <p>Aucune fenêtre ouverte</p>
-          <p className="fenetres-vide-aide">
-            Utilise la recherche en haut, ou <kbd>Ctrl K</kbd>
-          </p>
-        </div>
-      )}
       {affichees.map((f) => {
         const { titre, Contenu } = infosAppli(f.appli)
         const i = placees.indexOf(f)

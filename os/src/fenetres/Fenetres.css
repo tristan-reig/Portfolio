@@ -6,47 +6,6 @@
   bottom: 8px;
 }
 
-.fenetres-vide {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: var(--texte);
-  font: 600 14px/1.4 var(--police);
-  text-align: center;
-  pointer-events: none;
-  animation: fenetres-vide 0.3s 0.15s ease-out both;
-}
-
-.fenetres-vide p {
-  margin: 0;
-}
-
-.fenetres-vide-aide {
-  color: var(--texte-doux);
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.fenetres-vide kbd {
-  margin-left: 4px;
-  padding: 3px 6px;
-  border-radius: 5px;
-  background: var(--survol);
-  color: var(--texte);
-  font: 700 10px/1 var(--police);
-}
-
-@keyframes fenetres-vide {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-}
-
 .fenetre {
   position: absolute;
   border-radius: 10px;
