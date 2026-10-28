@@ -98,3 +98,36 @@ button.barre-icone {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.barre-musique {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  padding-bottom: 7px;
+  box-sizing: border-box;
+  color: var(--accent);
+}
+
+.barre-musique span {
+  width: 3px;
+  height: 12px;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: barre-musique 0.9s ease-in-out infinite alternate;
+}
+
+.barre-musique span:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.barre-musique span:nth-child(3) {
+  animation-delay: -0.6s;
+}
+
+@keyframes barre-musique {
+  from {
+    transform: scaleY(0.25);
+  }
+}

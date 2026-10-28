@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { APPLIS, AU_DEMARRAGE } from './applis/applis'
 import Barre from './barre/Barre'
 import Fenetres from './fenetres/Fenetres'
 import { useFenetres } from './fenetres/useFenetres'
@@ -18,7 +17,14 @@ export default function App() {
   return (
     <div className="bureau" style={{ background: fond.fond }}>
       <Fenetres fenetres={fenetres} active={active} onActiver={activer} onFermer={fermer} />
-      <Barre titre={titre} onFonds={() => setSelecteur(true)} />
+      <Barre
+        titre={titre}
+        onFonds={() => setSelecteur(true)}
+        onMusique={() => {
+          const musique = fenetres.find((f) => f.appli === 'musique' && !f.fermeture)
+          if (musique) activer(musique.id)
+        }}
+      />
       {selecteur && (
         <SelecteurFonds actuel={fond} onChoisir={choisirFond} onFermer={() => setSelecteur(false)} />
       )}

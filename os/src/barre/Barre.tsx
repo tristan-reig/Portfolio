@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Calendrier from './Calendrier'
 import { IconeAlimentation, IconeBatterie, IconeEclair, IconeFond, IconeReseau, IconeVolume } from './Icones'
+import { useEnLecture } from '../applis/musique/etat'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
@@ -13,11 +14,14 @@ type Props = {
   titre: string
   // Ouvre le sélecteur de fond d'écran
   onFonds: () => void
+  // Active la fenêtre de musique (clic sur l'indicateur « en lecture »)
+  onMusique: () => void
 }
 
-export default function Barre({ titre, onFonds }: Props) {
+export default function Barre({ titre, onFonds, onMusique }: Props) {
   const maintenant = useHeure()
   const batterie = useBatterie()
+  const enLecture = useEnLecture()
   const [calendrier, setCalendrier] = useState(false)
   const zoneHeure = useRef<HTMLDivElement>(null)
 
@@ -61,6 +65,11 @@ export default function Barre({ titre, onFonds }: Props) {
       </div>
 
       <div className="barre-droite">
+        {enLecture && (
+          <button className="barre-icone barre-musique" onClick={onMusique} title="Musique en cours" aria-label="Musique en cours">
+            <span /><span /><span />
+          </button>
+        )}
         <button className="barre-icone" onClick={onFonds} title="Fond d'écran" aria-label="Fond d'écran">
           <IconeFond />
         </button>
