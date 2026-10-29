@@ -3,7 +3,7 @@ import Calendrier from './Calendrier'
 import type { Appli, AppliId } from '../applis/applis'
 import { useEnLecture } from '../applis/musique/etat'
 import Lanceur from '../lanceur/Lanceur'
-import { IconeAlimentation, IconeApplis, IconeBatterie, IconeEclair, IconeFond, IconeReseau, IconeVolume } from './Icones'
+import { IconeAlimentation, IconeBatterie, IconeEclair, IconeFond, IconeReseau, IconeVolume } from './Icones'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
@@ -54,16 +54,6 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
   return (
     <header className="barre">
       <div className="barre-gauche" ref={zoneHeure}>
-        <button
-          className="barre-icone barre-lanceur"
-          // Sans ça, le clic « en dehors » fermerait le lanceur juste avant que ce bouton le rouvre
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={() => setLanceur(!lanceur)}
-          title="Applis"
-          aria-label="Ouvrir le lanceur d'applis"
-        >
-          <IconeApplis />
-        </button>
         <button
           className={`barre-heure${calendrier ? ' barre-heure-ouverte' : ''}`}
           onClick={() => setCalendrier(!calendrier)}
