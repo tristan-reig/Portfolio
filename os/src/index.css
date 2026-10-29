@@ -13,6 +13,7 @@
   --bordure-active-2: #00ff99;
   --bordure-inactive: rgba(89, 89, 89, 0.67);
   --police: 'JetBrains Mono', ui-monospace, monospace;
+  --police-titre: 'Fraunces', Georgia, serif;
 }
 
 html,
@@ -29,7 +30,6 @@ body {
   user-select: none;
 }
 
-/* Fond d'écran */
 .bureau {
   position: relative;
   height: 100%;

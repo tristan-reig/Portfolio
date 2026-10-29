@@ -1,0 +1,110 @@
+.portfolio {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--texte);
+  font: 500 13px/1.5 var(--police);
+  container-type: size;
+}
+
+.portfolio-page {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+}
+
+.portfolio-accueil {
+  margin: auto;
+  padding: 32px 24px;
+  text-align: center;
+  animation: portfolio-apparition 0.3s ease-out;
+}
+
+@keyframes portfolio-apparition {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.portfolio-accueil h1 {
+  margin: 0;
+  font: 900 min(104px, 12cqw) / 1 var(--police-titre);
+  letter-spacing: -0.01em;
+}
+
+.portfolio-sous-titre {
+  margin: min(14px, 1.6cqw) 0 0;
+  color: var(--texte-doux);
+  font: 600 min(30px, 3.6cqw) / 1.2 var(--police-titre);
+}
+
+.portfolio-liens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px min(40px, 4cqw);
+  margin-top: min(96px, 11cqh);
+}
+
+.portfolio-liens button {
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font: 800 min(22px, 3cqw) / 1.2 var(--police-titre);
+  letter-spacing: 0.04em;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.15s, text-underline-offset 0.15s;
+}
+
+.portfolio-liens button:hover {
+  color: var(--bordure-active-1);
+  text-underline-offset: 8px;
+}
+
+.portfolio-rubrique {
+  width: 100%;
+  padding: 24px 28px;
+  box-sizing: border-box;
+  animation: portfolio-apparition 0.25s ease-out;
+}
+
+.portfolio-retour {
+  padding: 4px 8px;
+  margin-left: -8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.portfolio-retour:hover {
+  background: var(--survol);
+}
+
+.portfolio-rubrique h2 {
+  margin: 14px 0 8px;
+  font: 900 34px/1.1 var(--police-titre);
+}
+
+.portfolio-doux {
+  margin: 0;
+  color: var(--texte-doux);
+}
+
+.portfolio-pied {
+  flex-shrink: 0;
+  padding: 7px 14px;
+  border-top: 1px solid var(--bordure);
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--texte-doux);
+  font-size: 11px;
+}
