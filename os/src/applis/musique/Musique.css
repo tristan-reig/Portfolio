@@ -270,6 +270,7 @@
 }
 
 .musique-bloc:first-child .musique-bloc-entete {
+  padding-right: 22px;
 }
 
 .musique-bloc-entete h2 {
@@ -299,6 +300,7 @@
 }
 
 .paroles {
+  position: relative;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -363,6 +365,7 @@
 
 .musique-liste {
   flex: 1;
+  min-height: 190px;
   display: flex;
   flex-direction: column;
 }
@@ -474,6 +477,7 @@
   .musique {
     flex-direction: column;
     gap: 16px;
+    padding: 36px 16px 12px;
   }
 
   .musique-lecteur {
