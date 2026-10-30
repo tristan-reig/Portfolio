@@ -1,21 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AU_DEMARRAGE, infosAppli, type AppliId } from './applis/applis'
 import Barre from './barre/Barre'
 import Fenetres from './fenetres/Fenetres'
 import { useFenetres } from './fenetres/useFenetres'
 import SelecteurFonds from './fonds/SelecteurFonds'
 import { useFond } from './fonds/useFond'
+import { EVENEMENT_LANCER } from './applis/lancer'
 
 export default function App() {
   const [fond, choisirFond] = useFond()
   const [selecteur, setSelecteur] = useState(false)
   const { fenetres, active, ouvrir, fermer, activer, echanger } = useFenetres(AU_DEMARRAGE)
 
+  // Une appli déjà ouverte est simplement mise au premier plan
   const lancer = (appli: AppliId) => {
     const ouverte = fenetres.find((f) => f.appli === appli && !f.fermeture)
     if (ouverte) activer(ouverte.id)
     else ouvrir(appli)
   }
+
+  const lancerRef = useRef(lancer)
+  useEffect(() => {
+    lancerRef.current = lancer
+  })
+  useEffect(() => {
+    const surLancer = (e: Event) => lancerRef.current((e as CustomEvent<AppliId>).detail)
+    window.addEventListener(EVENEMENT_LANCER, surLancer)
+    return () => window.removeEventListener(EVENEMENT_LANCER, surLancer)
+  }, [])
 
   const fenetreActive = fenetres.find((f) => f.id === active && !f.fermeture)
 
