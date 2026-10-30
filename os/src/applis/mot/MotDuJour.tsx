@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Delete } from 'lucide-react'
 import {
   chargerDictionnaire, ecrirePartie, ESSAIS, evaluer, jourDuJour, lirePartie, LONGUEUR, motDuJour, normaliser,
   type Couleur, type Langue,
@@ -36,8 +37,7 @@ const CLAVIERS = {
 }
 
 const PRIORITE: Record<Couleur, number> = { absent: 1, present: 2, bien: 3 }
-const DUREE_RETOURNEMENT = 300 // ms entre deux lettres, la même que dans MotDuJour.css
-// Fin du retournement de la dernière lettre (elle part à 4 × 300 ms et dure 500 ms)
+const DUREE_RETOURNEMENT = 300
 const FIN_RETOURNEMENT = DUREE_RETOURNEMENT * (LONGUEUR - 1) + 500
 
 function lireLangue(): Langue {
@@ -48,18 +48,16 @@ function lireLangue(): Langue {
   }
 }
 
-// Wordle : un mot de 5 lettres à trouver en 6 essais, le même pour tous chaque jour
 export default function MotDuJour() {
   const [langue, setLangue] = useState<Langue>(lireLangue)
   const [jour, setJour] = useState(jourDuJour)
   const [essais, setEssais] = useState(() => lirePartie(langue, jour).essais)
-  // Essais déjà dévoilés : le clavier ne se colore qu'une fois les lettres retournées
   const [devoiles, setDevoiles] = useState(essais.length)
   const [saisie, setSaisie] = useState('')
   const [dico, setDico] = useState<{ langue: Langue; mots: Set<string> } | null>(null)
   const [message, setMessage] = useState<string | null>(null)
   const [secoue, setSecoue] = useState(false)
-  const [revelee, setRevelee] = useState<number | null>(null) // ligne qui vient d'être jouée, pour l'animation
+  const [revelee, setRevelee] = useState<number | null>(null)
   const cadre = useRef<HTMLDivElement>(null)
   const minuteurs = useRef<number[]>([])
 
@@ -67,9 +65,8 @@ export default function MotDuJour() {
   const solution = motDuJour(langue, jour)
   const gagne = essais.at(-1) === solution
   const fini = gagne || essais.length >= ESSAIS
-  const enCours = devoiles < essais.length // une ligne est en train de se retourner
+  const enCours = devoiles < essais.length
 
-  // Minuteurs liés à la partie en cours : annulés si on change de langue ou de jour
   const plusTard = (action: () => void, ms: number) => minuteurs.current.push(window.setTimeout(action, ms))
   const annulerMinuteurs = () => {
     minuteurs.current.forEach(clearTimeout)
@@ -77,7 +74,6 @@ export default function MotDuJour() {
   }
   useEffect(() => annulerMinuteurs, [])
 
-  // Charge une partie (changement de langue ou nouveau jour)
   const chargerPartie = (l: Langue, j: number) => {
     annulerMinuteurs()
     const e = lirePartie(l, j).essais
@@ -88,7 +84,6 @@ export default function MotDuJour() {
     setMessage(null)
   }
 
-  // Dictionnaire de la langue choisie, puis celui de l'autre en avance pour un changement instantané
   useEffect(() => {
     let annule = false
     chargerDictionnaire(langue).then((mots) => {
@@ -109,9 +104,7 @@ export default function MotDuJour() {
     if (l === langue) return
     try {
       localStorage.setItem('mot-langue', l)
-    } catch {
-      // sans stockage, le choix vaut pour cette visite
-    }
+    } catch {}
     setLangue(l)
     chargerPartie(l, jour)
   }
@@ -152,7 +145,6 @@ export default function MotDuJour() {
     else setSaisie((s) => (s.length < LONGUEUR ? s + touche : s))
   }
 
-  // Clavier physique, seulement quand la fenêtre du jeu est active (lettres accentuées acceptées : é → E)
   const taperRef = useRef(taper)
   useEffect(() => {
     taperRef.current = taper
@@ -172,7 +164,6 @@ export default function MotDuJour() {
     return () => window.removeEventListener('keydown', surTouche)
   }, [])
 
-  // Nouveau jour pendant que la fenêtre est ouverte : nouvelle partie
   const chargerRef = useRef(chargerPartie)
   useEffect(() => {
     chargerRef.current = chargerPartie
@@ -187,7 +178,7 @@ export default function MotDuJour() {
     return () => clearInterval(minuteur)
   }, [jour, langue])
 
-  // Couleur de chaque touche du clavier : la meilleure information obtenue sur les essais dévoilés
+  // Couleur de chaque touche du clavier
   const touches = useMemo(() => {
     const c = new Map<string, Couleur>()
     essais.slice(0, devoiles).forEach((e) =>
@@ -240,7 +231,6 @@ export default function MotDuJour() {
                       key={i}
                       role="gridcell"
                       className={`mot-case${lettre && !couleurs ? ' mot-case-pleine' : ''}${couleurs ? ` mot-${couleurs[i]}` : ''}${anime ? ' mot-retourne' : ''}`}
-                      // Ligne gagnante : les délais (retournement puis saut) sont dans le CSS
                       style={anime && !victoire ? { animationDelay: `${i * DUREE_RETOURNEMENT}ms` } : undefined}
                     >
                       {lettre}
@@ -252,7 +242,6 @@ export default function MotDuJour() {
           })}
         </div>
 
-        {/* Partie terminée (et dernière ligne retournée) : le résultat et le compte à rebours remplacent le clavier */}
         {fini && !enCours ? (
           <div className="mot-fin">
             <p className={gagne ? 'mot-fin-gagne' : undefined}>
@@ -272,10 +261,10 @@ export default function MotDuJour() {
                       key={touche}
                       className={`mot-touche${large ? ' mot-touche-large' : ''}${c ? ` mot-${c}` : ''}`}
                       onClick={() => taper(touche)}
-                      onPointerDown={(e) => e.preventDefault()} // pas de focus : Entrée au clavier ne recliquerait pas la touche
+                      onPointerDown={(e) => e.preventDefault()}
                       aria-label={touche === '↵' ? t.entree : touche === '⌫' ? t.effacer : touche}
                     >
-                      {touche === '↵' ? t.entree : touche === '⌫' ? <IconeEffacer /> : touche}
+                      {touche === '↵' ? t.entree : touche === '⌫' ? <Delete size={20} strokeWidth={1.8} aria-hidden /> : touche}
                     </button>
                   )
                 })}
@@ -306,14 +295,5 @@ function Compte({ texte }: { texte: string }) {
       <span>{texte}</span>
       <strong>{deux(Math.floor(reste / 3600))}:{deux(Math.floor((reste % 3600) / 60))}:{deux(reste % 60)}</strong>
     </div>
-  )
-}
-
-function IconeEffacer() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z" />
-      <path d="m17 9-6 6M11 9l6 6" />
-    </svg>
   )
 }

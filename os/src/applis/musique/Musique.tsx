@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume, Volume1, Volume2, VolumeX } from 'lucide-react'
 import Curseur from './Curseur'
 import { enregistrerBasculer, signalerLecture } from './etat'
 import Paroles from './Paroles'
@@ -6,11 +7,11 @@ import Separateur from './Separateur'
 import { chargerLecteur, chargerPlaylist, type LecteurYT, type Playlist } from './youtube'
 import './Musique.css'
 
-// Identifiant de la playlist YouTube
+// Identifiant de ta playlist YouTube
 const PLAYLIST_YOUTUBE = 'OLAK5uy_msYZvB4nIlIHiuHMxqrI71oIKbfHqoti4'
 const CLE = import.meta.env.VITE_YOUTUBE_CLE as string | undefined
 
-// Panneau des paroles
+// Panneau des paroles, réglable avec la poignée qui le sépare de la file d'attente
 const PAROLES = {
   hauteur: 210,
   replie: 44,
@@ -26,6 +27,7 @@ const formatTemps = (secondes: number) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
+// Ordre aléatoire de la liste
 function melanger(n: number, premier: number) {
   const reste = Array.from({ length: n }, (_, i) => i).filter((i) => i !== premier)
   for (let i = reste.length - 1; i > 0; i--) {
@@ -58,7 +60,6 @@ export default function Musique() {
   const echecs = useRef(0)
   const nbVideos = useRef(0)
 
-  // Liste des vidéos
   useEffect(() => {
     if (!CLE || !PLAYLIST_YOUTUBE) return
     let annule = false
@@ -170,7 +171,6 @@ export default function Musique() {
     nbVideos.current = videos.length
   })
 
-  // Précédent, comme sur Spotify : au-delà de 3 secondes, on revient d'abord au début du titre
   const precedent = () => {
     if (temps.position > 3) {
       lecteur.current?.seekTo(0, true)
@@ -250,20 +250,20 @@ export default function Musique() {
                 title="Lecture aléatoire"
                 aria-label="Lecture aléatoire"
               >
-                <IconeAleatoire />
+                <Shuffle {...trait} />
               </button>
-              <button className="musique-bouton" onClick={precedent} disabled={!pret} aria-label="Précédent"><IconePrecedent /></button>
+              <button className="musique-bouton" onClick={precedent} disabled={!pret} aria-label="Précédent"><SkipBack {...plein} /></button>
               <button className="musique-bouton musique-bouton-principal" onClick={basculer} disabled={!pret} aria-label={enLecture ? 'Pause' : 'Lecture'}>
-                {enLecture ? <IconePause /> : <IconeLecture />}
+                {enLecture ? <Pause {...plein} /> : <Play {...plein} />}
               </button>
-              <button className="musique-bouton" onClick={suivant} disabled={!pret || aSuivre === null} aria-label="Suivant"><IconeSuivant /></button>
+              <button className="musique-bouton" onClick={suivant} disabled={!pret || aSuivre === null} aria-label="Suivant"><SkipForward {...plein} /></button>
               <button
                 className={`musique-bouton musique-option${boucle !== 'non' ? ' musique-option-active' : ''}`}
                 onClick={() => setBoucle(BOUCLE_SUIVANTE[boucle])}
                 title={boucle === 'non' ? 'Répéter' : boucle === 'liste' ? 'Répéter le titre' : 'Ne plus répéter'}
                 aria-label={boucle === 'non' ? 'Répétition désactivée' : boucle === 'liste' ? 'Répéter la liste' : 'Répéter le titre'}
               >
-                {boucle === 'titre' ? <IconeBoucleTitre /> : <IconeBoucle />}
+                {boucle === 'titre' ? <Repeat1 {...trait} /> : <Repeat {...trait} />}
               </button>
             </div>
 
@@ -349,67 +349,10 @@ function Egaliseur() {
   )
 }
 
-const icone = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'currentColor', 'aria-hidden': true } as const
-const trait = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true } as const
-
-function IconeLecture() {
-  return <svg {...icone}><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z" /></svg>
-}
-
-function IconePause() {
-  return <svg {...icone}><rect x="5" y="4" width="5" height="16" rx="1.5" /><rect x="14" y="4" width="5" height="16" rx="1.5" /></svg>
-}
-
-function IconePrecedent() {
-  return <svg {...icone}><rect x="4" y="5" width="3" height="14" rx="1" /><path d="M20 5.7v12.6a1 1 0 0 1-1.5.86L8.8 12.86a1 1 0 0 1 0-1.72l9.7-6.3A1 1 0 0 1 20 5.7z" /></svg>
-}
-
-function IconeSuivant() {
-  return <svg {...icone}><rect x="17" y="5" width="3" height="14" rx="1" /><path d="M4 5.7v12.6a1 1 0 0 0 1.5.86l9.7-6.3a1 1 0 0 0 0-1.72L5.5 4.84A1 1 0 0 0 4 5.7z" /></svg>
-}
-
-function IconeAleatoire() {
-  return (
-    <svg {...trait}>
-      <path d="M16 4h4v4" />
-      <path d="M4 20 20 4" />
-      <path d="M20 16v4h-4" />
-      <path d="m15 15 5 5" />
-      <path d="M4 4l5 5" />
-    </svg>
-  )
-}
-
-function IconeBoucle() {
-  return (
-    <svg {...trait}>
-      <path d="m17 2 4 4-4 4" />
-      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-      <path d="m7 22-4-4 4-4" />
-      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-    </svg>
-  )
-}
-
-function IconeBoucleTitre() {
-  return (
-    <svg {...trait}>
-      <path d="m17 2 4 4-4 4" />
-      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
-      <path d="m7 22-4-4 4-4" />
-      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
-      <path d="M11 10h1v4" strokeWidth={1.8} />
-    </svg>
-  )
-}
+const trait = { size: 18, 'aria-hidden': true } as const
+const plein = { ...trait, fill: 'currentColor' } as const
 
 function IconeVolume({ niveau }: { niveau: number }) {
-  return (
-    <svg {...trait}>
-      <path d="M4 9v6h4l5 4V5L8 9z" />
-      {niveau === 0 && <path d="m17 9 5 6M22 9l-5 6" />}
-      {niveau > 0 && <path d="M16.5 8.5a5 5 0 0 1 0 7" />}
-      {niveau > 50 && <path d="M19 6a8.5 8.5 0 0 1 0 12" />}
-    </svg>
-  )
+  const Icone = niveau === 0 ? VolumeX : niveau <= 33 ? Volume : niveau <= 66 ? Volume1 : Volume2
+  return <Icone {...trait} />
 }

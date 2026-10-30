@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Search } from 'lucide-react'
 import { toutesLesApplis, type Appli, type AppliId } from '../applis/applis'
 import './Lanceur.css'
 
@@ -10,15 +11,11 @@ type Props = {
   active: Appli | null
 }
 
-// Nombre d'applis par ligne de la grille (le même que dans Lanceur.css)
 const COLONNES = 5
 
-// Sans accents ni majuscules, pour que « musiq » trouve « Musique » et « a propos » trouve « À propos »
 const simplifier = (texte: string) => texte.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-// Lanceur d'applis, au centre de la barre : un champ de recherche qui déroule une grille d'icônes
 export default function Lanceur({ ouvert, onOuvert, onLancer, active }: Props) {
-  // Ctrl K (ou ⌘ K) ouvre et ferme le lanceur, depuis n'importe où dans l'OS
   useEffect(() => {
     const surTouche = (e: KeyboardEvent) => {
       if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k' || e.repeat) return
@@ -45,7 +42,7 @@ export default function Lanceur({ ouvert, onOuvert, onLancer, active }: Props) {
         aria-label="Rechercher une appli"
         title="Rechercher une appli"
       >
-        <IconeLoupe />
+        <Search size={14} strokeWidth={2.2} aria-hidden />
         {!active && <span className="lanceur-invite">Rechercher une appli…</span>}
         <kbd>Ctrl K</kbd>
       </button>
@@ -53,8 +50,6 @@ export default function Lanceur({ ouvert, onOuvert, onLancer, active }: Props) {
   )
 }
 
-// Lanceur ouvert : le champ de saisie dans la barre et le panneau des applis en dessous.
-// Monté à chaque ouverture, il repart d'une recherche vide.
 function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (appli: AppliId) => void }) {
   const [recherche, setRecherche] = useState('')
   const [choix, setChoix] = useState(0)
@@ -82,7 +77,6 @@ function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (ap
     onFermer()
   }
 
-  // Déplacement dans la grille, sans sortir de la liste
   const deplacer = (pas: number) => {
     const suivant = selection + pas
     if (suivant >= 0 && suivant < applis.length) setChoix(suivant)
@@ -94,7 +88,6 @@ function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (ap
     else if (e.key === 'ArrowDown') deplacer(COLONNES)
     else if (e.key === 'ArrowUp') deplacer(-COLONNES)
     else if (e.key === 'Enter' && applis[selection]) ouvrir(applis[selection][0])
-    // Échap ferme le lanceur, sans être transmis à la scène 3D (voir liaison.ts)
     else if (e.key === 'Escape') onFermer()
     else return
     e.preventDefault()
@@ -103,7 +96,7 @@ function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (ap
   return (
     <div className="lanceur" ref={zone}>
       <label className="lanceur-champ lanceur-champ-ouvert">
-        <IconeLoupe />
+        <Search size={14} strokeWidth={2.2} aria-hidden />
         <input
           ref={champ}
           value={recherche}
@@ -131,11 +124,11 @@ function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (ap
                   role="option"
                   aria-selected={i === selection}
                   onPointerEnter={() => setChoix(i)}
-                  onPointerDown={(e) => e.preventDefault()} // le champ garde le focus pour le clavier
+                  onPointerDown={(e) => e.preventDefault()}
                   onClick={() => ouvrir(id)}
                   style={{ '--couleur': a.couleur } as React.CSSProperties}
                 >
-                  <span className="lanceur-icone"><a.Icone /></span>
+                  <span className="lanceur-icone"><a.Icone size={22} strokeWidth={1.8} aria-hidden /></span>
                   <span className="lanceur-titre">{a.titre}</span>
                 </button>
               </li>
@@ -158,14 +151,5 @@ function Recherche({ onFermer, onLancer }: { onFermer: () => void; onLancer: (ap
         </footer>
       </div>
     </div>
-  )
-}
-
-function IconeLoupe() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
   )
 }

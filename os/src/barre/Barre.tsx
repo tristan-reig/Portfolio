@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import { BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryWarning, Image, Power, Volume2, Wifi } from 'lucide-react'
 import Calendrier from './Calendrier'
 import type { Appli, AppliId } from '../applis/applis'
 import { useEnLecture } from '../applis/musique/etat'
 import Lanceur from '../lanceur/Lanceur'
-import { IconeAlimentation, IconeBatterie, IconeEclair, IconeFond, IconeReseau, IconeVolume } from './Icones'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
@@ -77,22 +77,30 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
           </button>
         )}
         <button className="barre-icone" onClick={onFonds} title="Fond d'écran" aria-label="Fond d'écran">
-          <IconeFond />
+          <Image {...icone} />
         </button>
-        <span className="barre-icone" title="Réseau"><IconeReseau /></span>
-        <span className="barre-icone" title="Volume"><IconeVolume /></span>
+        <span className="barre-icone" title="Réseau"><Wifi {...icone} /></span>
+        <span className="barre-icone" title="Volume"><Volume2 {...icone} /></span>
         {batterie && (
           <span
             className={`barre-batterie${batterie.niveau < 0.2 && !batterie.enCharge ? ' barre-faible' : ''}`}
             title={batterie.enCharge ? 'En charge' : 'Sur batterie'}
           >
-            {batterie.enCharge && <IconeEclair />}
-            <IconeBatterie niveau={batterie.niveau} />
+            <IconeBatterie niveau={batterie.niveau} enCharge={batterie.enCharge} />
             {Math.round(batterie.niveau * 100)}{'\u202f'}%
           </span>
         )}
-        <span className="barre-icone" title="Alimentation"><IconeAlimentation /></span>
+        <span className="barre-icone" title="Alimentation"><Power {...icone} /></span>
       </div>
     </header>
   )
+}
+
+// Icônes Lucide de la barre : 16 px, couleur du texte
+const icone = { size: 16, 'aria-hidden': true } as const
+
+// Batterie : en charge, ou plus ou moins pleine selon le niveau (0 à 1)
+function IconeBatterie({ niveau, enCharge }: { niveau: number; enCharge: boolean }) {
+  const Icone = enCharge ? BatteryCharging : niveau > 0.7 ? BatteryFull : niveau > 0.4 ? BatteryMedium : niveau > 0.15 ? BatteryLow : BatteryWarning
+  return <Icone size={18} aria-hidden />
 }

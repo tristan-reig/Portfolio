@@ -1,3 +1,4 @@
+
 .portfolio {
   height: 100%;
   display: flex;
@@ -98,13 +99,4 @@
 .portfolio-doux {
   margin: 0;
   color: var(--texte-doux);
-}
-
-.portfolio-pied {
-  flex-shrink: 0;
-  padding: 7px 14px;
-  border-top: 1px solid var(--bordure);
-  background: rgba(0, 0, 0, 0.18);
-  color: var(--texte-doux);
-  font-size: 11px;
 }

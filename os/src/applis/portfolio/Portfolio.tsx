@@ -21,6 +21,7 @@ export default function Portfolio() {
     <div className="portfolio">
       <main className="portfolio-page">
         {ouverte ? (
+          // Rubrique : contenu à venir
           <section className="portfolio-rubrique">
             <button className="portfolio-retour" onClick={() => setRubrique(null)}>
               ← Accueil
@@ -42,10 +43,6 @@ export default function Portfolio() {
           </div>
         )}
       </main>
-
-      <footer className="portfolio-pied">
-        © {new Date().getFullYear()} {NOM}
-      </footer>
     </div>
   )
 }
