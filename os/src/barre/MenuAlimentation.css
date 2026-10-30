@@ -1,0 +1,60 @@
+.alimentation {
+  position: relative;
+}
+
+.barre-icone.barre-icone-ouverte {
+  background: var(--survol);
+}
+
+.alimentation-menu {
+  position: absolute;
+  top: 38px;
+  right: -6px;
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  box-sizing: border-box;
+  background: var(--menu);
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  animation: alimentation-entree 0.16s ease-out;
+}
+
+@keyframes alimentation-entree {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.alimentation-menu button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: var(--texte);
+  font: 500 13px/1 var(--police);
+  text-align: left;
+  cursor: pointer;
+}
+
+.alimentation-menu button svg {
+  color: var(--texte-doux);
+}
+
+.alimentation-menu button:hover,
+.alimentation-menu button:focus-visible {
+  background: var(--survol);
+}
+
+.alimentation-menu button:hover svg,
+.alimentation-menu button:focus-visible svg {
+  color: var(--accent);
+}

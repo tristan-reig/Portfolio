@@ -7,22 +7,19 @@ import Lanceur from '../lanceur/Lanceur'
 import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
+import MenuAlimentation from './MenuAlimentation'
 
 const formatHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
 const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
 
 type Props = {
-  // Fenêtre active, affichée au centre à côté de la recherche
   active: Appli | null
-  // Ouvre une appli depuis le lanceur
   onLancer: (appli: AppliId) => void
   // Ouvre le sélecteur de fond d'écran
   onFonds: () => void
-  // Active la fenêtre de musique (clic sur l'indicateur « en lecture »)
   onMusique: () => void
 }
 
-// Barre système flottante, façon Waybar : heure à gauche, recherche et fenêtre active au centre, icônes système à droite
 export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
   const maintenant = useHeure()
   const batterie = useBatterie()
@@ -36,7 +33,6 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
     if (!calendrier) return
     const surTouche = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
-      // Échap ferme le calendrier, sans être transmis à la scène 3D (voir liaison.ts)
       e.preventDefault()
       setCalendrier(false)
     }
@@ -90,16 +86,14 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
             {Math.round(batterie.niveau * 100)}{'\u202f'}%
           </span>
         )}
-        <span className="barre-icone" title="Alimentation"><Power {...icone} /></span>
+        <MenuAlimentation />
       </div>
     </header>
   )
 }
 
-// Icônes Lucide de la barre : 16 px, couleur du texte
 const icone = { size: 16, 'aria-hidden': true } as const
 
-// Batterie : en charge, ou plus ou moins pleine selon le niveau (0 à 1)
 function IconeBatterie({ niveau, enCharge }: { niveau: number; enCharge: boolean }) {
   const Icone = enCharge ? BatteryCharging : niveau > 0.7 ? BatteryFull : niveau > 0.4 ? BatteryMedium : niveau > 0.15 ? BatteryLow : BatteryWarning
   return <Icone size={18} aria-hidden />
