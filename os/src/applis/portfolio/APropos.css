@@ -1,0 +1,253 @@
+.ap {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.ap p {
+  max-width: 720px;
+}
+
+.portfolio-article .ap h2 {
+  margin-top: 0;
+}
+
+.ap-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 48px;
+  align-items: start;
+  margin-bottom: -12px;
+}
+
+.portfolio-article .ap-intro .portfolio-chapo {
+  margin-bottom: 22px;
+}
+
+.ap-photo {
+  margin: 8px 0 0;
+}
+
+.ap-photo img,
+.ap-photo-vide {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.ap-photo-vide {
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--bordure);
+  color: var(--texte-doux);
+}
+
+.ap-parcours {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ap-parcours li {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 20px;
+  padding: 14px 0;
+  border-top: 1px solid var(--bordure);
+}
+
+.ap-parcours li:last-child {
+  border-bottom: 1px solid var(--bordure);
+}
+
+.ap-dates {
+  padding-top: 2px;
+  color: var(--texte-doux);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ap-parcours div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font: 400 16px/1.4 var(--police-titre);
+}
+
+.ap-parcours strong {
+  font-weight: 700;
+}
+
+.ap-parcours div span {
+  color: var(--texte-doux);
+}
+
+.ap-competences {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.ap-competences h3 {
+  margin: 0 0 10px;
+  color: var(--texte-doux);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ap-competences ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: 400 16px/1.8 var(--police-titre);
+}
+
+.ap-recherche {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 32px;
+  align-items: center;
+}
+
+.carte-france {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  background: rgba(17, 17, 27, 0.55);
+}
+
+.carte-trame {
+  fill: rgba(255, 255, 255, 0.07);
+}
+
+.carte-voisins {
+  fill: rgba(255, 255, 255, 0.025);
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.carte-pays {
+  fill: rgba(137, 180, 250, 0.07);
+  stroke: url(#carte-bord);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.carte-zone-halo {
+  fill: var(--accent);
+  opacity: 0.35;
+}
+
+.carte-zone {
+  fill: rgba(137, 180, 250, 0.22);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.carte-repere circle {
+  fill: var(--texte-doux);
+}
+
+.carte-repere text {
+  fill: var(--texte-doux);
+  font: 600 20px var(--police-titre);
+}
+
+.carte-ville-point {
+  fill: var(--fond);
+  stroke: var(--texte);
+  stroke-width: 2;
+}
+
+.carte-ville-onde {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: carte-onde 2.4s ease-out infinite;
+}
+
+.carte-ville:nth-child(odd) .carte-ville-onde {
+  animation-delay: 1.2s;
+}
+
+@keyframes carte-onde {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(4);
+  }
+}
+
+.carte-ville text {
+  fill: var(--texte);
+  font: 700 26px var(--police-titre);
+  paint-order: stroke;
+  stroke: var(--fond);
+  stroke-width: 6px;
+  stroke-linejoin: round;
+}
+
+.ap-lien {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.ap-lien:hover {
+  color: var(--bordure-active-1);
+}
+
+.ap-fin {
+  padding-top: 28px;
+  border-top: 1px solid var(--bordure);
+}
+
+.portfolio-article .ap-fin p:last-child {
+  margin-bottom: 0;
+}
+
+@container (max-width: 760px) {
+  .ap {
+    gap: 32px;
+  }
+
+  .ap-intro,
+  .ap-competences,
+  .ap-recherche {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ap-intro {
+    margin-bottom: 0;
+  }
+
+  .carte-france {
+    max-width: 340px;
+  }
+
+  .ap-photo {
+    max-width: 240px;
+  }
+
+  .ap-parcours li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
