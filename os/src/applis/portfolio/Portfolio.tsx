@@ -1,5 +1,6 @@
 import { useRef, useState, type ComponentType } from 'react'
 import APropos from './APropos'
+import Contact from './Contact'
 import type { PropsRubrique, Rubrique } from './navigation'
 import './Portfolio.css'
 
@@ -19,7 +20,7 @@ function AVenir() {
 const RUBRIQUES = [
   { id: 'apropos', titre: 'À propos', Contenu: APropos },
   { id: 'projets', titre: 'Projets', Contenu: AVenir },
-  { id: 'contact', titre: 'Contact', Contenu: AVenir },
+  { id: 'contact', titre: 'Contact', Contenu: Contact },
 ] as const satisfies readonly { id: Rubrique; titre: string; Contenu: ComponentType<PropsRubrique> }[]
 
 export default function Portfolio() {
