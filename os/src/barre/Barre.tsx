@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryWarning, Image, Power, Volume2, Wifi } from 'lucide-react'
+import { BatteryCharging, BatteryFull, BatteryLow, BatteryMedium, BatteryWarning, Image, Volume2, Wifi } from 'lucide-react'
 import Calendrier from './Calendrier'
 import type { Appli, AppliId } from '../applis/applis'
 import { useEnLecture } from '../applis/musique/etat'
@@ -8,6 +8,7 @@ import { useBatterie } from './useBatterie'
 import { useHeure } from './useHeure'
 import './Barre.css'
 import MenuAlimentation from './MenuAlimentation'
+import { verrouiller } from '../verrouillage/etat'
 
 const formatHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
 const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -86,7 +87,7 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
             {Math.round(batterie.niveau * 100)}{'\u202f'}%
           </span>
         )}
-        <MenuAlimentation />
+        <MenuAlimentation onVerrouiller={verrouiller} />
       </div>
     </header>
   )

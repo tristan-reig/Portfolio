@@ -1,0 +1,128 @@
+/* Écran de verrouillage, par-dessus tout l'OS */
+.verrou {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 9vh;
+  box-sizing: border-box;
+  /* Fond transparent : le bureau reste visible derrière, flouté et assombri */
+  background: rgba(10, 10, 16, 0.3);
+  backdrop-filter: blur(24px) saturate(130%) brightness(0.75);
+  color: var(--texte);
+  font-family: var(--police);
+  cursor: default;
+  user-select: none;
+  animation: verrou-entree 0.35s ease-out;
+}
+
+@keyframes verrou-entree {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Déverrouillage : l'écran entier part vers le haut */
+.verrou-sortie {
+  animation: verrou-sortie 0.65s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+@keyframes verrou-sortie {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+/* ——— Barre minimale, sans fond : les icônes système à droite ——— */
+.verrou-barre {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  height: 40px;
+  padding: 0 6px;
+  color: var(--texte);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.verrou-batterie {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ——— Date et heure, en haut ——— */
+.verrou-heure {
+  margin-top: 7vh;
+  text-align: center;
+}
+
+.verrou-heure p {
+  margin: 0;
+  color: var(--texte);
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0.8;
+}
+
+/* La date commence par une majuscule */
+.verrou-heure p::first-letter {
+  text-transform: uppercase;
+}
+
+.verrou-heure time {
+  display: block;
+  margin-top: 4px;
+  color: var(--texte);
+  font-size: 132px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* ——— Utilisateur, en bas ——— */
+.verrou-session {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Initiales dans un cercle (une photo pourra les remplacer) */
+.verrou-avatar {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(17, 17, 27, 0.55);
+  font: 900 26px/1 var(--police-titre);
+}
+
+.verrou-nom {
+  margin: 12px 0 6px;
+  font: 700 16px/1.2 var(--police-titre);
+}
+
+.verrou-consigne {
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 12px;
+  animation: verrou-consigne 2.4s ease-in-out infinite;
+}
+
+/* La consigne « respire » doucement pour attirer l'œil */
+@keyframes verrou-consigne {
+  50% {
+    opacity: 0.55;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Search } from 'lucide-react'
 import { toutesLesApplis, type Appli, type AppliId } from '../applis/applis'
+import { estVerrouille } from '../verrouillage/etat'
 import './Lanceur.css'
 
 type Props = {
@@ -18,7 +19,7 @@ const simplifier = (texte: string) => texte.normalize('NFD').replace(/[̀-ͯ]/g,
 export default function Lanceur({ ouvert, onOuvert, onLancer, active }: Props) {
   useEffect(() => {
     const surTouche = (e: KeyboardEvent) => {
-      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k' || e.repeat) return
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k' || e.repeat || estVerrouille()) return
       e.preventDefault()
       onOuvert(!ouvert)
     }

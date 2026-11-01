@@ -3,6 +3,7 @@ import { infosAppli } from '../applis/applis'
 import { echelle } from '../zoom'
 import { disposer, voisine, type Direction } from './disposition'
 import type { Fenetre } from './useFenetres'
+import { estVerrouille } from '../verrouillage/etat'
 import './Fenetres.css'
 
 type Props = {
@@ -46,7 +47,7 @@ export default function Fenetres({ fenetres, active, onActiver, onFermer, onEcha
   useEffect(() => {
     echangeRef.current = (e) => {
       const direction = DIRECTIONS[e.key]
-      if (!direction || !(e.ctrlKey || e.metaKey) || !e.shiftKey || zoneDeTexte(e.target)) return
+      if (!direction || !(e.ctrlKey || e.metaKey) || !e.shiftKey || zoneDeTexte(e.target) || estVerrouille()) return
       const i = placees.findIndex((f) => f.id === active)
       if (i < 0) return
       e.preventDefault()

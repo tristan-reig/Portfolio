@@ -6,10 +6,13 @@ import { useFenetres } from './fenetres/useFenetres'
 import SelecteurFonds from './fonds/SelecteurFonds'
 import { useFond } from './fonds/useFond'
 import { EVENEMENT_LANCER } from './applis/lancer'
+import { useVerrouille } from './verrouillage/etat'
+import Verrouillage from './verrouillage/Verrouillage'
 
 export default function App() {
   const [fond, choisirFond] = useFond()
   const [selecteur, setSelecteur] = useState(false)
+  const verrouille = useVerrouille()
   const { fenetres, active, ouvrir, fermer, activer, echanger } = useFenetres(AU_DEMARRAGE)
 
   // Une appli déjà ouverte est simplement mise au premier plan
@@ -30,8 +33,7 @@ export default function App() {
   }, [])
 
   const fenetreActive = fenetres.find((f) => f.id === active && !f.fermeture)
-
-  return (
+    return (
     <div className="bureau" style={{ background: fond.fond }}>
       <Fenetres fenetres={fenetres} active={active} onActiver={activer} onFermer={fermer} onEchanger={echanger} />
       <Barre
@@ -46,6 +48,7 @@ export default function App() {
       {selecteur && (
         <SelecteurFonds actuel={fond} onChoisir={choisirFond} onFermer={() => setSelecteur(false)} />
       )}
+      {verrouille && <Verrouillage />}
     </div>
   )
 }
