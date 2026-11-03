@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, X } from 'lucide-react'
+import { echelle } from '../../zoom'
 import { GRILLES, type Groupe } from './grilles'
 import './Connexions.css'
 
 const ERREURS_MAX = 4
 const DUREE_SAUT = 450
+const DUREE_RANGEMENT = 550
+const COULEURS = ['jaune', 'vert', 'bleu', 'violet']
 
 // Progression de chaque grille, gardée dans le navigateur du visiteur
 type Partie = { trouves: number[]; erreurs: number; essais: string[] }
@@ -38,14 +41,55 @@ function melanger<T>(liste: T[]): T[] {
   return copie
 }
 
-// Mots encore en jeu, mélangés
 const motsRestants = (grille: number, partie: Partie) =>
   melanger(GRILLES[grille].flatMap((g, i) => (partie.trouves.includes(i) ? [] : g.mots)))
 
 const BRAVO = ['Parfait !', 'Superbe !', 'Bien joué !', 'Ouf !']
 
+function versLaPremiereLigne(ordre: string[], trouves: string[]) {
+  const suite = [...ordre]
+  const aDeplacer = trouves.filter((m) => suite.indexOf(m) >= 4)
+  const libres = [0, 1, 2, 3].filter((i) => !trouves.includes(suite[i]))
+  aDeplacer.forEach((mot, k) => {
+    const de = suite.indexOf(mot)
+    const vers = libres[k]
+    ;[suite[de], suite[vers]] = [suite[vers], suite[de]]
+  })
+  return suite
+}
+
+const sansAccents = (texte: string) => [...texte].map((c) => c.normalize('NFD').replace(/\p{M}/gu, '')).join('')
+
+function MotExplique({ mot, cache, note }: { mot: string; cache?: string; note?: string }) {
+  const i = cache ? sansAccents(mot).indexOf(sansAccents(cache)) : -1
+  const lettres = [...mot]
+  return (
+    <span className="cx-mot">
+      {i >= 0 && cache ? (
+        <>
+          {lettres.slice(0, i).join('')}
+          <mark>{lettres.slice(i, i + [...cache].length).join('')}</mark>
+          {lettres.slice(i + [...cache].length).join('')}
+        </>
+      ) : (
+        mot
+      )}
+      {note && <small> ({note})</small>}
+    </span>
+  )
+}
+
+function lireAideVue() {
+  try {
+    return localStorage.getItem('connexions-aide') === 'vue'
+  } catch {
+    return true
+  }
+}
+
 export default function Connexions() {
   const [parties, setParties] = useState(lireParties)
+  // On reprend à la première grille pas encore terminée
   const [numero, setNumero] = useState(() => {
     const p = lireParties()
     const i = GRILLES.findIndex((_, n) => !finie(p[n]))
@@ -58,6 +102,10 @@ export default function Connexions() {
   const [secoue, setSecoue] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
   const [liste, setListe] = useState(false)
+  const [aide, setAide] = useState(() => !lireAideVue())
+  const [rangement, setRangement] = useState<number | null>(null)
+  const tuiles = useRef(new Map<string, HTMLButtonElement>())
+  const positions = useRef<Map<string, DOMRect> | null>(null)
   const minuteurs = useRef<number[]>([])
   const navigation = useRef<HTMLDivElement>(null)
 
@@ -75,6 +123,36 @@ export default function Connexions() {
   ]
 
   useEffect(() => () => minuteurs.current.forEach(clearTimeout), [])
+
+  const deplacer = (nouvelOrdre: string[]) => {
+    positions.current = new Map([...tuiles.current].map(([mot, el]) => [mot, el.getBoundingClientRect()]))
+    setOrdre(nouvelOrdre)
+  }
+  useLayoutEffect(() => {
+    const avant = positions.current
+    if (!avant) return
+    positions.current = null
+    const k = echelle()
+    tuiles.current.forEach((el, mot) => {
+      const a = avant.get(mot)
+      if (!a) return
+      const b = el.getBoundingClientRect()
+      const dx = (a.left - b.left) / k
+      const dy = (a.top - b.top) / k
+      if (dx || dy)
+        el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+          duration: 380,
+          easing: 'cubic-bezier(0.3, 0, 0.2, 1)',
+        })
+    })
+  }, [ordre])
+
+  const fermerAide = () => {
+    setAide(false)
+    try {
+      localStorage.setItem('connexions-aide', 'vue')
+    } catch {}
+  }
 
   useEffect(() => {
     if (!liste) return
@@ -104,17 +182,18 @@ export default function Connexions() {
     setOrdre(motsRestants(n, parties[n] ?? PARTIE_VIDE))
     setSelection([])
     setSaut(false)
+    setRangement(null)
     setMessage(null)
     setListe(false)
   }
 
   const choisir = (mot: string) => {
-    if (fini || saut) return
+    if (fini || saut || rangement !== null) return
     setSelection((s) => (s.includes(mot) ? s.filter((m) => m !== mot) : s.length < 4 ? [...s, mot] : s))
   }
 
   const valider = () => {
-    if (selection.length !== 4 || fini || saut) return
+    if (selection.length !== 4 || fini || saut || rangement !== null) return
     const cle = [...selection].sort().join('|')
     if (partie.essais.includes(cle)) {
       afficher('Déjà essayé')
@@ -128,11 +207,17 @@ export default function Connexions() {
       const essais = [...partie.essais, cle]
 
       if (compte === 4) {
-        const trouves = [...partie.trouves, groupes[0]]
-        enregistrer({ ...partie, trouves, essais })
-        setOrdre((o) => o.filter((m) => !selection.includes(m)))
-        setSelection([])
-        if (trouves.length === 4) afficher(BRAVO[partie.erreurs], 2400)
+        // Les quatre tuiles prennent la couleur du groupe et glissent sur la première ligne libre…
+        setRangement(groupes[0])
+        deplacer(versLaPremiereLigne(ordre, selection))
+        plusTard(() => {
+          const trouves = [...partie.trouves, groupes[0]]
+          enregistrer({ ...partie, trouves, essais })
+          setOrdre((o) => o.filter((m) => !selection.includes(m)))
+          setSelection([])
+          setRangement(null)
+          if (trouves.length === 4) afficher(BRAVO[partie.erreurs], 2400)
+        }, DUREE_RANGEMENT)
         return
       }
 
@@ -142,7 +227,7 @@ export default function Connexions() {
       if (erreurs >= ERREURS_MAX) {
         setSelection([])
         afficher('Dommage !', 2400)
-      } else if (compte === 3) afficher('À un mot près !')
+      } else afficher(compte === 3 ? 'À un mot près !' : "Ce n'est pas un groupe")
     }, DUREE_SAUT)
   }
 
@@ -153,9 +238,11 @@ export default function Connexions() {
     <div className="cx-cadre">
       <div className="cx">
         <header className="cx-entete">
-          <div>
+          <div className="cx-titre">
             <h1>Connections</h1>
-            <p>Formez quatre groupes de quatre mots.</p>
+            <button className="cx-icone" onClick={() => setAide(true)} title="Règles du jeu" aria-label="Règles du jeu">
+              <CircleHelp size={16} aria-hidden />
+            </button>
           </div>
           <div className="cx-navigation" ref={navigation}>
             <button className="cx-icone" onClick={() => ouvrir(numero - 1)} disabled={numero === 0} aria-label="Grille précédente">
@@ -201,7 +288,14 @@ export default function Connexions() {
           {bandeaux.map((g) => (
             <div key={g.titre} className={`cx-bandeau cx-niveau-${g.niveau}`}>
               <strong>{g.titre}</strong>
-              <span>{g.mots.join(', ')}</span>
+              <span>
+                {g.mots.map((mot, i) => (
+                  <span key={mot}>
+                    {i > 0 && ', '}
+                    <MotExplique mot={mot} cache={g.caches?.[i]} note={g.notes?.[i]} />
+                  </span>
+                ))}
+              </span>
             </div>
           ))}
           {!perdue(partie) && (
@@ -209,10 +303,19 @@ export default function Connexions() {
               {ordre.map((mot) => {
                 const i = selection.indexOf(mot)
                 const choisie = i >= 0
+                const classes = ['cx-tuile']
+                if (choisie) classes.push('cx-choisie')
+                if (choisie && saut) classes.push('cx-saut')
+                if (choisie && secoue) classes.push('cx-secoue')
+                if (choisie && rangement !== null) classes.push('cx-rangee', `cx-niveau-${grille[rangement].niveau}`)
                 return (
                   <button
                     key={mot}
-                    className={`cx-tuile${choisie ? ' cx-choisie' : ''}${choisie && saut ? ' cx-saut' : ''}${choisie && secoue ? ' cx-secoue' : ''}`}
+                    ref={(el) => {
+                      if (el) tuiles.current.set(mot, el)
+                      else tuiles.current.delete(mot)
+                    }}
+                    className={classes.join(' ')}
                     style={{ '--longueur': mot.length, animationDelay: choisie && saut ? `${i * 80}ms` : undefined } as React.CSSProperties}
                     onClick={() => choisir(mot)}
                     aria-pressed={choisie}
@@ -253,17 +356,45 @@ export default function Connexions() {
               </span>
             </div>
             <div className="cx-actions">
-              <button className="cx-bouton" onClick={() => setOrdre(melanger(ordre))} disabled={saut}>
+              <button className="cx-bouton" onClick={() => deplacer(melanger(ordre))} disabled={saut || rangement !== null}>
                 Mélanger
               </button>
               <button className="cx-bouton" onClick={() => setSelection([])} disabled={!selection.length || saut}>
                 Tout désélectionner
               </button>
-              <button className="cx-bouton cx-principal" onClick={valider} disabled={selection.length !== 4 || saut}>
+              <button className="cx-bouton cx-principal" onClick={valider} disabled={selection.length !== 4 || saut || rangement !== null}>
                 Valider
               </button>
             </div>
           </>
+        )}
+
+        {aide && (
+          <div className="cx-voile" onClick={fermerAide}>
+            <div className="cx-aide" role="dialog" aria-label="Règles du jeu" onClick={(e) => e.stopPropagation()}>
+              <button className="cx-icone cx-fermer" onClick={fermerAide} aria-label="Fermer">
+                <X size={16} aria-hidden />
+              </button>
+              <h2>Comment jouer</h2>
+              <p>Trouvez les quatre groupes de quatre mots qui ont un point commun.</p>
+              <ul>
+                <li>Sélectionnez quatre mots, puis validez.</li>
+                <li>Quatre erreurs sont permises.</li>
+                <li>Gare aux pièges : certains mots semblent aller dans plusieurs groupes.</li>
+              </ul>
+              <p className="cx-aide-niveaux">Chaque groupe a sa couleur, du plus simple au plus retors :</p>
+              <div className="cx-aide-couleurs">
+                {COULEURS.map((c, i) => (
+                  <span key={c} className={`cx-niveau-${i}`}>
+                    {c}
+                  </span>
+                ))}
+              </div>
+              <button className="cx-bouton cx-principal" onClick={fermerAide}>
+                C'est parti
+              </button>
+            </div>
+          </div>
         )}
 
         {message && (
