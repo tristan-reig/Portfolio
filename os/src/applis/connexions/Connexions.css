@@ -1,0 +1,353 @@
+.cx-cadre {
+  height: 100%;
+  container-type: size;
+}
+
+.cx {
+  --jaune: #f9e2af;
+  --vert: #a6e3a1;
+  --bleu: #89b4fa;
+  --violet: #cba6f7;
+  --sur-couleur: #11111b;
+  --tuile: min(74px, 11.5cqh);
+
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: min(18px, 2.4cqh);
+  padding: 16px 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  color: var(--texte);
+  font: 500 13px/1.4 var(--police);
+  user-select: none;
+}
+
+.cx-entete {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-right: 28px;
+}
+
+.cx-entete h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cx-entete p {
+  margin: 2px 0 0;
+  color: var(--texte-doux);
+  font-size: 12px;
+}
+
+.cx-navigation {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cx-icone,
+.cx-numero {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--texte);
+  font: 600 12px/1 var(--police);
+  cursor: pointer;
+}
+
+.cx-icone:hover:not(:disabled),
+.cx-numero:hover,
+.cx-numero[aria-expanded='true'] {
+  background: var(--survol);
+}
+
+.cx-icone:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.cx-numero span {
+  color: var(--texte-doux);
+}
+
+.cx-liste {
+  position: absolute;
+  top: 34px;
+  right: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  background: var(--menu);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  animation: cx-apparition 0.15s ease-out;
+}
+
+.cx-liste button {
+  height: 34px;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texte);
+  font: 600 12px/1 var(--police);
+  cursor: pointer;
+}
+
+.cx-liste button:hover {
+  background: var(--survol);
+}
+
+.cx-liste .cx-liste-gagnee {
+  border-color: transparent;
+  background: var(--vert);
+  color: var(--sur-couleur);
+}
+
+.cx-liste .cx-liste-perdue {
+  border-color: transparent;
+  background: #45475a;
+  color: var(--texte-doux);
+  text-decoration: line-through;
+}
+
+.cx-liste .cx-liste-commencee {
+  border-color: var(--jaune);
+}
+
+.cx-liste .cx-liste-actuelle {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cx-plateau {
+  width: min(100%, 620px);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cx-tuiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cx-tuile {
+  height: var(--tuile);
+  padding: 0 4px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--texte);
+  font: 700 calc(min(15px, 2.4cqw) * min(1, 12 / var(--longueur))) / 1.1 var(--police);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s, transform 0.12s;
+}
+
+.cx-tuile:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.cx-tuile:active {
+  transform: scale(0.96);
+}
+
+.cx-choisie,
+.cx-choisie:hover {
+  background: var(--texte);
+  color: var(--sur-couleur);
+}
+
+.cx-saut {
+  animation: cx-saut 0.3s ease-out both;
+}
+
+@keyframes cx-saut {
+  40% {
+    transform: translateY(-8px);
+  }
+}
+
+.cx-secoue {
+  animation: cx-secoue 0.4s;
+}
+
+@keyframes cx-secoue {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+.cx-bandeau {
+  height: var(--tuile);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  color: var(--sur-couleur);
+  text-align: center;
+  animation: cx-bandeau 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes cx-bandeau {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+.cx-bandeau strong {
+  font-size: min(14px, 2.2cqw);
+  text-transform: uppercase;
+}
+
+.cx-bandeau span {
+  font-size: min(13px, 2cqw);
+}
+
+.cx-niveau-0 {
+  background: var(--jaune);
+}
+
+.cx-niveau-1 {
+  background: var(--vert);
+}
+
+.cx-niveau-2 {
+  background: var(--bleu);
+}
+
+.cx-niveau-3 {
+  background: var(--violet);
+}
+
+.cx-erreurs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--texte-doux);
+}
+
+.cx-erreurs span {
+  display: flex;
+  gap: 6px;
+}
+
+.cx-point {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--texte-doux);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.cx-point-perdu {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.cx-actions,
+.cx-fin {
+  margin-bottom: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.cx-fin {
+  flex-direction: column;
+}
+
+.cx-fin p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--texte-doux);
+}
+
+.cx-fin p svg {
+  color: var(--vert);
+}
+
+.cx-bouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texte);
+  font: 600 12px/1 var(--police);
+  cursor: pointer;
+  transition: background-color 0.15s, opacity 0.15s;
+}
+
+.cx-bouton:hover:not(:disabled) {
+  background: var(--survol);
+}
+
+.cx-bouton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.cx-principal,
+.cx-principal:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--texte);
+  color: var(--sur-couleur);
+}
+
+.cx-message {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  z-index: 2;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--texte);
+  color: var(--sur-couleur);
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: cx-apparition 0.15s ease-out;
+}
+
+@keyframes cx-apparition {
+  from {
+    opacity: 0;
+  }
+}

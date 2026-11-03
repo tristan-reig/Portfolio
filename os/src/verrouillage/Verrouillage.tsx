@@ -13,19 +13,14 @@ const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'num
 
 const DUREE_SORTIE = 650
 
-// Écran de verrouillage façon macOS / Hyprlock : le bureau flouté derrière, une barre minimale,
-// la date et l'heure en haut, l'utilisateur en bas. Pas de mot de passe : Entrée (ou un clic) déverrouille.
 export default function Verrouillage() {
   const maintenant = useHeure()
   const batterie = useBatterie()
   const [sortie, setSortie] = useState(false)
 
   useEffect(() => {
-    // Le champ ou le bouton qui avait le focus derrière ne reçoit plus le clavier
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
 
-    // Toutes les touches s'arrêtent ici (les applis derrière ignorent une touche déjà traitée),
-    // sauf Échap qui permet toujours de quitter l'écran dans la scène 3D
     const surTouche = (e: KeyboardEvent) => {
       if (e.key === 'Escape') return
       e.preventDefault()
@@ -35,7 +30,6 @@ export default function Verrouillage() {
     return () => window.removeEventListener('keydown', surTouche, true)
   }, [])
 
-  // L'écran remonte, puis disparaît
   useEffect(() => {
     if (!sortie) return
     const minuteur = window.setTimeout(deverrouiller, DUREE_SORTIE)
