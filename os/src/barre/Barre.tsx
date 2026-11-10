@@ -9,6 +9,7 @@ import { useHeure } from './useHeure'
 import './Barre.css'
 import MenuAlimentation from './MenuAlimentation'
 import { verrouiller } from '../verrouillage/etat'
+import { redemarrer } from '../redemarrage/etat'
 
 const formatHeure = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' })
 const formatDate = new Intl.DateTimeFormat('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
@@ -87,7 +88,7 @@ export default function Barre({ active, onLancer, onFonds, onMusique }: Props) {
             {Math.round(batterie.niveau * 100)}{'\u202f'}%
           </span>
         )}
-        <MenuAlimentation onVerrouiller={verrouiller} />
+        <MenuAlimentation onVerrouiller={verrouiller} onRedemarrer={redemarrer} />
       </div>
     </header>
   )

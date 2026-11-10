@@ -1,0 +1,60 @@
+.rd {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #000;
+  color: #c8c8c8;
+  font: 500 14px/1.45 var(--police);
+  cursor: none;
+  user-select: none;
+}
+
+.rd-fondu {
+  animation: rd-fondu 0.6s ease-in forwards;
+}
+
+@keyframes rd-fondu {
+  from {
+    opacity: 0;
+  }
+}
+
+.rd-fin {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.rd-console {
+  margin: 0;
+  padding: 14px 18px;
+  font: inherit;
+  white-space: pre;
+}
+
+.rd-ok {
+  color: #3ed15b;
+  font-weight: 700;
+}
+
+.rd-arch {
+  color: #3da9fc;
+  font-weight: 700;
+}
+
+.rd-bios {
+  padding: 28px 36px;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.rd-bios-titre {
+  color: #fff;
+  font-weight: 700;
+}
+
+.rd-bios-bas {
+  margin-top: auto;
+  color: #fff;
+}

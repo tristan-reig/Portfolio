@@ -16,6 +16,14 @@
   color: var(--texte);
   font: 500 14px/1 var(--police);
   z-index: 5;
+  animation: barre-entree 0.6s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes barre-entree {
+  from {
+    opacity: 0;
+    transform: translateY(-60px);
+  }
 }
 
 .barre-centre {
