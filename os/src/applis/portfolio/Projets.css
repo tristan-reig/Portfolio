@@ -1,0 +1,117 @@
+.pj {
+  max-width: 760px;
+}
+
+.portfolio-article .pj-intro {
+  margin: 14px 0 28px;
+}
+
+.pj-volets {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pj-volet {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  padding: 26px 30px;
+  box-sizing: border-box;
+  border: 1px solid var(--bordure);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--texte);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.pj-volet:hover,
+.pj-volet:focus-visible {
+  border-color: var(--accent);
+  background: rgba(137, 180, 250, 0.07);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.pj-volet-icone {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(137, 180, 250, 0.1);
+  color: var(--accent);
+}
+
+.pj-volet-texte {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pj-volet-texte strong {
+  font: 900 40px/1 var(--police-titre);
+}
+
+.pj-volet-texte span {
+  color: var(--texte-doux);
+  font: 700 15px/1.2 var(--police-titre);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pj-volet-fleche {
+  flex-shrink: 0;
+  color: var(--texte-doux);
+  transition: color 0.2s, transform 0.2s;
+}
+
+.pj-volet:hover .pj-volet-fleche,
+.pj-volet:focus-visible .pj-volet-fleche {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.pj-retour {
+  margin: 0 0 14px -8px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pj-retour:hover {
+  background: var(--survol);
+}
+
+@container (max-width: 760px) {
+  .pj-volet {
+    gap: 18px;
+    padding: 18px 20px;
+  }
+
+  .pj-volet-icone {
+    width: 48px;
+    height: 48px;
+  }
+
+  .pj-volet-texte strong {
+    font-size: 28px;
+  }
+
+  .pj-volet-texte span {
+    font-size: 12px;
+  }
+}

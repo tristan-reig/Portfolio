@@ -1,6 +1,7 @@
 import { useRef, useState, type ComponentType } from 'react'
 import APropos from './APropos'
 import Contact from './Contact'
+import Projets from './Projets'
 import type { PropsRubrique, Rubrique } from './navigation'
 import './Portfolio.css'
 
@@ -12,14 +13,10 @@ const FORMATIONS = [
   { nom: '42 Perpignan', logo: '42.svg', sigle: '42', ecole: 'École 42' },
 ]
 
-function AVenir() {
-  return <p className="portfolio-doux">Contenu à venir.</p>
-}
-
 // Rubriques du portfolio
 const RUBRIQUES = [
   { id: 'apropos', titre: 'À propos', Contenu: APropos },
-  { id: 'projets', titre: 'Projets', Contenu: AVenir },
+  { id: 'projets', titre: 'Projets', Contenu: Projets },
   { id: 'contact', titre: 'Contact', Contenu: Contact },
 ] as const satisfies readonly { id: Rubrique; titre: string; Contenu: ComponentType<PropsRubrique> }[]
 
