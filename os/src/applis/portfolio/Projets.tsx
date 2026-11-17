@@ -1,27 +1,55 @@
 import { useState } from 'react'
-import { ArrowRight, Box, Gamepad2, Terminal, type LucideIcon } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { PROJETS, VOLETS, type Projet, type VoletId } from './projets/donnees'
 import './Projets.css'
 
-type Volet = { id: 'jeux' | 'logiciel' | '3d'; titre: string; sousTitre: string; Icone: LucideIcon }
-
-const VOLETS: Volet[] = [
-  { id: 'jeux', titre: 'Jeux vidéo', sousTitre: 'Gameplay et moteurs', Icone: Gamepad2 },
-  { id: 'logiciel', titre: 'Logiciel', sousTitre: '& systèmes', Icone: Terminal },
-  { id: '3d', titre: '3D', sousTitre: '& animation', Icone: Box },
-]
-
 export default function Projets() {
-  const [volet, setVolet] = useState<Volet | null>(null)
+  const [voletId, setVoletId] = useState<VoletId | null>(null)
+  const [projet, setProjet] = useState<Projet | null>(null)
+  const volet = VOLETS.find((v) => v.id === voletId)
+
+  const haut = () => document.querySelector('.portfolio-contenu')?.scrollTo(0, 0)
+
+  if (volet && projet?.Page) {
+    return (
+      <div className="pj pj-projet">
+        <nav className="pj-fil" aria-label="Fil d'Ariane">
+          <button onClick={() => (setVoletId(null), setProjet(null), haut())}>Projets</button>
+          <span>/</span>
+          <button onClick={() => (setProjet(null), haut())}>{volet.titre}</button>
+        </nav>
+        <projet.Page />
+      </div>
+    )
+  }
 
   if (volet) {
+    const projets = PROJETS.filter((p) => p.volet === volet.id)
     return (
       <div className="pj">
-        <button className="pj-retour" onClick={() => setVolet(null)}>
-          ← Projets
-        </button>
+        <nav className="pj-fil" aria-label="Fil d'Ariane">
+          <button onClick={() => (setVoletId(null), haut())}>Projets</button>
+        </nav>
         <h1>{volet.titre}</h1>
         <p className="portfolio-chapo">{volet.sousTitre}</p>
-        <p className="portfolio-doux">Contenu à venir.</p>
+
+        {projets.length === 0 ? (
+          <p className="portfolio-doux">Contenu à venir.</p>
+        ) : (
+          <ul className="pj-liste">
+            {projets.map((p) => (
+              <li key={p.id}>
+                <button className="pj-carte" onClick={() => (setProjet(p), haut())} disabled={!p.Page}>
+                  <strong>{p.titre}</strong>
+                  <span className="pj-carte-infos">
+                    {p.langage} · {p.cadre}
+                  </span>
+                  {p.Page ? <ArrowRight className="pj-carte-fleche" size={18} aria-hidden /> : <em>Bientôt</em>}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     )
   }
@@ -37,7 +65,7 @@ export default function Projets() {
       <ul className="pj-volets">
         {VOLETS.map((v) => (
           <li key={v.id}>
-            <button className="pj-volet" onClick={() => setVolet(v)}>
+            <button className="pj-volet" onClick={() => (setVoletId(v.id), haut())}>
               <span className="pj-volet-icone">
                 <v.Icone size={30} strokeWidth={1.6} aria-hidden />
               </span>
