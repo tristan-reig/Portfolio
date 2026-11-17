@@ -1,7 +1,6 @@
-import { ExternalLink } from 'lucide-react'
+import { Download, ExternalLink } from 'lucide-react'
 import { Capture, EnTete, Fiche } from './elements'
 
-// Extrait du premier niveau : chaque caractère est une case de la carte
 const NIVEAU = `##########################
 #>.3...#....r..T.........#
 #......#...Z...T....I....#
@@ -18,23 +17,23 @@ const LEGENDE = [
   ['b', 'baril explosif'],
 ]
 
-// Page du projet Doom-like
 export default function DoomLike() {
   return (
     <>
       <EnTete
         titre="Doom-like"
         accroche="Un jeu de tir à la Doom, codé de zéro en Lua."
+        technos={['lua', 'love', 'glsl']}
         infos={[
-          ['Langages', 'Lua, GLSL'],
-          ['Moteur', 'LÖVE 11.5'],
           ['Cadre', 'Projet personnel'],
-          ['Date', 'Novembre 2026'],
+          ['Année', '2026'],
         ]}
-        liens={[{ nom: 'Code source', lien: 'https://github.com/tristan-reig/doom-like', Icone: ExternalLink }]}
+        liens={[
+          { nom: 'Télécharger', lien: 'https://github.com/tristan-reig/doom-like/releases/latest', Icone: Download },
+          { nom: 'Code source', lien: 'https://github.com/tristan-reig/doom-like', Icone: ExternalLink },
+        ]}
       />
 
-      {/* Image dans os/public/projets/doom-like/ (à défaut, un cadre vide s'affiche) */}
       <Capture image="projets/doom-like/jeu.png" legende="Le premier niveau, avec la barre d'état et le visage du joueur" grande />
 
       <section className="pr-section">
@@ -47,16 +46,16 @@ export default function DoomLike() {
         <p>
           On y retrouve ce qui fait un Doom : portes et cartes d'accès de couleur, objets à ramasser (soins,
           munitions, armure), barils explosifs, la barre d'état avec le visage du joueur qui réagit aux coups, et quatre
-          niveaux de difficulté, de « Trop jeune pour mourir » à « Ultra-violence ».
+          niveaux de difficulté, de "Trop jeune pour mourir" à "Ultra-violence".
         </p>
       </section>
 
       <Fiche
         chiffres={[
-          ['3 281', 'lignes de Lua'],
-          ['6', 'jours de développement'],
+          ['~3 000', 'lignes de code'],
           ['2', 'niveaux'],
-          ['3', 'monstres, 3 armes'],
+          ['3', 'armes'],
+          ['3', 'monstres'],
         ]}
       />
 

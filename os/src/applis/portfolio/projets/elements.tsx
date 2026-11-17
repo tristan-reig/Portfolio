@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { Technos, type TechnoId } from './technos'
 
 // Éléments communs aux pages de projets
 
-// Titre, accroche, fiche technique et liens
 export function EnTete({
   titre,
   accroche,
+  technos,
   infos,
   liens = [],
 }: {
   titre: string
   accroche: string
+  technos: TechnoId[]
   infos: [string, string][]
   liens?: { nom: string; lien: string; Icone: LucideIcon }[]
 }) {
@@ -19,6 +21,7 @@ export function EnTete({
     <header className="pr-entete">
       <h1>{titre}</h1>
       <p className="portfolio-chapo">{accroche}</p>
+      <Technos ids={technos} />
       <dl className="pr-infos">
         {infos.map(([nom, valeur]) => (
           <div key={nom}>
@@ -40,7 +43,7 @@ export function EnTete({
   )
 }
 
-// Capture d'écran avec légende. Tant que l'image n'existe pas, un cadre vide garde sa place.
+// Capture d'écran avec légende (cadre vide si l'image n'est pas là).
 export function Capture({ image, legende, grande }: { image: string; legende: string; grande?: boolean }) {
   const [absente, setAbsente] = useState(false)
   return (
@@ -55,7 +58,7 @@ export function Capture({ image, legende, grande }: { image: string; legende: st
   )
 }
 
-// Quelques chiffres clés, sur une ligne
+// Chiffres clés sur une ligne
 export function Fiche({ chiffres }: { chiffres: [string, string][] }) {
   return (
     <dl className="pr-fiche">
