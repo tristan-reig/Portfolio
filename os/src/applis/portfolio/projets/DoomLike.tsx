@@ -1,21 +1,35 @@
 import { Download, ExternalLink } from 'lucide-react'
 import { Capture, EnTete, Fiche } from './elements'
 
+// Le premier niveau en entier
 const NIVEAU = `##########################
 #>.3...#....r..T.........#
 #......#...Z...T....I....#
 #..+...#.......T.........#
 #......#..bb...TTTTDTTTTT#
 #......###D####..........#
-#..........a.......X..b..#`
+#..........a.......X..b..#
+#..s.....c.......c.......#
+#......###D####.....Z....#
+#....a.#......#..........#
+###D####......#....H.....#
+#......#...Z..MMMMRMMMMMM#
+#.l....#......M......a...#
+#......#...S..M.....A....#
+#..Z...#.b....M...I......#
+#......C......M.......L..E
+##########################`
 
-const LEGENDE = [
-  ['#  T  M', 'murs (briques, tuyaux, métal)'],
-  ['D', 'porte'],
-  ['Z  I  X', 'zombie, imp, démon'],
-  ['>', 'départ du joueur'],
-  ['b', 'baril explosif'],
+const FAMILLES = [
+  { classe: 'mur', caracteres: '#TMC', sens: 'murs : briques, tuyaux, métal, caisses' },
+  { classe: 'porte', caracteres: 'DRr', sens: 'portes, porte rouge et sa clé' },
+  { classe: 'monstre', caracteres: 'ZIX', sens: 'zombie, imp, démon' },
+  { classe: 'objet', caracteres: '+HsSaA3b', sens: 'soins, munitions, armure, arme, baril' },
+  { classe: 'joueur', caracteres: '>E', sens: 'départ du joueur, sortie' },
 ]
+
+// Une case de la carte, colorée selon sa famille
+const classeDe = (c: string) => FAMILLES.find((f) => f.caracteres.includes(c))?.classe
 
 export default function DoomLike() {
   return (
@@ -95,24 +109,38 @@ export default function DoomLike() {
           <Capture image="projets/doom-like/monstres.png" legende="Un imp et des zombies" />
         </div>
 
-        <div className="pr-bloc">
+        <div className="pr-bloc pr-bloc-haut">
           <div>
             <h3>Des niveaux en texte</h3>
             <p>
               Les niveaux sont de simples fichiers texte : chaque caractère est une case, mur, porte, monstre ou objet.
-              On peut ainsi dessiner une carte dans un éditeur de texte et la tester aussitôt.
+              On peut ainsi dessiner une carte dans un éditeur de texte et la tester aussitôt. Ci-contre, le premier
+              niveau en entier.
             </p>
             <dl className="pr-legende">
-              {LEGENDE.map(([c, sens]) => (
-                <div key={c}>
-                  <dt>{c}</dt>
-                  <dd>{sens}</dd>
+              {FAMILLES.map((f) => (
+                <div key={f.classe}>
+                  <dt className={`pr-case-${f.classe}`}>{f.caracteres.split('').join(' ')}</dt>
+                  <dd>{f.sens}</dd>
                 </div>
               ))}
             </dl>
           </div>
-          <pre className="pr-niveau" aria-label="Extrait du fichier du premier niveau">
-            {NIVEAU}
+          <pre className="pr-niveau" aria-label="Le fichier du premier niveau">
+            {NIVEAU.split('\n').map((ligne, y) => (
+              <div key={y}>
+                {[...ligne].map((c, x) => {
+                  const classe = classeDe(c)
+                  return classe ? (
+                    <span key={x} className={`pr-case-${classe}`}>
+                      {c}
+                    </span>
+                  ) : (
+                    c
+                  )
+                })}
+              </div>
+            ))}
           </pre>
         </div>
       </section>

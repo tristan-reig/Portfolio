@@ -1,25 +1,40 @@
-import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
-import { PROJETS, VOLETS, type Projet, type VoletId } from './projets/donnees'
+import type { PropsRubrique } from './navigation'
+import { PROJETS, VOLETS, type Projet } from './projets/donnees'
 import { Technos } from './projets/technos'
 import './Projets.css'
 
-export default function Projets() {
-  const [voletId, setVoletId] = useState<VoletId | null>(null)
-  const [projet, setProjet] = useState<Projet | null>(null)
-  const volet = VOLETS.find((v) => v.id === voletId)
+export default function Projets({ page, naviguer }: PropsRubrique) {
+  const volet = VOLETS.find((v) => v.id === page.volet)
+  const projet = volet && PROJETS.find((p) => p.id === page.projet && p.volet === volet.id && p.Page)
 
-  // Remonte en haut de la rubrique à chaque changement de page
-  const haut = () => document.querySelector('.portfolio-contenu')?.scrollTo(0, 0)
+  // Fil d'Ariane
+  const fil = [
+    { nom: 'Projets', page: { rubrique: 'projets' as const } },
+    ...(volet ? [{ nom: volet.titre, page: { rubrique: 'projets' as const, volet: volet.id } }] : []),
+    ...(projet ? [{ nom: projet.titre, page: { rubrique: 'projets' as const, volet: volet!.id, projet: projet.id } }] : []),
+  ]
+  const ariane = (
+    <nav className="pj-fil" aria-label="Fil d'Ariane">
+      {fil.map((f, i) => (
+        <span key={f.nom}>
+          {i > 0 && <span className="pj-fil-sep">/</span>}
+          {i === fil.length - 1 ? (
+            <span className="pj-fil-courant" aria-current="page">
+              {f.nom}
+            </span>
+          ) : (
+            <button onClick={() => naviguer(f.page)}>{f.nom}</button>
+          )}
+        </span>
+      ))}
+    </nav>
+  )
 
   if (volet && projet?.Page) {
     return (
       <div className="pj pj-projet">
-        <nav className="pj-fil" aria-label="Fil d'Ariane">
-          <button onClick={() => (setVoletId(null), setProjet(null), haut())}>Projets</button>
-          <span>/</span>
-          <button onClick={() => (setProjet(null), haut())}>{volet.titre}</button>
-        </nav>
+        {ariane}
         <projet.Page />
       </div>
     )
@@ -29,9 +44,7 @@ export default function Projets() {
     const projets = PROJETS.filter((p) => p.volet === volet.id)
     return (
       <div className="pj">
-        <nav className="pj-fil" aria-label="Fil d'Ariane">
-          <button onClick={() => (setVoletId(null), haut())}>Projets</button>
-        </nav>
+        {ariane}
         <h1>{volet.titre}</h1>
         <p className="portfolio-chapo">{volet.sousTitre}</p>
 
@@ -41,7 +54,11 @@ export default function Projets() {
           <ul className="pj-liste">
             {projets.map((p) => (
               <li key={p.id}>
-                <button className="pj-carte" onClick={() => (setProjet(p), haut())} disabled={!p.Page}>
+                <button
+                  className="pj-carte"
+                  onClick={() => naviguer({ rubrique: 'projets', volet: volet.id, projet: p.id })}
+                  disabled={!p.Page}
+                >
                   <Vignette projet={p} />
                   <span className="pj-carte-corps">
                     <span className="pj-carte-titre">
@@ -65,6 +82,7 @@ export default function Projets() {
 
   return (
     <div className="pj">
+      {ariane}
       <h1>Projets</h1>
       <p className="pj-intro">
         Cliquez sur l'un des domaines ci-dessous pour découvrir les projets que j'y ai réalisés, avec des captures et
@@ -74,7 +92,7 @@ export default function Projets() {
       <ul className="pj-volets">
         {VOLETS.map((v) => (
           <li key={v.id}>
-            <button className="pj-volet" onClick={() => (setVoletId(v.id), haut())}>
+            <button className="pj-volet" onClick={() => naviguer({ rubrique: 'projets', volet: v.id })}>
               <span className="pj-volet-icone">
                 <v.Icone size={30} strokeWidth={1.6} aria-hidden />
               </span>

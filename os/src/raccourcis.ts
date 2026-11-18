@@ -18,5 +18,5 @@ window.addEventListener(
 window.addEventListener('message', (e) => {
   if (e.source !== window.parent || e.data?.type !== 'touche') return
   if (e.data.key === ' ') basculerLecture()
-  else window.dispatchEvent(new KeyboardEvent('keydown', { key: e.data.key, ctrlKey: !!e.data.ctrl, shiftKey: !!e.data.maj, cancelable: true }))
+  else window.dispatchEvent(new KeyboardEvent('keydown', { key: e.data.key, ctrlKey: !!e.data.ctrl, shiftKey: !!e.data.maj, altKey: !!e.data.alt, cancelable: true }))
 })

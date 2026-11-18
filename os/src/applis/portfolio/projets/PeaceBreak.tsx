@@ -1,22 +1,17 @@
 import { Download, ExternalLink } from 'lucide-react'
 import { EnTete, Fiche, Telephones } from './elements'
 
-// Niveau 7 du jeu, tel qu'il est décrit dans levels.dart : le chiffre est la résistance de la brique
+// Niveau 7 du jeu
 const NIVEAU = ['33.22.33', '3.2112.3', '.211112.', '3.2112.3', '33.22.33']
 
-// Extrait de la fonction d'achat, côté serveur
-const ACHAT = `-- Verrouille la ligne du profil
--- le temps de la transaction.
-select coins, max_lives into v_coins, v_lives
-from public.profiles
-where id = v_user
-for update;
+// Palette du jeu
+const PALETTE = [
+  ['#3DFF7A', 'Vert'],
+  ['#FFB000', 'Ambre'],
+  ['#FF3D7F', 'Magenta'],
+  ['#3DE8FF', 'Cyan'],
+]
 
-if v_coins < v_price then
-  raise exception 'insufficient funds';
-end if;`
-
-// Page du projet Peace Break
 export default function PeaceBreak() {
   return (
     <>
@@ -91,37 +86,42 @@ export default function PeaceBreak() {
 
         <div className="pr-bloc pr-bloc-inverse">
           <div>
-            <h3>Le serveur avec Supabase</h3>
+            <h3>L'esthétique arcade</h3>
             <p>
-              Les comptes, la progression et le classement sont stockés dans une base PostgreSQL hébergée sur
-              Supabase. La sécurité au niveau des lignes garantit que chaque joueur ne lit et ne modifie que ses
-              propres données, et le client ne peut pas changer son nombre de pièces lui-même.
+              Police pixel Press Start 2P, couleurs néon et un effet d'écran cathodique : des lignes de balayage et un
+              assombrissement des bords sont dessinés par-dessus toute l'interface. Ci-contre, le même effet refait
+              en CSS.
             </p>
-            <p>
-              Les achats passent par une fonction SQL qui verrouille le profil le temps de la transaction : deux achats
-              lancés en même temps ne peuvent pas dépenser deux fois les mêmes pièces.
-            </p>
+            <ul className="pr-palette" aria-label="Palette du jeu">
+              {PALETTE.map(([couleur, nom]) => (
+                <li key={couleur}>
+                  <span style={{ background: couleur, boxShadow: `0 0 14px ${couleur}66` }} />
+                  <strong>{nom}</strong>
+                  {couleur}
+                </li>
+              ))}
+            </ul>
           </div>
-          <pre className="pr-code" aria-label="Extrait de la fonction d'achat">
-            {ACHAT}
-          </pre>
+          <div className="pr-crt" aria-hidden="true">
+            <span className="pr-crt-titre">PEACE BREAK</span>
+            <span className="pr-crt-start">PRESS START</span>
+          </div>
         </div>
 
         <div className="pr-bloc pr-bloc-texte">
           <div>
-            <h3>L'esthétique arcade</h3>
+            <h3>Le serveur avec Supabase</h3>
             <p>
-              Police pixel Press Start 2P, couleurs néon et un effet d'écran cathodique : des lignes de balayage et un
-              assombrissement des bords sont dessinés par-dessus toute l'interface.
+              Comptes, progression et classement sont stockés dans une base PostgreSQL. Chaque joueur n'accède qu'à ses
+              propres données, et les achats passent par une fonction SQL qui empêche de dépenser deux fois les mêmes
+              pièces.
             </p>
           </div>
           <div>
             <h3>La publication sur F-Droid</h3>
             <p>
-              F-Droid recompile lui-même chaque application depuis son code source. Il a fallu une construction
-              reproductible : version de Flutter épinglée, configuration passée à la compilation et un APK par
-              architecture. F-Droid signale aussi que l'appli dépend d'un serveur en ligne, dont le code reste libre et
-              auto-hébergeable.
+              F-Droid recompile chaque application depuis son code source : il a fallu une construction reproductible,
+              avec une version de Flutter épinglée et un APK par architecture.
             </p>
           </div>
         </div>

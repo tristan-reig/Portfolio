@@ -10,7 +10,6 @@ type Props = {
   actif: boolean
 }
 
-//
 export default function Ecran({ actif }: Props) {
   const { scene } = useModele()
   const invalidate = useThree((s) => s.invalidate)
@@ -62,12 +61,14 @@ export default function Ecran({ actif }: Props) {
     if (!parent || !canvas) return
 
     const v = document.createElement('div')
+    // Fond noir quand l'écran est éteint
     v.style.cssText = 'position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;background:#000'
     const r = document.createElement('div')
     r.style.cssText = 'position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none'
     const f = document.createElement('iframe')
     f.src = ECRAN.os
     f.title = 'OS'
+    // Transmission des permissions pour le lecteur
     f.allow = 'autoplay; encrypted-media; picture-in-picture; clipboard-write'
     f.style.cssText = 'position:absolute;border:0;background:#000;pointer-events:none;visibility:hidden'
     f.onload = () => {
@@ -145,27 +146,33 @@ export default function Ecran({ actif }: Props) {
     }
   })
 
+  // La souris passe à l'OS seulement en vue zoom
   useEffect(() => {
     if (iframe.current) iframe.current.style.pointerEvents = actif ? 'auto' : 'none'
     dernier.current = ''
     invalidate()
   }, [actif, invalidate])
 
+  // Fonctionnement des raccourcis de l'OS
   useEffect(() => {
     if (!actif) return
     const surTouche = (e: KeyboardEvent) => {
       if (e.repeat) return
       const ctrl = e.ctrlKey || e.metaKey
       const raccourci =
-        e.key === ' ' || (ctrl && e.key.toLowerCase() === 'k') || (ctrl && e.shiftKey && e.key.startsWith('Arrow'))
+        e.key === ' ' ||
+        (ctrl && e.key.toLowerCase() === 'k') ||
+        (ctrl && e.shiftKey && e.key.startsWith('Arrow')) ||
+        (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))
       if (!raccourci) return
       e.preventDefault()
-      iframe.current?.contentWindow?.postMessage({ type: 'touche', key: e.key, ctrl, maj: e.shiftKey }, '*')
+      iframe.current?.contentWindow?.postMessage({ type: 'touche', key: e.key, ctrl, maj: e.shiftKey, alt: e.altKey }, '*')
     }
     window.addEventListener('keydown', surTouche)
     return () => window.removeEventListener('keydown', surTouche)
   }, [actif])
 
+  // Transmission des touches vers l'OS
   useEffect(() => {
     const surMessage = (e: MessageEvent) => {
       if (e.source !== iframe.current?.contentWindow || e.data?.type !== 'touche') return
