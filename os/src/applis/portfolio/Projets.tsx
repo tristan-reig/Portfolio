@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { PROJETS, VOLETS, type Projet, type VoletId } from './projets/donnees'
+import { Technos } from './projets/technos'
 import './Projets.css'
 
 export default function Projets() {
@@ -8,6 +9,7 @@ export default function Projets() {
   const [projet, setProjet] = useState<Projet | null>(null)
   const volet = VOLETS.find((v) => v.id === voletId)
 
+  // Remonte en haut de la rubrique à chaque changement de page
   const haut = () => document.querySelector('.portfolio-contenu')?.scrollTo(0, 0)
 
   if (volet && projet?.Page) {
@@ -40,11 +42,18 @@ export default function Projets() {
             {projets.map((p) => (
               <li key={p.id}>
                 <button className="pj-carte" onClick={() => (setProjet(p), haut())} disabled={!p.Page}>
-                  <strong>{p.titre}</strong>
-                  <span className="pj-carte-infos">
-                    {p.langage} · {p.cadre}
+                  <Vignette projet={p} />
+                  <span className="pj-carte-corps">
+                    <span className="pj-carte-titre">
+                      <strong>{p.titre}</strong>
+                      {p.annee && <span>{p.annee}</span>}
+                    </span>
+                    {p.accroche && <span className="pj-carte-accroche">{p.accroche}</span>}
+                    <span className="pj-carte-pied">
+                      {p.technos ? <Technos ids={p.technos} compact /> : <span className="pj-carte-infos">{p.langage}</span>}
+                      <span className="pj-carte-cadre">{p.cadre}</span>
+                    </span>
                   </span>
-                  {p.Page ? <ArrowRight className="pj-carte-fleche" size={18} aria-hidden /> : <em>Bientôt</em>}
                 </button>
               </li>
             ))}
@@ -79,5 +88,27 @@ export default function Projets() {
         ))}
       </ul>
     </div>
+  )
+}
+
+function Vignette({ projet }: { projet: Projet }) {
+  const base = import.meta.env.BASE_URL
+  const v = projet.vignette
+  return (
+    <span className={`pj-vignette${v?.telephone ? ' pj-vignette-telephones' : ''}`}>
+      {!projet.Page ? (
+        <em>Bientôt</em>
+      ) : v?.telephone ? (
+        <>
+          <span className="pj-vignette-flou" style={{ backgroundImage: `url(${base}${v.images[0]})` }} />
+          {v.images.map((image) => (
+            <img key={image} src={`${base}${image}`} alt="" loading="lazy" />
+          ))}
+        </>
+      ) : v ? (
+        <img src={`${base}${v.images[0]}`} alt="" loading="lazy" onError={(e) => (e.currentTarget.style.visibility = 'hidden')} />
+      ) : null}
+      {projet.Page && <ArrowRight className="pj-carte-fleche" size={18} aria-hidden />}
+    </span>
   )
 }

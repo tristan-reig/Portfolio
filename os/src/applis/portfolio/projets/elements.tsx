@@ -43,11 +43,21 @@ export function EnTete({
   )
 }
 
-// Capture d'écran avec légende (cadre vide si l'image n'est pas là).
-export function Capture({ image, legende, grande }: { image: string; legende: string; grande?: boolean }) {
+// Capture d'écran avec légende (cadre vide si l'image est manquante).
+export function Capture({
+  image,
+  legende,
+  grande,
+  telephone,
+}: {
+  image: string
+  legende: string
+  grande?: boolean
+  telephone?: boolean
+}) {
   const [absente, setAbsente] = useState(false)
   return (
-    <figure className={`pr-capture${grande ? ' pr-capture-grande' : ''}`}>
+    <figure className={`pr-capture${grande ? ' pr-capture-grande' : ''}${telephone ? ' pr-capture-telephone' : ''}`}>
       {absente ? (
         <div className="pr-capture-vide">{image.split('/').pop()}</div>
       ) : (
@@ -69,5 +79,19 @@ export function Fiche({ chiffres }: { chiffres: [string, string][] }) {
         </div>
       ))}
     </dl>
+  )
+}
+
+// Captures de téléphone côte à côte, chacune avec sa légende
+export function Telephones({ captures }: { captures: [string, string][] }) {
+  return (
+    <div className="pr-telephones">
+      {captures.map(([image, legende]) => (
+        <figure key={image}>
+          <img src={`${import.meta.env.BASE_URL}${image}`} alt={legende} loading="lazy" />
+          <figcaption>{legende}</figcaption>
+        </figure>
+      ))}
+    </div>
   )
 }
