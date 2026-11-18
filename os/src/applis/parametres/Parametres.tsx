@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react'
-import { Check, Info, Keyboard, Palette, RotateCcw, type LucideIcon } from 'lucide-react'
+import { useState } from 'react'
+import { Check, Database, Info, Keyboard, Monitor, Palette, RotateCcw, Trash2, Volume2, type LucideIcon } from 'lucide-react'
 import { FONDS } from '../../fonds/fonds'
-import { ACCENTS, PAR_DEFAUT, modifier, useReglages, type AccentId } from '../../reglages/reglages'
+import { redemarrer } from '../../redemarrage/etat'
+import { ACCENTS, PAR_DEFAUT, modifier, reinitialiserReglages, useReglages, type AccentId } from '../../reglages/reglages'
+import { toutesLesApplis, type AppliId } from '../applis'
 import './Parametres.css'
 
-type SectionId = 'apparence' | 'raccourcis' | 'apropos'
+type SectionId = 'apparence' | 'son' | 'bureau' | 'raccourcis' | 'donnees' | 'apropos'
 
 const SECTIONS: { id: SectionId; titre: string; Icone: LucideIcon }[] = [
   { id: 'apparence', titre: 'Apparence', Icone: Palette },
+  { id: 'son', titre: 'Son', Icone: Volume2 },
+  { id: 'bureau', titre: 'Bureau', Icone: Monitor },
   { id: 'raccourcis', titre: 'Raccourcis clavier', Icone: Keyboard },
+  { id: 'donnees', titre: 'Données', Icone: Database },
   { id: 'apropos', titre: 'À propos', Icone: Info },
 ]
 
@@ -36,7 +41,10 @@ export default function Parametres() {
         <div className="pa-contenu">
           <div key={section} className="pa-page">
             {section === 'apparence' && <Apparence />}
+            {section === 'son' && <Son />}
+            {section === 'bureau' && <Bureau />}
             {section === 'raccourcis' && <Raccourcis />}
+            {section === 'donnees' && <Donnees />}
             {section === 'apropos' && <APropos />}
           </div>
         </div>
@@ -121,18 +129,12 @@ function Apparence() {
 
       <section className="pa-groupe">
         <h3>Accessibilité</h3>
-        <label className="pa-interrupteur">
-          <span>
-            <strong>Réduire les animations</strong>
-            <span className="pa-aide">Les fenêtres, menus et transitions s'affichent sans mouvement.</span>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={r.animationsReduites}
-            onChange={(e) => modifier({ animationsReduites: e.target.checked })}
-          />
-        </label>
+        <Interrupteur
+          nom="Réduire les animations"
+          aide="Les fenêtres, menus et transitions s'affichent sans mouvement."
+          actif={r.animationsReduites}
+          onChange={(animationsReduites) => modifier({ animationsReduites })}
+        />
       </section>
 
       <button
@@ -154,6 +156,7 @@ function Reglette({
   valeur,
   min,
   max,
+  unite = 'px',
   onChange,
 }: {
   nom: string
@@ -161,6 +164,7 @@ function Reglette({
   valeur: number
   min: number
   max: number
+  unite?: string
   onChange: (v: number) => void
 }) {
   return (
@@ -177,8 +181,179 @@ function Reglette({
         onChange={(e) => onChange(Number(e.target.value))}
         style={{ '--rempli': `${((valeur - min) / (max - min)) * 100}%` } as React.CSSProperties}
       />
-      <output>{valeur} px</output>
+      <output>
+        {valeur} {unite}
+      </output>
     </label>
+  )
+}
+
+function Interrupteur({
+  nom,
+  aide,
+  actif,
+  onChange,
+}: {
+  nom: string
+  aide: string
+  actif: boolean
+  onChange: (v: boolean) => void
+}) {
+  return (
+    <label className="pa-interrupteur">
+      <span>
+        <strong>{nom}</strong>
+        <span className="pa-aide">{aide}</span>
+      </span>
+      <input type="checkbox" role="switch" checked={actif} onChange={(e) => onChange(e.target.checked)} />
+    </label>
+  )
+}
+
+// ——— Son ———
+
+function Son() {
+  const r = useReglages()
+  return (
+    <>
+      <h2>Son</h2>
+      <section className="pa-groupe">
+        <h3>Musique</h3>
+        <Reglette
+          nom="Volume"
+          aide="Le même réglage que dans l'appli Musique."
+          valeur={r.volume}
+          min={0}
+          max={100}
+          unite="%"
+          onChange={(volume) => modifier({ volume })}
+        />
+      </section>
+      <section className="pa-groupe">
+        <h3>Scène 3D</h3>
+        <Interrupteur
+          nom="Bruits du clavier"
+          aide="Le son des touches quand on tape sur le clavier du bureau en 3D."
+          actif={r.sonsScene}
+          onChange={(sonsScene) => modifier({ sonsScene })}
+        />
+      </section>
+    </>
+  )
+}
+
+// ——— Bureau ———
+
+const DELAIS = [
+  [0, 'Jamais'],
+  [2, '2 min'],
+  [5, '5 min'],
+  [10, '10 min'],
+] as const
+
+function Bureau() {
+  const r = useReglages()
+  const basculer = (id: AppliId) =>
+    modifier({ demarrage: r.demarrage.includes(id) ? r.demarrage.filter((a) => a !== id) : [...r.demarrage, id] })
+
+  return (
+    <>
+      <h2>Bureau</h2>
+      <section className="pa-groupe">
+        <h3>Ouvertes au démarrage</h3>
+        <p className="pa-aide">Les fenêtres qui s'ouvrent à l'arrivée sur l'écran et après un redémarrage.</p>
+        <ul className="pa-applis">
+          {toutesLesApplis().map(([id, a]) => (
+            <li key={id}>
+              <label>
+                <span className="pa-applis-icone" style={{ background: a.couleur }}>
+                  <a.Icone size={16} strokeWidth={1.8} aria-hidden />
+                </span>
+                {a.titre}
+                <input type="checkbox" checked={r.demarrage.includes(id)} onChange={() => basculer(id)} />
+              </label>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="pa-groupe">
+        <h3>Verrouillage automatique</h3>
+        <p className="pa-aide">L'écran se verrouille après ce délai sans souris ni clavier.</p>
+        <div className="pa-choix" role="radiogroup" aria-label="Délai avant le verrouillage">
+          {DELAIS.map(([minutes, nom]) => (
+            <button
+              key={minutes}
+              role="radio"
+              aria-checked={r.verrouAuto === minutes}
+              className={r.verrouAuto === minutes ? 'pa-choisi' : undefined}
+              onClick={() => modifier({ verrouAuto: minutes })}
+            >
+              {nom}
+            </button>
+          ))}
+        </div>
+      </section>
+    </>
+  )
+}
+
+// ——— Données ———
+
+// Ce que l'OS garde dans le navigateur du visiteur
+const PREFIXES = ['os-', 'mot-', 'connexions-']
+
+function Donnees() {
+  const [confirmer, setConfirmer] = useState(false)
+
+  const reinitialiser = () => {
+    try {
+      Object.keys(localStorage)
+        .filter((cle) => PREFIXES.some((p) => cle.startsWith(p)))
+        .forEach((cle) => localStorage.removeItem(cle))
+    } catch {
+      // Stockage indisponible
+    }
+    reinitialiserReglages()
+    redemarrer()
+  }
+
+  return (
+    <>
+      <h2>Données</h2>
+      <section className="pa-groupe">
+        <h3>Enregistré dans ce navigateur</h3>
+        <ul className="pa-liste">
+          <li>Les réglages : fond d'écran, couleurs, fenêtres, son et bureau</li>
+          <li>La progression du Wordle et de Connections</li>
+        </ul>
+        <p className="pa-aide">Rien n'est envoyé sur un serveur : tout reste sur cet appareil.</p>
+      </section>
+
+      <section className="pa-groupe">
+        <h3>Réinitialiser</h3>
+        <div className="pa-danger">
+          <span>
+            <strong>Tout effacer et redémarrer</strong>
+            <span className="pa-aide">Les réglages reviennent par défaut et les parties sont perdues.</span>
+          </span>
+          {confirmer ? (
+            <span className="pa-danger-boutons">
+              <button className="pa-bouton" onClick={() => setConfirmer(false)}>
+                Annuler
+              </button>
+              <button className="pa-bouton pa-bouton-danger" onClick={reinitialiser}>
+                Confirmer
+              </button>
+            </span>
+          ) : (
+            <button className="pa-bouton pa-bouton-danger" onClick={() => setConfirmer(true)}>
+              <Trash2 size={14} aria-hidden /> Réinitialiser
+            </button>
+          )}
+        </div>
+      </section>
+    </>
   )
 }
 
@@ -242,17 +417,14 @@ function Raccourcis() {
   )
 }
 
-// ——— À propos, façon neofetch ———
+// ——— À propos ———
 
-const LOGO = [
-  '████████ ██████ ',
-  '   ██    ██   ██',
-  '   ██    ██████ ',
-  '   ██    ██  ██ ',
-  '   ██    ██   ██',
-].join('\n')
-
-const DEBUT = Date.now()
+const SYSTEME: [string, string][] = [
+  ['Système', 'TR-OS 1.0, inspiré de Hyprland'],
+  ['Interface', 'React 19, TypeScript'],
+  ['Scène 3D', 'Three.js, React Three Fiber, Blender'],
+  ['Outils', 'Vite 8'],
+]
 
 const CREDITS: [string, string, string][] = [
   ['Idée et sons', 'Portfolio de Henry Heffernan', 'MIT'],
@@ -263,71 +435,34 @@ const CREDITS: [string, string, string][] = [
   ['Paroles', 'LRCLIB', ''],
 ]
 
+function Lignes({ lignes }: { lignes: [string, string, string?][] }) {
+  return (
+    <dl className="pa-credits">
+      {lignes.map(([quoi, qui, licence]) => (
+        <div key={quoi}>
+          <dt>{quoi}</dt>
+          <dd>
+            {qui}
+            {licence && <span>{licence}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 function APropos() {
-  const r = useReglages()
-  const [maintenant, setMaintenant] = useState(() => Date.now())
-  useEffect(() => {
-    const minuteur = window.setInterval(() => setMaintenant(Date.now()), 1000)
-    return () => clearInterval(minuteur)
-  }, [])
-
-  const secondes = Math.floor((maintenant - DEBUT) / 1000)
-  const duree = secondes < 60 ? `${secondes} s` : `${Math.floor(secondes / 60)} min ${secondes % 60} s`
-
-  const infos: [string, string][] = [
-    ['Système', 'TR-OS 1.0, inspiré de Hyprland'],
-    ['Interface', 'React 19, TypeScript'],
-    ['Scène 3D', 'Three.js r186, React Three Fiber'],
-    ['Outils', 'Vite 8, Blender'],
-    ['Résolution', `${window.innerWidth} × ${window.innerHeight}`],
-    ['Allumé depuis', duree],
-    ['Thème', `${ACCENTS[r.accent].nom}, ${FONDS.find((f) => f.id === r.fond)?.nom ?? ''}`],
-    ['Police', 'JetBrains Mono'],
-  ]
-
   return (
     <>
-      <div className="pa-neofetch">
-        <pre className="pa-logo" aria-hidden="true">
-          {LOGO}
-        </pre>
-        <div>
-          <p className="pa-utilisateur">
-            <span>visiteur</span>@<span>tristan-reig</span>
-          </p>
-          <p className="pa-trait" aria-hidden="true">
-            {'─'.repeat(21)}
-          </p>
-          <dl className="pa-infos">
-            {infos.map(([nom, valeur]) => (
-              <div key={nom}>
-                <dt>{nom}</dt>
-                <dd>{valeur}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="pa-couleurs" aria-hidden="true">
-            {['#f38ba8', '#fab387', '#f9e2af', '#a6e3a1', '#94e2d5', '#89b4fa', '#cba6f7', '#f5c2e7'].map((c) => (
-              <span key={c} style={{ background: c }} />
-            ))}
-          </div>
-        </div>
-      </div>
-
+      <h2>À propos</h2>
+      <section className="pa-groupe">
+        <h3>Système</h3>
+        <Lignes lignes={SYSTEME} />
+      </section>
       <section className="pa-groupe">
         <h3>Crédits</h3>
-        <dl className="pa-credits">
-          {CREDITS.map(([quoi, qui, licence]) => (
-            <div key={quoi}>
-              <dt>{quoi}</dt>
-              <dd>
-                {qui}
-                {licence && <span>{licence}</span>}
-              </dd>
-            </div>
-          ))}
-        </dl>
-        <p className="pa-aide">
+        <Lignes lignes={CREDITS} />
+        <p className="pa-aide pa-signature">
           Conçu et développé par Tristan Reig.{' '}
           <a href="https://github.com/tristan-reig" target="_blank" rel="noreferrer">
             github.com/tristan-reig

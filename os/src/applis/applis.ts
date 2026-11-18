@@ -24,10 +24,8 @@ export const APPLIS = {
 
 export type AppliId = keyof typeof APPLIS
 
-// Fenêtres ouvertes au démarrage
-export const AU_DEMARRAGE: AppliId[] = ['portfolio']
-
-// Titre et contenu d'une appli.
+// Titre et contenu d'une appli. Passer par cette fonction plutôt que par APPLIS[id]
+// garde le code valide même quand la liste est vide.
 export const infosAppli = (id: AppliId): Appli => (APPLIS as Record<string, Appli>)[id]
 
 // Toutes les applis, dans l'ordre de la liste

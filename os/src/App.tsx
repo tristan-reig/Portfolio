@@ -1,27 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AU_DEMARRAGE, infosAppli, type AppliId } from './applis/applis'
+import { infosAppli, type AppliId } from './applis/applis'
 import Barre from './barre/Barre'
 import Fenetres from './fenetres/Fenetres'
 import { useFenetres } from './fenetres/useFenetres'
 import SelecteurFonds from './fonds/SelecteurFonds'
 import { useFond } from './fonds/useFond'
+import { lireReglages, useReglages } from './reglages/reglages'
 import { EVENEMENT_LANCER } from './applis/lancer'
 import { deverrouiller, useVerrouille, verrouiller } from './verrouillage/etat'
 import { useRedemarrage } from './redemarrage/etat'
 import Redemarrage from './redemarrage/Redemarrage'
 import Verrouillage from './verrouillage/Verrouillage'
 
-// L'OS : le bureau, et la séquence de redémarrage par-dessus quand on la demande
 export default function App() {
   const redemarrage = useRedemarrage()
   const [allume, setAllume] = useState(true)
-  // Chaque démarrage crée un bureau tout neuf : fenêtres de départ, musique arrêtée…
   const [demarrage, setDemarrage] = useState(0)
 
   const eteindre = useCallback(() => {
     setAllume(false)
     deverrouiller()
   }, [])
+  // Démarrage sur l'écran de verrouillage
   const allumer = useCallback(() => {
     setDemarrage((n) => n + 1)
     setAllume(true)
@@ -36,21 +36,37 @@ export default function App() {
   )
 }
 
-// Bureau de l'OS, dans l'esprit de Hyprland : fond d'écran, barre système et fenêtres en mosaïque
 function Bureau() {
   const [fond, choisirFond] = useFond()
   const [selecteur, setSelecteur] = useState(false)
   const verrouille = useVerrouille()
-  const { fenetres, active, ouvrir, fermer, activer, echanger } = useFenetres(AU_DEMARRAGE)
+  const { fenetres, active, ouvrir, fermer, activer, echanger } = useFenetres(lireReglages().demarrage)
 
-  // Une appli déjà ouverte est simplement mise au premier plan (pas deux lecteurs de musique à la fois)
+  // Une appli déjà ouverte est mise au premier plan
   const lancer = (appli: AppliId) => {
     const ouverte = fenetres.find((f) => f.appli === appli && !f.fermeture)
     if (ouverte) activer(ouverte.id)
     else ouvrir(appli)
   }
 
-  // Une appli peut en ouvrir une autre (voir applis/lancer.ts)
+  // Verrouillage automatique après quelques minutes
+  const { verrouAuto } = useReglages()
+  useEffect(() => {
+    if (!verrouAuto) return
+    let minuteur = 0
+    const relancer = () => {
+      clearTimeout(minuteur)
+      minuteur = window.setTimeout(verrouiller, verrouAuto * 60_000)
+    }
+    const evenements = ['pointermove', 'pointerdown', 'keydown', 'wheel'] as const
+    evenements.forEach((e) => window.addEventListener(e, relancer, { passive: true }))
+    relancer()
+    return () => {
+      clearTimeout(minuteur)
+      evenements.forEach((e) => window.removeEventListener(e, relancer))
+    }
+  }, [verrouAuto])
+
   const lancerRef = useRef(lancer)
   useEffect(() => {
     lancerRef.current = lancer

@@ -7,11 +7,11 @@ const SON = {
 }
 
 let contexte: AudioContext | null = null
+let actifs = true
 let chargement: Promise<void> | null = null
 let derniere = -1
 const frappes: AudioBuffer[] = []
 
-// Les fichiers sont téléchargés dès l'ouverture de la page, pour être prêts à la première lettre.
 const telechargements =
   typeof window !== 'undefined'
     ? SON.chemins.map((chemin) =>
@@ -22,7 +22,6 @@ const telechargements =
       )
     : []
 
-// Décode les fichiers une seule fois, dès que le contexte audio existe.
 function chargerFrappes(c: AudioContext) {
   chargement ??= Promise.allSettled(
     telechargements.map((telechargement) => telechargement.then((donnees) => c.decodeAudioData(donnees))),
@@ -45,11 +44,9 @@ function choisirFrappe(liste: AudioBuffer[]) {
   return liste[index]
 }
 
-// Programme une frappe à l'instant `quand`
 export function programmerFrappe(c: BaseAudioContext, sortie: AudioNode, liste: AudioBuffer[], quand: number) {
   const source = c.createBufferSource()
   source.buffer = choisirFrappe(liste)
-  // Chaque demi-ton multiplie la vitesse de lecture par 2^(1/12)
   const demiTons = SON.demiTons + hasard() * SON.variationHauteur
   source.playbackRate.value = 2 ** (demiTons / 12)
 
@@ -60,7 +57,6 @@ export function programmerFrappe(c: BaseAudioContext, sortie: AudioNode, liste: 
   source.start(quand)
 }
 
-// À appeler pendant un clic du visiteur (les navigateurs n'autorisent le son qu'après une interaction)
 export function debloquerSon() {
   if (!contexte && typeof window !== 'undefined' && 'AudioContext' in window) {
     contexte = new AudioContext()
@@ -70,8 +66,12 @@ export function debloquerSon() {
   chargerFrappes(contexte)
 }
 
+export function activerSons(valeur: boolean) {
+  actifs = valeur
+}
+
 export function jouerTouche() {
   const c = contexte
-  if (!c || c.state !== 'running' || frappes.length === 0) return
+  if (!actifs || !c || c.state !== 'running' || frappes.length === 0) return
   programmerFrappe(c, c.destination, frappes, c.currentTime)
 }

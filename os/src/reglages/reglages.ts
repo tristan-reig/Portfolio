@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import type { AppliId } from '../applis/applis'
 import { FOND_PAR_DEFAUT, FONDS, type Fond } from '../fonds/fonds'
 
 // Réglages de l'OS, partagés entre le bureau et l'appli Paramètres
@@ -20,6 +21,10 @@ export type Reglages = {
   espace: number // marge entre les fenêtres
   arrondi: number // arrondi des coins des fenêtres
   animationsReduites: boolean
+  volume: number // volume de la musique
+  sonsScene: boolean
+  demarrage: AppliId[] // applis ouvertes au démarrage
+  verrouAuto: number
 }
 
 const CLE = 'os-reglages'
@@ -38,6 +43,10 @@ export const PAR_DEFAUT: Reglages = {
   espace: 8,
   arrondi: 10,
   animationsReduites: mouvementReduit(),
+  volume: 80,
+  sonsScene: true,
+  demarrage: ['musique', 'portfolio'],
+  verrouAuto: 0,
 }
 
 function lire(): Reglages {
@@ -64,6 +73,7 @@ function appliquer(r: Reglages) {
   s.setProperty('--espace', `${r.espace}px`)
   s.setProperty('--arrondi', `${r.arrondi}px`)
   document.documentElement.classList.toggle('animations-reduites', r.animationsReduites)
+  if (window.parent !== window) window.parent.postMessage({ type: 'sons', actifs: r.sonsScene }, '*')
 }
 appliquer(reglages)
 
@@ -79,6 +89,9 @@ export function modifier(changements: Partial<Reglages>) {
 }
 
 export const lireReglages = () => reglages
+
+// Remet tous les réglages par défaut
+export const reinitialiserReglages = () => modifier(PAR_DEFAUT)
 
 export function useReglages() {
   return useSyncExternalStore(

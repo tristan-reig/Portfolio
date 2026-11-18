@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { modifier, useReglages } from '../../reglages/reglages'
 import { Pause, Play, Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Volume, Volume1, Volume2, VolumeX } from 'lucide-react'
 import Curseur from './Curseur'
 import { enregistrerBasculer, signalerLecture } from './etat'
@@ -11,7 +12,7 @@ import './Musique.css'
 const PLAYLIST_YOUTUBE = 'OLAK5uy_msYZvB4nIlIHiuHMxqrI71oIKbfHqoti4'
 const CLE = import.meta.env.VITE_YOUTUBE_CLE as string | undefined
 
-// Panneau des paroles, réglable avec la poignée qui le sépare de la file d'attente
+// Panneau des paroles
 const PAROLES = {
   hauteur: 210,
   replie: 44,
@@ -46,7 +47,9 @@ export default function Musique() {
   const [pret, setPret] = useState(false)
   const [enLecture, setEnLecture] = useState(false)
   const [temps, setTemps] = useState({ position: 0, duree: 0 })
-  const [volume, setVolume] = useState(80)
+  // Volume partagé avec Paramètres > Son
+  const volume = useReglages().volume
+  const setVolume = (v: number) => modifier({ volume: v })
   const volumeAvantMuet = useRef(80)
   const [boucle, setBoucle] = useState<Boucle>('liste')
   const [ordre, setOrdre] = useState<number[] | null>(null)
@@ -60,6 +63,7 @@ export default function Musique() {
   const echecs = useRef(0)
   const nbVideos = useRef(0)
 
+  // Liste des vidéos
   useEffect(() => {
     if (!CLE || !PLAYLIST_YOUTUBE) return
     let annule = false
@@ -75,6 +79,7 @@ export default function Musique() {
   const video = videos[index]
   const premiere = videos[0]?.id
 
+  // Lecteur YouTube
   useEffect(() => {
     const parent = conteneur.current
     if (!parent || !premiere) return
@@ -171,6 +176,7 @@ export default function Musique() {
     nbVideos.current = videos.length
   })
 
+  // Au-delà de 3 secondes, on revient au début du titre
   const precedent = () => {
     if (temps.position > 3) {
       lecteur.current?.seekTo(0, true)
@@ -184,6 +190,7 @@ export default function Musique() {
     else lecteur.current.playVideo()
   }
 
+  // Espace, depuis n'importe où dans l'OS
   useEffect(() => {
     enregistrerBasculer(basculer)
     return () => enregistrerBasculer(null)
