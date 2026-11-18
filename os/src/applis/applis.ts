@@ -1,8 +1,9 @@
 import type { ComponentType } from 'react'
-import { Briefcase, LayoutGrid, Music, Puzzle, type LucideIcon } from 'lucide-react'
+import { Briefcase, LayoutGrid, Music, Puzzle, Settings, type LucideIcon } from 'lucide-react'
 import Connexions from './connexions/Connexions'
 import MotDuJour from './mot/MotDuJour'
 import Musique from './musique/Musique'
+import Parametres from './parametres/Parametres'
 import Portfolio from './portfolio/Portfolio'
 
 export type Appli = {
@@ -18,12 +19,16 @@ export const APPLIS = {
   musique: { titre: 'Musique', description: 'Ma playlist du moment, avec les paroles', couleur: '#f5c2e7', Icone: Music, Contenu: Musique },
   mot: { titre: 'Wordle', description: 'Le mot du jour en 6 essais, en français ou en anglais', couleur: '#a6e3a1', Icone: LayoutGrid, Contenu: MotDuJour },
   connexions: { titre: 'Connections', description: 'Retrouvez les quatre groupes de quatre mots', couleur: '#fab387', Icone: Puzzle, Contenu: Connexions },
+  parametres: { titre: 'Paramètres', description: 'Apparence, raccourcis clavier et informations sur le système', couleur: '#b4befe', Icone: Settings, Contenu: Parametres },
 } satisfies Record<string, Appli>
 
 export type AppliId = keyof typeof APPLIS
 
+// Fenêtres ouvertes au démarrage
 export const AU_DEMARRAGE: AppliId[] = ['portfolio']
 
+// Titre et contenu d'une appli.
 export const infosAppli = (id: AppliId): Appli => (APPLIS as Record<string, Appli>)[id]
 
+// Toutes les applis, dans l'ordre de la liste
 export const toutesLesApplis = () => Object.entries(APPLIS as Record<string, Appli>) as [AppliId, Appli][]

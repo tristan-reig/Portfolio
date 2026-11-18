@@ -1,9 +1,10 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { infosAppli } from '../applis/applis'
 import { echelle } from '../zoom'
+import { estVerrouille } from '../verrouillage/etat'
+import { useReglages } from '../reglages/reglages'
 import { disposer, voisine, type Direction } from './disposition'
 import type { Fenetre } from './useFenetres'
-import { estVerrouille } from '../verrouillage/etat'
 import './Fenetres.css'
 
 type Props = {
@@ -16,8 +17,10 @@ type Props = {
 
 const DIRECTIONS: Record<string, Direction> = { ArrowLeft: 'gauche', ArrowRight: 'droite', ArrowUp: 'haut', ArrowDown: 'bas' }
 
+// Fenêtre en train d'être glissée par sa poignée
 type Glisse = { id: number; x0: number; y0: number; dx: number; dy: number; cible: number | null }
 
+// Taille de la zone des fenêtres mise à jour si elle change
 function useTaille() {
   const ref = useRef<HTMLDivElement>(null)
   const [taille, setTaille] = useState({ largeur: 0, hauteur: 0 })
@@ -40,9 +43,10 @@ export default function Fenetres({ fenetres, active, onActiver, onFermer, onEcha
   const [zone, taille] = useTaille()
   const [glisse, setGlisse] = useState<Glisse | null>(null)
   const placees = fenetres.filter((f) => !f.fermeture)
-  const rects = disposer(placees.length, { x: 0, y: 0, ...taille })
+  const { espace } = useReglages()
+  const rects = disposer(placees.length, { x: 0, y: 0, ...taille }, espace)
 
-  // Ctrl Maj ←↑↓→ : la fenêtre active échange sa place avec sa voisine dans cette direction
+  // Changements de la fenêtre active
   const echangeRef = useRef<(e: KeyboardEvent) => void>(() => {})
   useEffect(() => {
     echangeRef.current = (e) => {
@@ -135,7 +139,7 @@ export default function Fenetres({ fenetres, active, onActiver, onFermer, onEcha
               aria-label={`Fermer ${titre}`}
               title="Fermer"
             >
-              ×
+              x
             </button>
             <div className="fenetre-contenu">
               <Contenu />

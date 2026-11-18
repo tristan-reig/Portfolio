@@ -29,7 +29,7 @@ export const FONDS: Fond[] = [
   { id: 'icecold', nom: 'IceCold', couleur: 'bleu', fond: 'center / cover url(/os/fonds/IceCold.webp)' },
   { id: 'kay', nom: 'Kay', couleur: 'bleu', fond: 'center / cover url(/os/fonds/Kay.webp)' },
   { id: 'milkyway', nom: 'MilkyWay', couleur: 'violet', fond: 'center / cover url(/os/fonds/MilkyWay.webp)' },
-  { id: 'mountain', nom: 'Mountai,', couleur: 'gris', fond: 'center / cover url(/os/fonds/Mountain.webp)' },
+  { id: 'mountain', nom: 'Mountain', couleur: 'gris', fond: 'center / cover url(/os/fonds/Mountain.webp)' },
   { id: 'mrlee', nom: 'MrLee', couleur: 'gris', fond: 'center / cover url(/os/fonds/MrLee.jpg)' },
   { id: 'nuvole', nom: 'Nuvole', couleur: 'rose', fond: 'center / cover url(/os/fonds/Nuvole.webp)' },
   { id: 'orionnebula', nom: 'OrionNebula', couleur: 'rose', fond: 'center / cover url(/os/fonds/OrionNebula.jpg)' },
@@ -40,7 +40,6 @@ export const FONDS: Fond[] = [
   { id: 'snowcappedmountain', nom: 'SnowCappedMountain', couleur: 'gris', fond: 'center / cover url(/os/fonds/SnowCappedMountain.jpg)' },
   { id: 'stellar', nom: 'Stellar', couleur: 'gris', fond: 'center / cover url(/os/fonds/Stellar.jpg)' },
   { id: 'tarantulanebula', nom: 'TarantulaNebula', couleur: 'orange', fond: 'center / cover url(/os/fonds/TarantulaNebula.jpg)' },
-  { id: 'weeb', nom: 'Weeb', couleur: 'bleu', fond: 'center / cover url(/os/fonds/Weeb.jpg)' },
 ]
 
 export const FOND_PAR_DEFAUT = FONDS[0]

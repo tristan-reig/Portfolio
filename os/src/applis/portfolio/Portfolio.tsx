@@ -11,7 +11,7 @@ const SOUS_TITRE = 'Master IMAGINE · 42 Perpignan'
 
 // Formations affichées sous le nom
 const FORMATIONS = [
-  { nom: 'Master IMAGINE', logo: 'um.svg', sigle: 'UM', ecole: 'Université de Montpellier' },
+  { nom: 'Master IMAGINE', logo: 'um.png', sigle: 'UM', ecole: 'Université de Montpellier' },
   { nom: '42 Perpignan', logo: '42.svg', sigle: '42', ecole: 'École 42' },
 ]
 

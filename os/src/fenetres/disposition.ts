@@ -1,10 +1,10 @@
-// Disposition "dwindle" de Hyprland
+// Disposition « dwindle » de Hyprland
 
 export type Rect = { x: number; y: number; largeur: number; hauteur: number }
 
-export const ESPACE = 8
-
-export function disposer(n: number, zone: Rect): Rect[] {
+export function disposer(n: number, zone: Rect, espace = 8): Rect[] {
+  const ESPACE = espace
+  // On agrandit la zone d'une demi-marge, puis on rétrécit chaque fenêtre d'une demi-marge
   const d = ESPACE / 2
   let reste: Rect = { x: zone.x - d, y: zone.y - d, largeur: zone.largeur + ESPACE, hauteur: zone.hauteur + ESPACE }
   const rects: Rect[] = []
