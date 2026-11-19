@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { Box, Code, Gamepad2, type LucideIcon } from 'lucide-react'
 import DoomLike from './DoomLike'
 import PeaceBreak from './PeaceBreak'
+import SimsEngine from './SimsEngine'
 import type { TechnoId } from './technos'
 
 export type VoletId = 'jeux' | 'programmation' | '3d'
@@ -57,6 +58,17 @@ export const PROJETS: Projet[] = [
   { id: 'platformer', volet: 'jeux', titre: 'Platformer', langage: 'C#', cadre: 'Perso' },
   { id: 'ft_minecraft', volet: 'jeux', titre: 'ft_minecraft', langage: 'Java', cadre: '42' },
   { id: 'ft_transcendence', volet: 'programmation', titre: 'ft_transcendence', langage: 'JavaScript', cadre: '42' },
-  { id: 'simesengine', volet: 'programmation', titre: 'Simesengine', langage: 'Python', cadre: 'Université' },
+  {
+    id: 'simsengine',
+    volet: 'programmation',
+    titre: 'SimsEngine',
+    langage: 'Python',
+    cadre: 'Université',
+    annee: '2026',
+    accroche: 'Des créatures virtuelles qui apprennent à se déplacer toutes seules.',
+    technos: ['python', 'numpy'],
+    vignette: { images: ['projets/simsengine/marche.webp'] },
+    Page: SimsEngine,
+  },
   { id: 'minishell', volet: 'programmation', titre: 'minishell', langage: 'C', cadre: '42' },
 ]

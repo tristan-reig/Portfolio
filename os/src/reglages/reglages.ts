@@ -45,7 +45,7 @@ export const PAR_DEFAUT: Reglages = {
   animationsReduites: mouvementReduit(),
   volume: 80,
   sonsScene: true,
-  demarrage: ['musique', 'portfolio'],
+  demarrage: ['portfolio'],
   verrouAuto: 0,
 }
 

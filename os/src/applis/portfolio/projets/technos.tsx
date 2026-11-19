@@ -1,4 +1,4 @@
-import { siDart, siFlutter, siLua, siOpengl, siSupabase, type SimpleIcon } from 'simple-icons'
+import { siDart, siFlutter, siLua, siNumpy, siOpengl, siPython, siSupabase, type SimpleIcon } from 'simple-icons'
 
 // Technologies citées dans les pages de projets avec leur logo.
 type Techno = { nom: string } & ({ icone: SimpleIcon } | { image: string })
@@ -10,6 +10,8 @@ const TECHNOS = {
   dart: { nom: 'Dart', icone: siDart },
   flutter: { nom: 'Flutter', icone: siFlutter },
   supabase: { nom: 'Supabase', icone: siSupabase },
+  python: { nom: 'Python', icone: siPython },
+  numpy: { nom: 'NumPy', icone: siNumpy },
 } satisfies Record<string, Techno>
 
 export type TechnoId = keyof typeof TECHNOS
